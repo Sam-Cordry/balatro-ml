@@ -2,13 +2,11 @@ use std::fmt::Display;
 
 use crate::{
     model::{
-        cards::{Enhancement, Suit},
+        cards::{Card, Enhancement, Suit},
         State,
     },
     traits::Consumable,
 };
-
-use super::cards::Card;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Tarot {

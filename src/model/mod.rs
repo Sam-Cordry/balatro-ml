@@ -3,6 +3,7 @@ use rand::{
     Rng,
 };
 use std::fmt::Display;
+use strum::EnumIter;
 
 use crate::{
     model::{cards::Card, scoring::Scoring},
@@ -23,6 +24,7 @@ pub struct State {
     pub consumable_slots: usize,
     pub money: usize,
     pub hand: Vec<Card>,
+    pub hand_size: usize,
     pub deck: Vec<Card>,
     pub remaining_deck: Vec<Card>,
 }
@@ -48,7 +50,7 @@ impl Display for Edition {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash)]
+#[derive(Debug, PartialEq, Eq, Hash, EnumIter)]
 pub enum HandType {
     High,
     Pair,
