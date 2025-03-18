@@ -81,7 +81,7 @@ impl Consumable for Spectral {
             Self::Familiar(_) => todo!("randomness required"),
             Self::Grim(_) => todo!("randomness required"),
             Self::Incantation(_) => todo!("randomness required"),
-            Self::Talisman(_) => state.selected_cards.get_mut(0).unwrap().seal = Seal::Gold,
+            Self::Talisman(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Gold),
             Self::Aura(_) => todo!("randomness"),
             Self::Wraith(_) => todo!("randomness"),
             Self::Sigil(_) => todo!("randomness"),
@@ -89,10 +89,10 @@ impl Consumable for Spectral {
             Self::Ectoplasm(_) => todo!("randomness"),
             Self::Immolate(_) => todo!("randomness"),
             Self::Ankh(_) => todo!("randomness"),
-            Self::DejaVu(_) => state.selected_cards.get_mut(0).unwrap().seal = Seal::Red,
+            Self::DejaVu(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Red),
             Self::Hex(_) => todo!("randomness"),
-            Self::Trance(_) => state.selected_cards.get_mut(0).unwrap().seal = Seal::Blue,
-            Self::Medium(_) => state.selected_cards.get_mut(0).unwrap().seal = Seal::Purple,
+            Self::Trance(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Blue),
+            Self::Medium(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Purple),
             Self::Cryptid(_) => {
                 for _ in 0..2 {
                     state
@@ -106,7 +106,7 @@ impl Consumable for Spectral {
             Self::Soul(_) => todo!("randomness/jokers"),
             Self::BlackHole(_) => {
                 for hand_type in HandType::iter() {
-                    state.scoring.update_score(hand_type, true);
+                    state.scoring.level_hand(hand_type, true);
                 }
             }
         }

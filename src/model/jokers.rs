@@ -2,7 +2,7 @@ use std::{cmp::max, collections::HashSet, fmt::Display};
 
 use crate::{
     model::{
-        cards::{Card, Enhancement, Suit, Value},
+        cards::{Card, Enhancement, Rank, Suit},
         Edition, HandType, State,
     },
     traits::Scoreable,
@@ -12,790 +12,790 @@ use crate::{
 pub enum Joker {
     Joker {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Greedy {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Lusty {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Wrathful {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Gluttonous {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Jolly {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Zany {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Mad {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Crazy {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Droll {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Sly {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Wily {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Clever {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Devious {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Crafty {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Half {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Stencil {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Fingers {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Mime {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Credit {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Dagger {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Banner {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Mystic {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Marble {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Loyalty {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         hands: u8,
     },
     Ball {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Misprint {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Dusk {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Fist {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
-        min: Option<Value>,
+        min: Option<Rank>,
     },
     Chaos {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Fibonacci {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Steel {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Scary {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Abstract {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Gratification {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Hack {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Pareidolia {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Michel {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Steven {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Todd {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Scholar {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Business {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Supernova {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Bus {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Space {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Egg {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Burglar {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Blackboard {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Runner {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         chips: usize,
     },
     Cream {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: usize,
         chips: usize,
     },
     DNA {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Splash {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Blue {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Sixth {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Constellation {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Hiker {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Faceless {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Green {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Superposition {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     List {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         hand_type: HandType,
     },
     Cavendish {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Sharp {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Red {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Madness {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Square {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         chips: usize,
     },
     Seance {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Riff {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Vampire {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Shortcut {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Hologram {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Vagabond {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         ediiton: Edition,
     },
     Baron {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Cloud {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Rocket {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         money: usize,
     },
     Obelisk {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Midas {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Luchador {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Photograph {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         used: bool,
     },
     Gift {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Turtle {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         hand_size: u8,
     },
     Erosion {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Parking {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Rebate {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
-        rank: Value,
+        rank: Rank,
     },
     Moon {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Hallucination {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Fortune {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Juggler {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Drunkard {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Stone {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Golden {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Lucky {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Baseball {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Bull {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Cola {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Trading {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Flash {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Popcorn {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Trousers {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Ancient {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         suit: Suit,
     },
     Ramen {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Walkie {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Seltzer {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Castle {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         suit: Suit,
         chips: usize,
     },
     Smiley {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Campfire {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Ticket {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Bones {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Acrobat {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Sock {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Swashbuckler {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Troubadour {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Certificate {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Smeared {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Throwback {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Chad {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Gem {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Bloodstone {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Arrowhead {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Onyx {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Glass {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Showman {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Flower {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Blueprint {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Wee {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         chips: usize,
     },
     Andy {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Oops {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Idol {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
-        rank: Value,
+        rank: Rank,
         suit: Suit,
     },
     Double {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Matador {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Road {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Duo {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Trio {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Family {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Order {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Tribe {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Stuntman {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Invisible {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         rounds: usize,
     },
     Brainstorm {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Satellite {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Shoot {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     License {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Cartomancer {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Astronomer {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Burnt {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Bootstraps {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Canio {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         mult: usize,
     },
     Triboulet {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Yorick {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
         discards: usize,
         mult: usize,
     },
     Chicot {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
     Perkeo {
         cost: usize,
-        sell_value: usize,
+        sell_rank: usize,
         edition: Edition,
     },
 }
@@ -814,7 +814,7 @@ impl Joker {
                     mult += state
                         .jokers
                         .remove(state.jokers.iter().position(|j| j == self).unwrap() + 1)
-                        .get_sell_value();
+                        .get_sell_rank();
                 }
             }
             Self::Marble { .. } => {
@@ -835,7 +835,7 @@ impl Joker {
     pub fn on_hand_played(&mut self, state: &mut State) {
         match self {
             Self::Fist { mut min, .. } => {
-                min = Some(state.hand.iter().map(|c| c.value).min().unwrap());
+                min = Some(state.hand.iter().map(|c| c.rank).min().unwrap());
             }
             Self::Bus { mut mult, .. } => {
                 if state
@@ -869,7 +869,7 @@ impl Joker {
             }
             Self::Sixth { .. } => {
                 if state.played_hand.len() == 1
-                    && state.played_hand.get(0).unwrap().value == Value::Six
+                    && state.played_hand.get(0).unwrap().rank == Rank::Six
                 {
                     state.deck.remove(
                         state
@@ -932,15 +932,15 @@ impl Joker {
             }
             Self::Photograph { mut used, .. } => used = false,
             Self::Trousers { mut mult, .. } => {
-                let s: HashSet<Value> =
-                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let s: HashSet<Rank> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.rank));
                 let mut result: u8 = 0;
                 if s.len() < state.selected_cards.len() - 1 {
                     for v in s {
                         if state
                             .selected_cards
                             .iter()
-                            .filter(|c| c.value == v)
+                            .filter(|c| c.rank == v)
                             .collect::<Vec<&Card>>()
                             .len()
                             >= 2
@@ -981,7 +981,7 @@ impl Joker {
                 }
             }
             Self::Ball { .. } => {
-                if card.value == Value::Eight {
+                if card.rank == Rank::Eight {
                     todo!("randomness")
                 }
             }
@@ -989,11 +989,11 @@ impl Joker {
                 card.on_score(state);
             }
             Self::Fibonacci { .. } => {
-                if card.value == Value::Ace
-                    || card.value == Value::Two
-                    || card.value == Value::Three
-                    || card.value == Value::Five
-                    || card.value == Value::Eight
+                if card.rank == Rank::Ace
+                    || card.rank == Rank::Two
+                    || card.rank == Rank::Three
+                    || card.rank == Rank::Five
+                    || card.rank == Rank::Eight
                 {
                     state.current_score.update(None, Some(8.0), None);
                 }
@@ -1002,36 +1002,36 @@ impl Joker {
                 state.current_score.update(Some(30), None, None);
             }
             Self::Hack { .. } => {
-                if card.value == Value::Two
-                    || card.value == Value::Three
-                    || card.value == Value::Four
-                    || card.value == Value::Five
+                if card.rank == Rank::Two
+                    || card.rank == Rank::Three
+                    || card.rank == Rank::Four
+                    || card.rank == Rank::Five
                 {
                     card.on_score(state);
                 }
             }
             Self::Steven { .. } => {
-                if card.value == Value::Two
-                    || card.value == Value::Four
-                    || card.value == Value::Six
-                    || card.value == Value::Eight
-                    || card.value == Value::Ten
+                if card.rank == Rank::Two
+                    || card.rank == Rank::Four
+                    || card.rank == Rank::Six
+                    || card.rank == Rank::Eight
+                    || card.rank == Rank::Ten
                 {
                     state.current_score.update(None, Some(4.0), None);
                 }
             }
             Self::Todd { .. } => {
-                if card.value == Value::Ace
-                    || card.value == Value::Three
-                    || card.value == Value::Five
-                    || card.value == Value::Seven
-                    || card.value == Value::Nine
+                if card.rank == Rank::Ace
+                    || card.rank == Rank::Three
+                    || card.rank == Rank::Five
+                    || card.rank == Rank::Seven
+                    || card.rank == Rank::Nine
                 {
                     state.current_score.update(Some(31), None, None);
                 }
             }
             Self::Scholar { .. } => {
-                if card.value == Value::Ace {
+                if card.rank == Rank::Ace {
                     state.current_score.update(Some(20), Some(4.0), None);
                 }
             }
@@ -1055,7 +1055,7 @@ impl Joker {
                 }
             }
             Self::Walkie { .. } => {
-                if card.value == Value::Ten || card.value == Value::Four {
+                if card.rank == Rank::Ten || card.rank == Rank::Four {
                     state.current_score.update(Some(10), Some(4.0), None);
                 }
             }
@@ -1096,17 +1096,17 @@ impl Joker {
                 }
             }
             Self::Wee { mut chips, .. } => {
-                if card.value == Value::Two {
+                if card.rank == Rank::Two {
                     chips += 8;
                 }
             }
             Self::Idol { rank, suit, .. } => {
-                if card.is_suit(*suit, state) && card.value == *rank {
+                if card.is_suit(*suit, state) && card.rank == *rank {
                     state.current_score.update(None, None, Some(2.0));
                 }
             }
             Self::Triboulet { .. } => {
-                if card.value == Value::King || card.value == Value::Queen {
+                if card.rank == Rank::King || card.rank == Rank::Queen {
                     state.current_score.update(None, None, Some(2.0));
                 }
             }
@@ -1119,10 +1119,10 @@ impl Joker {
             Self::Mime { .. } => card.on_score(state),
             Self::Fist { mut min, .. } => {
                 if let Some(m) = min {
-                    if m == card.value {
+                    if m == card.rank {
                         state.current_score.update(
                             None,
-                            Some((card.value.get_value() * 2) as f64),
+                            Some((card.rank.get_rank() * 2) as f64),
                             None,
                         );
                     }
@@ -1130,13 +1130,13 @@ impl Joker {
                 }
             }
             Self::Baron { .. } => {
-                if card.value == Value::King {
+                if card.rank == Rank::King {
                     state.current_score.update(None, None, Some(1.5));
                 }
             }
             Self::Parking { .. } => todo!("randomness"),
             Self::Shoot { .. } => {
-                if card.value == Value::Queen {
+                if card.rank == Rank::Queen {
                     state.current_score.update(None, Some(13.0), None);
                 }
             }
@@ -1148,25 +1148,23 @@ impl Joker {
         match self {
             Self::Joker { .. } => state.current_score.update(None, Some(4.0), None),
             Self::Jolly { .. } => {
-                if HashSet::<Value>::from_iter(
-                    state.selected_cards.iter().cloned().map(|c| c.value),
-                )
-                .len()
+                if HashSet::<Rank>::from_iter(state.selected_cards.iter().cloned().map(|c| c.rank))
+                    .len()
                     < state.selected_cards.len()
                 {
                     state.current_score.update(None, Some(8.0), None);
                 }
             }
             Self::Zany { .. } => {
-                let s: HashSet<Value> =
-                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let s: HashSet<Rank> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.rank));
                 let mut result: bool = false;
                 if s.len() < state.selected_cards.len() - 1 {
                     for v in s {
                         result |= state
                             .selected_cards
                             .iter()
-                            .filter(|c| c.value == v)
+                            .filter(|c| c.rank == v)
                             .collect::<Vec<&Card>>()
                             .len()
                             >= 3;
@@ -1178,15 +1176,15 @@ impl Joker {
                 }
             }
             Self::Mad { .. } => {
-                let s: HashSet<Value> =
-                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let s: HashSet<Rank> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.rank));
                 let mut result: u8 = 0;
                 if s.len() < state.selected_cards.len() - 1 {
                     for v in s {
                         if state
                             .selected_cards
                             .iter()
-                            .filter(|c| c.value == v)
+                            .filter(|c| c.rank == v)
                             .collect::<Vec<&Card>>()
                             .len()
                             >= 2
@@ -1215,25 +1213,23 @@ impl Joker {
                 }
             }
             Self::Sly { .. } => {
-                if HashSet::<Value>::from_iter(
-                    state.selected_cards.iter().cloned().map(|c| c.value),
-                )
-                .len()
+                if HashSet::<Rank>::from_iter(state.selected_cards.iter().cloned().map(|c| c.rank))
+                    .len()
                     < state.selected_cards.len()
                 {
                     state.current_score.update(Some(50), None, None);
                 }
             }
             Self::Wily { .. } => {
-                let s: HashSet<Value> =
-                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let s: HashSet<Rank> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.rank));
                 let mut result: bool = false;
                 if s.len() < state.selected_cards.len() - 1 {
                     for v in s {
                         result |= state
                             .selected_cards
                             .iter()
-                            .filter(|c| c.value == v)
+                            .filter(|c| c.rank == v)
                             .collect::<Vec<&Card>>()
                             .len()
                             >= 3;
@@ -1245,15 +1241,15 @@ impl Joker {
                 }
             }
             Self::Clever { .. } => {
-                let s: HashSet<Value> =
-                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let s: HashSet<Rank> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.rank));
                 let mut result: u8 = 0;
                 if s.len() < state.selected_cards.len() - 1 {
                     for v in s {
                         if state
                             .selected_cards
                             .iter()
-                            .filter(|c| c.value == v)
+                            .filter(|c| c.rank == v)
                             .collect::<Vec<&Card>>()
                             .len()
                             >= 2
@@ -1376,7 +1372,7 @@ impl Joker {
                     && state
                         .played_hand
                         .iter()
-                        .filter(|c| c.value == Value::Ace)
+                        .filter(|c| c.rank == Rank::Ace)
                         .count()
                         > 0
                     && state.consumables.len() < state.consumable_slots
@@ -1487,9 +1483,9 @@ impl Joker {
                     (state
                         .jokers
                         .iter()
-                        .map(|j| j.get_sell_value())
+                        .map(|j| j.get_sell_rank())
                         .sum::<usize>()
-                        - self.get_sell_value()) as f64,
+                        - self.get_sell_rank()) as f64,
                 ),
                 None,
             ),
@@ -1544,20 +1540,20 @@ impl Joker {
                     .update(None, None, Some((*mult / 2) as f64))
             }
             Self::Duo { .. } => {
-                if HashSet::<Value>::from_iter(state.scoring_cards.iter().map(|c| c.value)).len()
+                if HashSet::<Rank>::from_iter(state.scoring_cards.iter().map(|c| c.rank)).len()
                     < state.scoring_cards.len()
                 {
                     state.current_score.update(None, None, Some(2.0));
                 }
             }
             Self::Trio { .. } => {
-                let s: HashSet<Value> =
-                    HashSet::from_iter(state.scoring_cards.iter().map(|c| c.value));
+                let s: HashSet<Rank> =
+                    HashSet::from_iter(state.scoring_cards.iter().map(|c| c.rank));
                 if s.len() < state.scoring_cards.len() - 1
                     && state
                         .scoring_cards
                         .iter()
-                        .filter(|c| c.value == *s.iter().max().unwrap())
+                        .filter(|c| c.rank == *s.iter().max().unwrap())
                         .count()
                         >= 3
                 {
@@ -1565,8 +1561,8 @@ impl Joker {
                 }
             }
             Self::Family { .. } => {
-                let s: HashSet<Value> =
-                    HashSet::from_iter(state.scoring_cards.iter().map(|c| c.value));
+                let s: HashSet<Rank> =
+                    HashSet::from_iter(state.scoring_cards.iter().map(|c| c.rank));
                 if s.len() < state.scoring_cards.len() - 2 {
                     state.current_score.update(None, None, Some(4.0));
                 }
@@ -1630,7 +1626,7 @@ impl Joker {
             Self::Rebate { rank, .. } => state
                 .selected_cards
                 .iter()
-                .filter(|c| c.value == *rank)
+                .filter(|c| c.rank == *rank)
                 .for_each(|_| state.money += 5),
             Self::Trading { .. } => {
                 if state.discards_remaining == state.discards - 1 && state.selected_cards.len() == 1
@@ -1686,21 +1682,18 @@ impl Joker {
                 }
             }
             Self::Michel { .. } => todo!("randomness"),
-            Self::Egg { mut sell_value, .. } => sell_value += 3,
+            Self::Egg { mut sell_rank, .. } => sell_rank += 3,
             Self::List { hand_type, .. } => todo!("randomness"),
             Self::Cavendish { .. } => todo!("randomness"),
             Self::Cloud { .. } => {
-                state.money += state.deck.iter().filter(|c| c.value == Value::Nine).count();
+                state.money += state.deck.iter().filter(|c| c.rank == Rank::Nine).count();
             }
             Self::Rocket { money, .. } => {
                 state.money += *money;
                 todo!("blinds")
             }
             Self::Gift { .. } => {
-                state
-                    .jokers
-                    .iter_mut()
-                    .for_each(|j| j.increase_sell_value());
+                state.jokers.iter_mut().for_each(|j| j.increase_sell_rank());
             }
             Self::Turtle { mut hand_size, .. } => {
                 hand_size -= 1;
@@ -1998,313 +1991,313 @@ impl Joker {
         }
     }
 
-    pub fn get_sell_value(&self) -> usize {
+    pub fn get_sell_rank(&self) -> usize {
         match self {
-            Self::Joker { sell_value, .. }
-            | Self::Greedy { sell_value, .. }
-            | Self::Lusty { sell_value, .. }
-            | Self::Wrathful { sell_value, .. }
-            | Self::Gluttonous { sell_value, .. }
-            | Self::Jolly { sell_value, .. }
-            | Self::Zany { sell_value, .. }
-            | Self::Mad { sell_value, .. }
-            | Self::Crazy { sell_value, .. }
-            | Self::Droll { sell_value, .. }
-            | Self::Sly { sell_value, .. }
-            | Self::Wily { sell_value, .. }
-            | Self::Clever { sell_value, .. }
-            | Self::Devious { sell_value, .. }
-            | Self::Crafty { sell_value, .. }
-            | Self::Half { sell_value, .. }
-            | Self::Stencil { sell_value, .. }
-            | Self::Fingers { sell_value, .. }
-            | Self::Mime { sell_value, .. }
-            | Self::Credit { sell_value, .. }
-            | Self::Dagger { sell_value, .. }
-            | Self::Banner { sell_value, .. }
-            | Self::Mystic { sell_value, .. }
-            | Self::Marble { sell_value, .. }
-            | Self::Loyalty { sell_value, .. }
-            | Self::Ball { sell_value, .. }
-            | Self::Misprint { sell_value, .. }
-            | Self::Dusk { sell_value, .. }
-            | Self::Fist { sell_value, .. }
-            | Self::Chaos { sell_value, .. }
-            | Self::Fibonacci { sell_value, .. }
-            | Self::Steel { sell_value, .. }
-            | Self::Scary { sell_value, .. }
-            | Self::Abstract { sell_value, .. }
-            | Self::Gratification { sell_value, .. }
-            | Self::Hack { sell_value, .. }
-            | Self::Pareidolia { sell_value, .. }
-            | Self::Michel { sell_value, .. }
-            | Self::Steven { sell_value, .. }
-            | Self::Todd { sell_value, .. }
-            | Self::Scholar { sell_value, .. }
-            | Self::Business { sell_value, .. }
-            | Self::Supernova { sell_value, .. }
-            | Self::Bus { sell_value, .. }
-            | Self::Space { sell_value, .. }
-            | Self::Egg { sell_value, .. }
-            | Self::Burglar { sell_value, .. }
-            | Self::Blackboard { sell_value, .. }
-            | Self::Runner { sell_value, .. }
-            | Self::Cream { sell_value, .. }
-            | Self::DNA { sell_value, .. }
-            | Self::Splash { sell_value, .. }
-            | Self::Blue { sell_value, .. }
-            | Self::Sixth { sell_value, .. }
-            | Self::Constellation { sell_value, .. }
-            | Self::Hiker { sell_value, .. }
-            | Self::Faceless { sell_value, .. }
-            | Self::Green { sell_value, .. }
-            | Self::Superposition { sell_value, .. }
-            | Self::List { sell_value, .. }
-            | Self::Cavendish { sell_value, .. }
-            | Self::Sharp { sell_value, .. }
-            | Self::Red { sell_value, .. }
-            | Self::Madness { sell_value, .. }
-            | Self::Square { sell_value, .. }
-            | Self::Seance { sell_value, .. }
-            | Self::Riff { sell_value, .. }
-            | Self::Vampire { sell_value, .. }
-            | Self::Shortcut { sell_value, .. }
-            | Self::Hologram { sell_value, .. }
-            | Self::Vagabond { sell_value, .. }
-            | Self::Baron { sell_value, .. }
-            | Self::Cloud { sell_value, .. }
-            | Self::Rocket { sell_value, .. }
-            | Self::Obelisk { sell_value, .. }
-            | Self::Midas { sell_value, .. }
-            | Self::Luchador { sell_value, .. }
-            | Self::Photograph { sell_value, .. }
-            | Self::Gift { sell_value, .. }
-            | Self::Turtle { sell_value, .. }
-            | Self::Erosion { sell_value, .. }
-            | Self::Parking { sell_value, .. }
-            | Self::Rebate { sell_value, .. }
-            | Self::Moon { sell_value, .. }
-            | Self::Hallucination { sell_value, .. }
-            | Self::Fortune { sell_value, .. }
-            | Self::Juggler { sell_value, .. }
-            | Self::Drunkard { sell_value, .. }
-            | Self::Stone { sell_value, .. }
-            | Self::Golden { sell_value, .. }
-            | Self::Lucky { sell_value, .. }
-            | Self::Baseball { sell_value, .. }
-            | Self::Bull { sell_value, .. }
-            | Self::Cola { sell_value, .. }
-            | Self::Trading { sell_value, .. }
-            | Self::Flash { sell_value, .. }
-            | Self::Popcorn { sell_value, .. }
-            | Self::Trousers { sell_value, .. }
-            | Self::Ancient { sell_value, .. }
-            | Self::Ramen { sell_value, .. }
-            | Self::Walkie { sell_value, .. }
-            | Self::Seltzer { sell_value, .. }
-            | Self::Castle { sell_value, .. }
-            | Self::Smiley { sell_value, .. }
-            | Self::Campfire { sell_value, .. }
-            | Self::Ticket { sell_value, .. }
-            | Self::Bones { sell_value, .. }
-            | Self::Acrobat { sell_value, .. }
-            | Self::Sock { sell_value, .. }
-            | Self::Swashbuckler { sell_value, .. }
-            | Self::Troubadour { sell_value, .. }
-            | Self::Certificate { sell_value, .. }
-            | Self::Smeared { sell_value, .. }
-            | Self::Throwback { sell_value, .. }
-            | Self::Chad { sell_value, .. }
-            | Self::Gem { sell_value, .. }
-            | Self::Bloodstone { sell_value, .. }
-            | Self::Arrowhead { sell_value, .. }
-            | Self::Onyx { sell_value, .. }
-            | Self::Glass { sell_value, .. }
-            | Self::Showman { sell_value, .. }
-            | Self::Flower { sell_value, .. }
-            | Self::Blueprint { sell_value, .. }
-            | Self::Wee { sell_value, .. }
-            | Self::Andy { sell_value, .. }
-            | Self::Oops { sell_value, .. }
-            | Self::Idol { sell_value, .. }
-            | Self::Double { sell_value, .. }
-            | Self::Matador { sell_value, .. }
-            | Self::Road { sell_value, .. }
-            | Self::Duo { sell_value, .. }
-            | Self::Trio { sell_value, .. }
-            | Self::Family { sell_value, .. }
-            | Self::Order { sell_value, .. }
-            | Self::Tribe { sell_value, .. }
-            | Self::Stuntman { sell_value, .. }
-            | Self::Invisible { sell_value, .. }
-            | Self::Brainstorm { sell_value, .. }
-            | Self::Satellite { sell_value, .. }
-            | Self::Shoot { sell_value, .. }
-            | Self::License { sell_value, .. }
-            | Self::Cartomancer { sell_value, .. }
-            | Self::Astronomer { sell_value, .. }
-            | Self::Burnt { sell_value, .. }
-            | Self::Bootstraps { sell_value, .. }
-            | Self::Canio { sell_value, .. }
-            | Self::Triboulet { sell_value, .. }
-            | Self::Yorick { sell_value, .. }
-            | Self::Chicot { sell_value, .. }
-            | Self::Perkeo { sell_value, .. } => *sell_value,
+            Self::Joker { sell_rank, .. }
+            | Self::Greedy { sell_rank, .. }
+            | Self::Lusty { sell_rank, .. }
+            | Self::Wrathful { sell_rank, .. }
+            | Self::Gluttonous { sell_rank, .. }
+            | Self::Jolly { sell_rank, .. }
+            | Self::Zany { sell_rank, .. }
+            | Self::Mad { sell_rank, .. }
+            | Self::Crazy { sell_rank, .. }
+            | Self::Droll { sell_rank, .. }
+            | Self::Sly { sell_rank, .. }
+            | Self::Wily { sell_rank, .. }
+            | Self::Clever { sell_rank, .. }
+            | Self::Devious { sell_rank, .. }
+            | Self::Crafty { sell_rank, .. }
+            | Self::Half { sell_rank, .. }
+            | Self::Stencil { sell_rank, .. }
+            | Self::Fingers { sell_rank, .. }
+            | Self::Mime { sell_rank, .. }
+            | Self::Credit { sell_rank, .. }
+            | Self::Dagger { sell_rank, .. }
+            | Self::Banner { sell_rank, .. }
+            | Self::Mystic { sell_rank, .. }
+            | Self::Marble { sell_rank, .. }
+            | Self::Loyalty { sell_rank, .. }
+            | Self::Ball { sell_rank, .. }
+            | Self::Misprint { sell_rank, .. }
+            | Self::Dusk { sell_rank, .. }
+            | Self::Fist { sell_rank, .. }
+            | Self::Chaos { sell_rank, .. }
+            | Self::Fibonacci { sell_rank, .. }
+            | Self::Steel { sell_rank, .. }
+            | Self::Scary { sell_rank, .. }
+            | Self::Abstract { sell_rank, .. }
+            | Self::Gratification { sell_rank, .. }
+            | Self::Hack { sell_rank, .. }
+            | Self::Pareidolia { sell_rank, .. }
+            | Self::Michel { sell_rank, .. }
+            | Self::Steven { sell_rank, .. }
+            | Self::Todd { sell_rank, .. }
+            | Self::Scholar { sell_rank, .. }
+            | Self::Business { sell_rank, .. }
+            | Self::Supernova { sell_rank, .. }
+            | Self::Bus { sell_rank, .. }
+            | Self::Space { sell_rank, .. }
+            | Self::Egg { sell_rank, .. }
+            | Self::Burglar { sell_rank, .. }
+            | Self::Blackboard { sell_rank, .. }
+            | Self::Runner { sell_rank, .. }
+            | Self::Cream { sell_rank, .. }
+            | Self::DNA { sell_rank, .. }
+            | Self::Splash { sell_rank, .. }
+            | Self::Blue { sell_rank, .. }
+            | Self::Sixth { sell_rank, .. }
+            | Self::Constellation { sell_rank, .. }
+            | Self::Hiker { sell_rank, .. }
+            | Self::Faceless { sell_rank, .. }
+            | Self::Green { sell_rank, .. }
+            | Self::Superposition { sell_rank, .. }
+            | Self::List { sell_rank, .. }
+            | Self::Cavendish { sell_rank, .. }
+            | Self::Sharp { sell_rank, .. }
+            | Self::Red { sell_rank, .. }
+            | Self::Madness { sell_rank, .. }
+            | Self::Square { sell_rank, .. }
+            | Self::Seance { sell_rank, .. }
+            | Self::Riff { sell_rank, .. }
+            | Self::Vampire { sell_rank, .. }
+            | Self::Shortcut { sell_rank, .. }
+            | Self::Hologram { sell_rank, .. }
+            | Self::Vagabond { sell_rank, .. }
+            | Self::Baron { sell_rank, .. }
+            | Self::Cloud { sell_rank, .. }
+            | Self::Rocket { sell_rank, .. }
+            | Self::Obelisk { sell_rank, .. }
+            | Self::Midas { sell_rank, .. }
+            | Self::Luchador { sell_rank, .. }
+            | Self::Photograph { sell_rank, .. }
+            | Self::Gift { sell_rank, .. }
+            | Self::Turtle { sell_rank, .. }
+            | Self::Erosion { sell_rank, .. }
+            | Self::Parking { sell_rank, .. }
+            | Self::Rebate { sell_rank, .. }
+            | Self::Moon { sell_rank, .. }
+            | Self::Hallucination { sell_rank, .. }
+            | Self::Fortune { sell_rank, .. }
+            | Self::Juggler { sell_rank, .. }
+            | Self::Drunkard { sell_rank, .. }
+            | Self::Stone { sell_rank, .. }
+            | Self::Golden { sell_rank, .. }
+            | Self::Lucky { sell_rank, .. }
+            | Self::Baseball { sell_rank, .. }
+            | Self::Bull { sell_rank, .. }
+            | Self::Cola { sell_rank, .. }
+            | Self::Trading { sell_rank, .. }
+            | Self::Flash { sell_rank, .. }
+            | Self::Popcorn { sell_rank, .. }
+            | Self::Trousers { sell_rank, .. }
+            | Self::Ancient { sell_rank, .. }
+            | Self::Ramen { sell_rank, .. }
+            | Self::Walkie { sell_rank, .. }
+            | Self::Seltzer { sell_rank, .. }
+            | Self::Castle { sell_rank, .. }
+            | Self::Smiley { sell_rank, .. }
+            | Self::Campfire { sell_rank, .. }
+            | Self::Ticket { sell_rank, .. }
+            | Self::Bones { sell_rank, .. }
+            | Self::Acrobat { sell_rank, .. }
+            | Self::Sock { sell_rank, .. }
+            | Self::Swashbuckler { sell_rank, .. }
+            | Self::Troubadour { sell_rank, .. }
+            | Self::Certificate { sell_rank, .. }
+            | Self::Smeared { sell_rank, .. }
+            | Self::Throwback { sell_rank, .. }
+            | Self::Chad { sell_rank, .. }
+            | Self::Gem { sell_rank, .. }
+            | Self::Bloodstone { sell_rank, .. }
+            | Self::Arrowhead { sell_rank, .. }
+            | Self::Onyx { sell_rank, .. }
+            | Self::Glass { sell_rank, .. }
+            | Self::Showman { sell_rank, .. }
+            | Self::Flower { sell_rank, .. }
+            | Self::Blueprint { sell_rank, .. }
+            | Self::Wee { sell_rank, .. }
+            | Self::Andy { sell_rank, .. }
+            | Self::Oops { sell_rank, .. }
+            | Self::Idol { sell_rank, .. }
+            | Self::Double { sell_rank, .. }
+            | Self::Matador { sell_rank, .. }
+            | Self::Road { sell_rank, .. }
+            | Self::Duo { sell_rank, .. }
+            | Self::Trio { sell_rank, .. }
+            | Self::Family { sell_rank, .. }
+            | Self::Order { sell_rank, .. }
+            | Self::Tribe { sell_rank, .. }
+            | Self::Stuntman { sell_rank, .. }
+            | Self::Invisible { sell_rank, .. }
+            | Self::Brainstorm { sell_rank, .. }
+            | Self::Satellite { sell_rank, .. }
+            | Self::Shoot { sell_rank, .. }
+            | Self::License { sell_rank, .. }
+            | Self::Cartomancer { sell_rank, .. }
+            | Self::Astronomer { sell_rank, .. }
+            | Self::Burnt { sell_rank, .. }
+            | Self::Bootstraps { sell_rank, .. }
+            | Self::Canio { sell_rank, .. }
+            | Self::Triboulet { sell_rank, .. }
+            | Self::Yorick { sell_rank, .. }
+            | Self::Chicot { sell_rank, .. }
+            | Self::Perkeo { sell_rank, .. } => *sell_rank,
         }
     }
 
-    pub fn increase_sell_value(&mut self) {
+    pub fn increase_sell_rank(&mut self) {
         match self {
-            Self::Joker { mut sell_value, .. }
-            | Self::Greedy { mut sell_value, .. }
-            | Self::Lusty { mut sell_value, .. }
-            | Self::Wrathful { mut sell_value, .. }
-            | Self::Gluttonous { mut sell_value, .. }
-            | Self::Jolly { mut sell_value, .. }
-            | Self::Zany { mut sell_value, .. }
-            | Self::Mad { mut sell_value, .. }
-            | Self::Crazy { mut sell_value, .. }
-            | Self::Droll { mut sell_value, .. }
-            | Self::Sly { mut sell_value, .. }
-            | Self::Wily { mut sell_value, .. }
-            | Self::Clever { mut sell_value, .. }
-            | Self::Devious { mut sell_value, .. }
-            | Self::Crafty { mut sell_value, .. }
-            | Self::Half { mut sell_value, .. }
-            | Self::Stencil { mut sell_value, .. }
-            | Self::Fingers { mut sell_value, .. }
-            | Self::Mime { mut sell_value, .. }
-            | Self::Credit { mut sell_value, .. }
-            | Self::Dagger { mut sell_value, .. }
-            | Self::Banner { mut sell_value, .. }
-            | Self::Mystic { mut sell_value, .. }
-            | Self::Marble { mut sell_value, .. }
-            | Self::Loyalty { mut sell_value, .. }
-            | Self::Ball { mut sell_value, .. }
-            | Self::Misprint { mut sell_value, .. }
-            | Self::Dusk { mut sell_value, .. }
-            | Self::Fist { mut sell_value, .. }
-            | Self::Chaos { mut sell_value, .. }
-            | Self::Fibonacci { mut sell_value, .. }
-            | Self::Steel { mut sell_value, .. }
-            | Self::Scary { mut sell_value, .. }
-            | Self::Abstract { mut sell_value, .. }
-            | Self::Gratification { mut sell_value, .. }
-            | Self::Hack { mut sell_value, .. }
-            | Self::Pareidolia { mut sell_value, .. }
-            | Self::Michel { mut sell_value, .. }
-            | Self::Steven { mut sell_value, .. }
-            | Self::Todd { mut sell_value, .. }
-            | Self::Scholar { mut sell_value, .. }
-            | Self::Business { mut sell_value, .. }
-            | Self::Supernova { mut sell_value, .. }
-            | Self::Bus { mut sell_value, .. }
-            | Self::Space { mut sell_value, .. }
-            | Self::Egg { mut sell_value, .. }
-            | Self::Burglar { mut sell_value, .. }
-            | Self::Blackboard { mut sell_value, .. }
-            | Self::Runner { mut sell_value, .. }
-            | Self::Cream { mut sell_value, .. }
-            | Self::DNA { mut sell_value, .. }
-            | Self::Splash { mut sell_value, .. }
-            | Self::Blue { mut sell_value, .. }
-            | Self::Sixth { mut sell_value, .. }
-            | Self::Constellation { mut sell_value, .. }
-            | Self::Hiker { mut sell_value, .. }
-            | Self::Faceless { mut sell_value, .. }
-            | Self::Green { mut sell_value, .. }
-            | Self::Superposition { mut sell_value, .. }
-            | Self::List { mut sell_value, .. }
-            | Self::Cavendish { mut sell_value, .. }
-            | Self::Sharp { mut sell_value, .. }
-            | Self::Red { mut sell_value, .. }
-            | Self::Madness { mut sell_value, .. }
-            | Self::Square { mut sell_value, .. }
-            | Self::Seance { mut sell_value, .. }
-            | Self::Riff { mut sell_value, .. }
-            | Self::Vampire { mut sell_value, .. }
-            | Self::Shortcut { mut sell_value, .. }
-            | Self::Hologram { mut sell_value, .. }
-            | Self::Vagabond { mut sell_value, .. }
-            | Self::Baron { mut sell_value, .. }
-            | Self::Cloud { mut sell_value, .. }
-            | Self::Rocket { mut sell_value, .. }
-            | Self::Obelisk { mut sell_value, .. }
-            | Self::Midas { mut sell_value, .. }
-            | Self::Luchador { mut sell_value, .. }
-            | Self::Photograph { mut sell_value, .. }
-            | Self::Gift { mut sell_value, .. }
-            | Self::Turtle { mut sell_value, .. }
-            | Self::Erosion { mut sell_value, .. }
-            | Self::Parking { mut sell_value, .. }
-            | Self::Rebate { mut sell_value, .. }
-            | Self::Moon { mut sell_value, .. }
-            | Self::Hallucination { mut sell_value, .. }
-            | Self::Fortune { mut sell_value, .. }
-            | Self::Juggler { mut sell_value, .. }
-            | Self::Drunkard { mut sell_value, .. }
-            | Self::Stone { mut sell_value, .. }
-            | Self::Golden { mut sell_value, .. }
-            | Self::Lucky { mut sell_value, .. }
-            | Self::Baseball { mut sell_value, .. }
-            | Self::Bull { mut sell_value, .. }
-            | Self::Cola { mut sell_value, .. }
-            | Self::Trading { mut sell_value, .. }
-            | Self::Flash { mut sell_value, .. }
-            | Self::Popcorn { mut sell_value, .. }
-            | Self::Trousers { mut sell_value, .. }
-            | Self::Ancient { mut sell_value, .. }
-            | Self::Ramen { mut sell_value, .. }
-            | Self::Walkie { mut sell_value, .. }
-            | Self::Seltzer { mut sell_value, .. }
-            | Self::Castle { mut sell_value, .. }
-            | Self::Smiley { mut sell_value, .. }
-            | Self::Campfire { mut sell_value, .. }
-            | Self::Ticket { mut sell_value, .. }
-            | Self::Bones { mut sell_value, .. }
-            | Self::Acrobat { mut sell_value, .. }
-            | Self::Sock { mut sell_value, .. }
-            | Self::Swashbuckler { mut sell_value, .. }
-            | Self::Troubadour { mut sell_value, .. }
-            | Self::Certificate { mut sell_value, .. }
-            | Self::Smeared { mut sell_value, .. }
-            | Self::Throwback { mut sell_value, .. }
-            | Self::Chad { mut sell_value, .. }
-            | Self::Gem { mut sell_value, .. }
-            | Self::Bloodstone { mut sell_value, .. }
-            | Self::Arrowhead { mut sell_value, .. }
-            | Self::Onyx { mut sell_value, .. }
-            | Self::Glass { mut sell_value, .. }
-            | Self::Showman { mut sell_value, .. }
-            | Self::Flower { mut sell_value, .. }
-            | Self::Blueprint { mut sell_value, .. }
-            | Self::Wee { mut sell_value, .. }
-            | Self::Andy { mut sell_value, .. }
-            | Self::Oops { mut sell_value, .. }
-            | Self::Idol { mut sell_value, .. }
-            | Self::Double { mut sell_value, .. }
-            | Self::Matador { mut sell_value, .. }
-            | Self::Road { mut sell_value, .. }
-            | Self::Duo { mut sell_value, .. }
-            | Self::Trio { mut sell_value, .. }
-            | Self::Family { mut sell_value, .. }
-            | Self::Order { mut sell_value, .. }
-            | Self::Tribe { mut sell_value, .. }
-            | Self::Stuntman { mut sell_value, .. }
-            | Self::Invisible { mut sell_value, .. }
-            | Self::Brainstorm { mut sell_value, .. }
-            | Self::Satellite { mut sell_value, .. }
-            | Self::Shoot { mut sell_value, .. }
-            | Self::License { mut sell_value, .. }
-            | Self::Cartomancer { mut sell_value, .. }
-            | Self::Astronomer { mut sell_value, .. }
-            | Self::Burnt { mut sell_value, .. }
-            | Self::Bootstraps { mut sell_value, .. }
-            | Self::Canio { mut sell_value, .. }
-            | Self::Triboulet { mut sell_value, .. }
-            | Self::Yorick { mut sell_value, .. }
-            | Self::Chicot { mut sell_value, .. }
-            | Self::Perkeo { mut sell_value, .. } => sell_value += 1,
+            Self::Joker { mut sell_rank, .. }
+            | Self::Greedy { mut sell_rank, .. }
+            | Self::Lusty { mut sell_rank, .. }
+            | Self::Wrathful { mut sell_rank, .. }
+            | Self::Gluttonous { mut sell_rank, .. }
+            | Self::Jolly { mut sell_rank, .. }
+            | Self::Zany { mut sell_rank, .. }
+            | Self::Mad { mut sell_rank, .. }
+            | Self::Crazy { mut sell_rank, .. }
+            | Self::Droll { mut sell_rank, .. }
+            | Self::Sly { mut sell_rank, .. }
+            | Self::Wily { mut sell_rank, .. }
+            | Self::Clever { mut sell_rank, .. }
+            | Self::Devious { mut sell_rank, .. }
+            | Self::Crafty { mut sell_rank, .. }
+            | Self::Half { mut sell_rank, .. }
+            | Self::Stencil { mut sell_rank, .. }
+            | Self::Fingers { mut sell_rank, .. }
+            | Self::Mime { mut sell_rank, .. }
+            | Self::Credit { mut sell_rank, .. }
+            | Self::Dagger { mut sell_rank, .. }
+            | Self::Banner { mut sell_rank, .. }
+            | Self::Mystic { mut sell_rank, .. }
+            | Self::Marble { mut sell_rank, .. }
+            | Self::Loyalty { mut sell_rank, .. }
+            | Self::Ball { mut sell_rank, .. }
+            | Self::Misprint { mut sell_rank, .. }
+            | Self::Dusk { mut sell_rank, .. }
+            | Self::Fist { mut sell_rank, .. }
+            | Self::Chaos { mut sell_rank, .. }
+            | Self::Fibonacci { mut sell_rank, .. }
+            | Self::Steel { mut sell_rank, .. }
+            | Self::Scary { mut sell_rank, .. }
+            | Self::Abstract { mut sell_rank, .. }
+            | Self::Gratification { mut sell_rank, .. }
+            | Self::Hack { mut sell_rank, .. }
+            | Self::Pareidolia { mut sell_rank, .. }
+            | Self::Michel { mut sell_rank, .. }
+            | Self::Steven { mut sell_rank, .. }
+            | Self::Todd { mut sell_rank, .. }
+            | Self::Scholar { mut sell_rank, .. }
+            | Self::Business { mut sell_rank, .. }
+            | Self::Supernova { mut sell_rank, .. }
+            | Self::Bus { mut sell_rank, .. }
+            | Self::Space { mut sell_rank, .. }
+            | Self::Egg { mut sell_rank, .. }
+            | Self::Burglar { mut sell_rank, .. }
+            | Self::Blackboard { mut sell_rank, .. }
+            | Self::Runner { mut sell_rank, .. }
+            | Self::Cream { mut sell_rank, .. }
+            | Self::DNA { mut sell_rank, .. }
+            | Self::Splash { mut sell_rank, .. }
+            | Self::Blue { mut sell_rank, .. }
+            | Self::Sixth { mut sell_rank, .. }
+            | Self::Constellation { mut sell_rank, .. }
+            | Self::Hiker { mut sell_rank, .. }
+            | Self::Faceless { mut sell_rank, .. }
+            | Self::Green { mut sell_rank, .. }
+            | Self::Superposition { mut sell_rank, .. }
+            | Self::List { mut sell_rank, .. }
+            | Self::Cavendish { mut sell_rank, .. }
+            | Self::Sharp { mut sell_rank, .. }
+            | Self::Red { mut sell_rank, .. }
+            | Self::Madness { mut sell_rank, .. }
+            | Self::Square { mut sell_rank, .. }
+            | Self::Seance { mut sell_rank, .. }
+            | Self::Riff { mut sell_rank, .. }
+            | Self::Vampire { mut sell_rank, .. }
+            | Self::Shortcut { mut sell_rank, .. }
+            | Self::Hologram { mut sell_rank, .. }
+            | Self::Vagabond { mut sell_rank, .. }
+            | Self::Baron { mut sell_rank, .. }
+            | Self::Cloud { mut sell_rank, .. }
+            | Self::Rocket { mut sell_rank, .. }
+            | Self::Obelisk { mut sell_rank, .. }
+            | Self::Midas { mut sell_rank, .. }
+            | Self::Luchador { mut sell_rank, .. }
+            | Self::Photograph { mut sell_rank, .. }
+            | Self::Gift { mut sell_rank, .. }
+            | Self::Turtle { mut sell_rank, .. }
+            | Self::Erosion { mut sell_rank, .. }
+            | Self::Parking { mut sell_rank, .. }
+            | Self::Rebate { mut sell_rank, .. }
+            | Self::Moon { mut sell_rank, .. }
+            | Self::Hallucination { mut sell_rank, .. }
+            | Self::Fortune { mut sell_rank, .. }
+            | Self::Juggler { mut sell_rank, .. }
+            | Self::Drunkard { mut sell_rank, .. }
+            | Self::Stone { mut sell_rank, .. }
+            | Self::Golden { mut sell_rank, .. }
+            | Self::Lucky { mut sell_rank, .. }
+            | Self::Baseball { mut sell_rank, .. }
+            | Self::Bull { mut sell_rank, .. }
+            | Self::Cola { mut sell_rank, .. }
+            | Self::Trading { mut sell_rank, .. }
+            | Self::Flash { mut sell_rank, .. }
+            | Self::Popcorn { mut sell_rank, .. }
+            | Self::Trousers { mut sell_rank, .. }
+            | Self::Ancient { mut sell_rank, .. }
+            | Self::Ramen { mut sell_rank, .. }
+            | Self::Walkie { mut sell_rank, .. }
+            | Self::Seltzer { mut sell_rank, .. }
+            | Self::Castle { mut sell_rank, .. }
+            | Self::Smiley { mut sell_rank, .. }
+            | Self::Campfire { mut sell_rank, .. }
+            | Self::Ticket { mut sell_rank, .. }
+            | Self::Bones { mut sell_rank, .. }
+            | Self::Acrobat { mut sell_rank, .. }
+            | Self::Sock { mut sell_rank, .. }
+            | Self::Swashbuckler { mut sell_rank, .. }
+            | Self::Troubadour { mut sell_rank, .. }
+            | Self::Certificate { mut sell_rank, .. }
+            | Self::Smeared { mut sell_rank, .. }
+            | Self::Throwback { mut sell_rank, .. }
+            | Self::Chad { mut sell_rank, .. }
+            | Self::Gem { mut sell_rank, .. }
+            | Self::Bloodstone { mut sell_rank, .. }
+            | Self::Arrowhead { mut sell_rank, .. }
+            | Self::Onyx { mut sell_rank, .. }
+            | Self::Glass { mut sell_rank, .. }
+            | Self::Showman { mut sell_rank, .. }
+            | Self::Flower { mut sell_rank, .. }
+            | Self::Blueprint { mut sell_rank, .. }
+            | Self::Wee { mut sell_rank, .. }
+            | Self::Andy { mut sell_rank, .. }
+            | Self::Oops { mut sell_rank, .. }
+            | Self::Idol { mut sell_rank, .. }
+            | Self::Double { mut sell_rank, .. }
+            | Self::Matador { mut sell_rank, .. }
+            | Self::Road { mut sell_rank, .. }
+            | Self::Duo { mut sell_rank, .. }
+            | Self::Trio { mut sell_rank, .. }
+            | Self::Family { mut sell_rank, .. }
+            | Self::Order { mut sell_rank, .. }
+            | Self::Tribe { mut sell_rank, .. }
+            | Self::Stuntman { mut sell_rank, .. }
+            | Self::Invisible { mut sell_rank, .. }
+            | Self::Brainstorm { mut sell_rank, .. }
+            | Self::Satellite { mut sell_rank, .. }
+            | Self::Shoot { mut sell_rank, .. }
+            | Self::License { mut sell_rank, .. }
+            | Self::Cartomancer { mut sell_rank, .. }
+            | Self::Astronomer { mut sell_rank, .. }
+            | Self::Burnt { mut sell_rank, .. }
+            | Self::Bootstraps { mut sell_rank, .. }
+            | Self::Canio { mut sell_rank, .. }
+            | Self::Triboulet { mut sell_rank, .. }
+            | Self::Yorick { mut sell_rank, .. }
+            | Self::Chicot { mut sell_rank, .. }
+            | Self::Perkeo { mut sell_rank, .. } => sell_rank += 1,
         }
     }
 

@@ -10,7 +10,7 @@ use super::jokers::Joker;
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Card {
     pub suit: Suit,
-    pub value: Value,
+    pub rank: Rank,
     pub edition: Edition,
     pub enhancement: Option<Enhancement>,
     pub seal: Option<Seal>,
@@ -23,15 +23,15 @@ impl Display for Card {
             (Some(e), Some(s)) => write!(
                 f,
                 "{} {} {} of {}s with a {} seal",
-                self.edition, e, self.value, self.suit, s
+                self.edition, e, self.rank, self.suit, s
             ),
-            (Some(e), None) => write!(f, "{} {} {} of {}s", self.edition, e, self.value, self.suit),
+            (Some(e), None) => write!(f, "{} {} {} of {}s", self.edition, e, self.rank, self.suit),
             (None, Some(s)) => write!(
                 f,
                 "{} {} of {}s with a {} seal",
-                self.edition, self.value, self.suit, s
+                self.edition, self.rank, self.suit, s
             ),
-            (None, None) => write!(f, "{} {} of {}", self.edition, self.value, self.suit),
+            (None, None) => write!(f, "{} {} of {}", self.edition, self.rank, self.suit),
         }
     }
 }
@@ -50,12 +50,12 @@ impl Scoreable for Card {
 
 impl Card {
     pub fn increment(&mut self) {
-        self.value = self.value.increment();
+        self.rank = self.rank.increment();
     }
 
     pub fn duplicate(&mut self, other: &Card) {
         self.suit = other.suit;
-        self.value = other.value;
+        self.rank = other.rank;
         self.edition = other.edition;
         self.enhancement = other.enhancement;
         self.seal = other.seal;
@@ -63,9 +63,9 @@ impl Card {
 
     pub fn is_face_card(&self, jokers: &Vec<Joker>) -> bool {
         jokers.iter().filter(|j| j.name() == "Pareidolia").count() > 0
-            || self.value == Value::King
-            || self.value == Value::Queen
-            || self.value == Value::Jack
+            || self.rank == Rank::King
+            || self.rank == Rank::Queen
+            || self.rank == Rank::Jack
     }
 
     pub fn is_suit(&self, suit: Suit, state: &State) -> bool {
@@ -93,7 +93,7 @@ impl Display for Suit {
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord)]
-pub enum Value {
+pub enum Rank {
     Two,
     Three,
     Four,
@@ -109,7 +109,7 @@ pub enum Value {
     Ace,
 }
 
-impl Display for Value {
+impl Display for Rank {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Two => write!(f, "Two"),
@@ -129,7 +129,7 @@ impl Display for Value {
     }
 }
 
-impl Value {
+impl Rank {
     pub fn increment(&mut self) -> Self {
         match self {
             Self::Two => Self::Three,
@@ -148,7 +148,7 @@ impl Value {
         }
     }
 
-    pub fn get_value(&self) -> u8 {
+    pub fn get_rank(&self) -> u8 {
         match self {
             Self::Two => 2,
             Self::Three => 3,

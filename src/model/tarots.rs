@@ -101,7 +101,7 @@ impl Consumable for Tarot {
             Self::Fool(_) => todo!("can implement once random is implemented for consumables"),
             Self::Magician(_) => {
                 for card in state.selected_cards.iter_mut() {
-                    card.enhancement = Enhancement::Lucky;
+                    card.enhancement = Some(Enhancement::Lucky);
                 }
             }
             Self::Priestess(_) => {
@@ -109,23 +109,23 @@ impl Consumable for Tarot {
             }
             Self::Empress(_) => {
                 for card in state.selected_cards.iter_mut() {
-                    card.enhancement = Enhancement::Mult;
+                    card.enhancement = Some(Enhancement::Mult);
                 }
             }
             Self::Emperor(_) => todo!("can implement once jokers are implemented"),
             Self::Hierophant(_) => {
                 for card in state.selected_cards.iter_mut() {
-                    card.enhancement = Enhancement::Bonus;
+                    card.enhancement = Some(Enhancement::Bonus);
                 }
             }
             Self::Lovers(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Enhancement::Wild
+                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Wild);
             }
             Self::Chariot(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Enhancement::Steel
+                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Steel);
             }
             Self::Justice(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Enhancement::Glass
+                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Glass);
             }
             Self::Hermit(_) => state.money += state.money.clamp(0, 20),
             Self::Wheel(_) => todo!("can implement once jokers are implemented"),
@@ -150,10 +150,10 @@ impl Consumable for Tarot {
             }
             Self::Temperance(_) => todo!("can implement once jokers are implemented"),
             Self::Devil(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Enhancement::Gold
+                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Gold);
             }
             Self::Tower(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Enhancement::Stone
+                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Stone);
             }
             Self::Star(_) => {
                 for card in state.selected_cards.iter_mut() {

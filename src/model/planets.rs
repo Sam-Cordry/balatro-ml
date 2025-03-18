@@ -60,7 +60,7 @@ impl Consumable for Planet {
             Self::Eris { .. } => HandType::FlushHouse,
             Self::Ceres { .. } => HandType::FlushFive,
         };
-        state.scoring.update_score(hand_type, true);
+        state.scoring.level_hand(hand_type, true);
     }
 
     fn is_negative(&self) -> bool {
