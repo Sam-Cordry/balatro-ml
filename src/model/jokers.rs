@@ -1,0 +1,2465 @@
+use std::{cmp::max, collections::HashSet, fmt::Display};
+
+use crate::{
+    model::{
+        cards::{Card, Enhancement, Suit, Value},
+        Edition, HandType, State,
+    },
+    traits::Scoreable,
+};
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum Joker {
+    Joker {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Greedy {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Lusty {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Wrathful {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Gluttonous {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Jolly {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Zany {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Mad {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Crazy {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Droll {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Sly {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Wily {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Clever {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Devious {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Crafty {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Half {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Stencil {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Fingers {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Mime {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Credit {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Dagger {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Banner {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Mystic {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Marble {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Loyalty {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        hands: u8,
+    },
+    Ball {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Misprint {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Dusk {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Fist {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        min: Option<Value>,
+    },
+    Chaos {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Fibonacci {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Steel {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Scary {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Abstract {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Gratification {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Hack {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Pareidolia {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Michel {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Steven {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Todd {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Scholar {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Business {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Supernova {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Bus {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Space {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Egg {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Burglar {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Blackboard {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Runner {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        chips: usize,
+    },
+    Cream {
+        cost: usize,
+        sell_value: usize,
+        edition: usize,
+        chips: usize,
+    },
+    DNA {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Splash {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Blue {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Sixth {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Constellation {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Hiker {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Faceless {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Green {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Superposition {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    List {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        hand_type: HandType,
+    },
+    Cavendish {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Sharp {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Red {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Madness {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Square {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        chips: usize,
+    },
+    Seance {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Riff {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Vampire {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Shortcut {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Hologram {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Vagabond {
+        cost: usize,
+        sell_value: usize,
+        ediiton: Edition,
+    },
+    Baron {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Cloud {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Rocket {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        money: usize,
+    },
+    Obelisk {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Midas {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Luchador {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Photograph {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        used: bool,
+    },
+    Gift {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Turtle {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        hand_size: u8,
+    },
+    Erosion {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Parking {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Rebate {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        rank: Value,
+    },
+    Moon {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Hallucination {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Fortune {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Juggler {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Drunkard {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Stone {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Golden {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Lucky {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Baseball {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Bull {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Cola {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Trading {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Flash {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Popcorn {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Trousers {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Ancient {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        suit: Suit,
+    },
+    Ramen {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Walkie {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Seltzer {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Castle {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        suit: Suit,
+        chips: usize,
+    },
+    Smiley {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Campfire {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Ticket {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Bones {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Acrobat {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Sock {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Swashbuckler {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Troubadour {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Certificate {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Smeared {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Throwback {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Chad {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Gem {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Bloodstone {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Arrowhead {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Onyx {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Glass {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Showman {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Flower {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Blueprint {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Wee {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        chips: usize,
+    },
+    Andy {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Oops {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Idol {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        rank: Value,
+        suit: Suit,
+    },
+    Double {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Matador {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Road {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Duo {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Trio {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Family {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Order {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Tribe {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Stuntman {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Invisible {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        rounds: usize,
+    },
+    Brainstorm {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Satellite {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Shoot {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    License {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Cartomancer {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Astronomer {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Burnt {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Bootstraps {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Canio {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        mult: usize,
+    },
+    Triboulet {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Yorick {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+        discards: usize,
+        mult: usize,
+    },
+    Chicot {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+    Perkeo {
+        cost: usize,
+        sell_value: usize,
+        edition: Edition,
+    },
+}
+
+impl Display for Joker {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.name())
+    }
+}
+
+impl Joker {
+    pub fn on_blind_select(&mut self, state: &mut State) {
+        match self {
+            Self::Dagger { mut mult, .. } => {
+                if state.jokers.iter().position(|j| j == self).unwrap() + 1 < state.jokers.len() {
+                    mult += state
+                        .jokers
+                        .remove(state.jokers.iter().position(|j| j == self).unwrap() + 1)
+                        .get_sell_value();
+                }
+            }
+            Self::Marble { .. } => {
+                todo!("randomness needed")
+            }
+            Self::Burglar { .. } => {
+                state.hands_remaining += 3;
+                state.discards_remaining = 0;
+            }
+            Self::Madness { mut mult, .. } => todo!("blinds"),
+            Self::Riff { .. } => todo!("randomness"),
+            Self::Certificate { .. } => todo!("randomness"),
+            Self::Cartomancer { .. } => todo!("randomness"),
+            _ => {}
+        }
+    }
+
+    pub fn on_hand_played(&mut self, state: &mut State) {
+        match self {
+            Self::Fist { mut min, .. } => {
+                min = Some(state.hand.iter().map(|c| c.value).min().unwrap());
+            }
+            Self::Bus { mut mult, .. } => {
+                if state
+                    .scoring_cards
+                    .iter()
+                    .filter(|c| c.is_face_card(&state.jokers))
+                    .count()
+                    == 0
+                {
+                    mult += 1;
+                } else {
+                    mult = 0;
+                }
+            }
+            Self::Space { .. } => todo!("randomness"),
+            Self::Runner { mut chips, .. } => {
+                if state.hand_type_played == HandType::Straight
+                    || state.hand_type_played == HandType::StraightFlush
+                {
+                    chips += 15;
+                }
+            }
+            Self::DNA { .. } => {
+                if state.hands_remaining == state.hands - 1 && state.played_hand.len() == 1 {
+                    state.deck.push(state.played_hand.get(0).unwrap().clone());
+                    state.hand.push(state.played_hand.get(0).unwrap().clone());
+                }
+            }
+            Self::Splash { .. } => {
+                state.scoring_cards = state.played_hand.clone();
+            }
+            Self::Sixth { .. } => {
+                if state.played_hand.len() == 1
+                    && state.played_hand.get(0).unwrap().value == Value::Six
+                {
+                    state.deck.remove(
+                        state
+                            .deck
+                            .iter()
+                            .position(|c| c == state.played_hand.get(0).unwrap())
+                            .unwrap(),
+                    );
+                }
+            }
+            Self::Green { mut mult, .. } => mult += 1,
+            Self::List { hand_type, .. } => {
+                if *hand_type == state.hand_type_played {
+                    state.money += 4;
+                }
+            }
+            Self::Square { mut chips, .. } => {
+                if state.played_hand.len() == 4 {
+                    chips += 4;
+                }
+            }
+            Self::Vampire { mut mult, .. } => {
+                state
+                    .scoring_cards
+                    .iter_mut()
+                    .filter(|c| c.enhancement.is_some())
+                    .for_each(|c| {
+                        c.enhancement = None;
+                        mult += 1;
+                    });
+            }
+            Self::Obelisk { mut mult, .. } => {
+                if state
+                    .scoring
+                    .scoring_times
+                    .iter()
+                    .filter(|e| {
+                        e.1 == state
+                            .scoring
+                            .scoring_times
+                            .iter()
+                            .map(|e| e.1)
+                            .max_by(|x, y| x.cmp(y))
+                            .unwrap()
+                    })
+                    .map(|(k, _)| k)
+                    .any(|k| *k == state.hand_type_played)
+                {
+                    mult = 5;
+                } else {
+                    mult += 1;
+                }
+            }
+            Self::Midas { .. } => {
+                state
+                    .played_hand
+                    .iter_mut()
+                    .filter(|c| c.is_face_card(&state.jokers))
+                    .for_each(|c| c.enhancement = Some(Enhancement::Gold));
+            }
+            Self::Photograph { mut used, .. } => used = false,
+            Self::Trousers { mut mult, .. } => {
+                let s: HashSet<Value> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let mut result: u8 = 0;
+                if s.len() < state.selected_cards.len() - 1 {
+                    for v in s {
+                        if state
+                            .selected_cards
+                            .iter()
+                            .filter(|c| c.value == v)
+                            .collect::<Vec<&Card>>()
+                            .len()
+                            >= 2
+                        {
+                            result += 1;
+                        }
+                    }
+                }
+
+                if result == 2 {
+                    mult += 2;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn on_card_score(&mut self, state: &mut State, card: &mut Card) {
+        match self {
+            Self::Greedy { .. } => {
+                if card.suit == Suit::Diamond {
+                    state.current_score.update(None, Some(3.0), None);
+                }
+            }
+            Self::Lusty { .. } => {
+                if card.suit == Suit::Heart {
+                    state.current_score.update(None, Some(3.0), None);
+                }
+            }
+            Self::Wrathful { .. } => {
+                if card.suit == Suit::Spade {
+                    state.current_score.update(None, Some(3.0), None);
+                }
+            }
+            Self::Gluttonous { .. } => {
+                if card.suit == Suit::Club {
+                    state.current_score.update(None, Some(3.0), None);
+                }
+            }
+            Self::Ball { .. } => {
+                if card.value == Value::Eight {
+                    todo!("randomness")
+                }
+            }
+            Self::Dusk { .. } => {
+                card.on_score(state);
+            }
+            Self::Fibonacci { .. } => {
+                if card.value == Value::Ace
+                    || card.value == Value::Two
+                    || card.value == Value::Three
+                    || card.value == Value::Five
+                    || card.value == Value::Eight
+                {
+                    state.current_score.update(None, Some(8.0), None);
+                }
+            }
+            Self::Scary { .. } => {
+                state.current_score.update(Some(30), None, None);
+            }
+            Self::Hack { .. } => {
+                if card.value == Value::Two
+                    || card.value == Value::Three
+                    || card.value == Value::Four
+                    || card.value == Value::Five
+                {
+                    card.on_score(state);
+                }
+            }
+            Self::Steven { .. } => {
+                if card.value == Value::Two
+                    || card.value == Value::Four
+                    || card.value == Value::Six
+                    || card.value == Value::Eight
+                    || card.value == Value::Ten
+                {
+                    state.current_score.update(None, Some(4.0), None);
+                }
+            }
+            Self::Todd { .. } => {
+                if card.value == Value::Ace
+                    || card.value == Value::Three
+                    || card.value == Value::Five
+                    || card.value == Value::Seven
+                    || card.value == Value::Nine
+                {
+                    state.current_score.update(Some(31), None, None);
+                }
+            }
+            Self::Scholar { .. } => {
+                if card.value == Value::Ace {
+                    state.current_score.update(Some(20), Some(4.0), None);
+                }
+            }
+            Self::Business { .. } => {
+                if card.is_face_card(&state.jokers) {
+                    todo!("randomness");
+                }
+            }
+            Self::Hiker { .. } => {
+                card.chips += 5;
+            }
+            Self::Photograph { mut used, .. } => {
+                if !used && card.is_face_card(&state.jokers) {
+                    used = true;
+                    state.current_score.update(None, None, Some(2.0));
+                }
+            }
+            Self::Ancient { suit, .. } => {
+                if card.suit == *suit {
+                    state.current_score.update(None, None, Some(1.5));
+                }
+            }
+            Self::Walkie { .. } => {
+                if card.value == Value::Ten || card.value == Value::Four {
+                    state.current_score.update(Some(10), Some(4.0), None);
+                }
+            }
+            Self::Seltzer { .. } => card.on_score(state),
+            Self::Smiley { .. } => {
+                if card.is_face_card(&state.jokers) {
+                    state.current_score.update(None, Some(5.0), None);
+                }
+            }
+            Self::Ticket { .. } => state
+                .scoring_cards
+                .iter()
+                .filter(|c| c.enhancement == Some(Enhancement::Gold))
+                .for_each(|c| state.money += 4),
+            Self::Sock { .. } => {
+                if card.is_face_card(&state.jokers) {
+                    card.on_score(state);
+                }
+            }
+            Self::Chad { .. } => {
+                card.on_score(state);
+                card.on_score(state);
+            }
+            Self::Gem { .. } => {
+                if card.is_suit(Suit::Diamond, state) {
+                    state.money += 1;
+                }
+            }
+            Self::Bloodstone { .. } => todo!("randomness"),
+            Self::Arrowhead { .. } => {
+                if card.is_suit(Suit::Spade, state) {
+                    state.current_score.update(Some(50), None, None);
+                }
+            }
+            Self::Onyx { .. } => {
+                if card.is_suit(Suit::Club, state) {
+                    state.current_score.update(None, Some(7.0), None);
+                }
+            }
+            Self::Wee { mut chips, .. } => {
+                if card.value == Value::Two {
+                    chips += 8;
+                }
+            }
+            Self::Idol { rank, suit, .. } => {
+                if card.is_suit(*suit, state) && card.value == *rank {
+                    state.current_score.update(None, None, Some(2.0));
+                }
+            }
+            Self::Triboulet { .. } => {
+                if card.value == Value::King || card.value == Value::Queen {
+                    state.current_score.update(None, None, Some(2.0));
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn on_card_in_hand_score(&mut self, state: &mut State, card: &Card) {
+        match self {
+            Self::Mime { .. } => card.on_score(state),
+            Self::Fist { mut min, .. } => {
+                if let Some(m) = min {
+                    if m == card.value {
+                        state.current_score.update(
+                            None,
+                            Some((card.value.get_value() * 2) as f64),
+                            None,
+                        );
+                    }
+                    min = None;
+                }
+            }
+            Self::Baron { .. } => {
+                if card.value == Value::King {
+                    state.current_score.update(None, None, Some(1.5));
+                }
+            }
+            Self::Parking { .. } => todo!("randomness"),
+            Self::Shoot { .. } => {
+                if card.value == Value::Queen {
+                    state.current_score.update(None, Some(13.0), None);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn on_independent(&mut self, state: &mut State) {
+        match self {
+            Self::Joker { .. } => state.current_score.update(None, Some(4.0), None),
+            Self::Jolly { .. } => {
+                if HashSet::<Value>::from_iter(
+                    state.selected_cards.iter().cloned().map(|c| c.value),
+                )
+                .len()
+                    < state.selected_cards.len()
+                {
+                    state.current_score.update(None, Some(8.0), None);
+                }
+            }
+            Self::Zany { .. } => {
+                let s: HashSet<Value> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let mut result: bool = false;
+                if s.len() < state.selected_cards.len() - 1 {
+                    for v in s {
+                        result |= state
+                            .selected_cards
+                            .iter()
+                            .filter(|c| c.value == v)
+                            .collect::<Vec<&Card>>()
+                            .len()
+                            >= 3;
+                    }
+                }
+
+                if result {
+                    state.current_score.update(None, Some(12.0), None);
+                }
+            }
+            Self::Mad { .. } => {
+                let s: HashSet<Value> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let mut result: u8 = 0;
+                if s.len() < state.selected_cards.len() - 1 {
+                    for v in s {
+                        if state
+                            .selected_cards
+                            .iter()
+                            .filter(|c| c.value == v)
+                            .collect::<Vec<&Card>>()
+                            .len()
+                            >= 2
+                        {
+                            result += 1;
+                        }
+                    }
+                }
+
+                if result == 2 {
+                    state.current_score.update(None, Some(10.0), None);
+                }
+            }
+            Self::Crazy { .. } => {
+                if state.hand_type_played == HandType::Straight
+                    || state.hand_type_played == HandType::StraightFlush
+                {
+                    state.current_score.update(None, Some(12.0), None);
+                }
+            }
+            Self::Droll { .. } => {
+                let s: HashSet<Suit> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.suit));
+                if s.len() == 1 {
+                    state.current_score.update(None, Some(10.0), None);
+                }
+            }
+            Self::Sly { .. } => {
+                if HashSet::<Value>::from_iter(
+                    state.selected_cards.iter().cloned().map(|c| c.value),
+                )
+                .len()
+                    < state.selected_cards.len()
+                {
+                    state.current_score.update(Some(50), None, None);
+                }
+            }
+            Self::Wily { .. } => {
+                let s: HashSet<Value> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let mut result: bool = false;
+                if s.len() < state.selected_cards.len() - 1 {
+                    for v in s {
+                        result |= state
+                            .selected_cards
+                            .iter()
+                            .filter(|c| c.value == v)
+                            .collect::<Vec<&Card>>()
+                            .len()
+                            >= 3;
+                    }
+                }
+
+                if result {
+                    state.current_score.update(Some(100), None, None);
+                }
+            }
+            Self::Clever { .. } => {
+                let s: HashSet<Value> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.value));
+                let mut result: u8 = 0;
+                if s.len() < state.selected_cards.len() - 1 {
+                    for v in s {
+                        if state
+                            .selected_cards
+                            .iter()
+                            .filter(|c| c.value == v)
+                            .collect::<Vec<&Card>>()
+                            .len()
+                            >= 2
+                        {
+                            result += 1;
+                        }
+                    }
+                }
+
+                if result == 2 {
+                    state.current_score.update(Some(80), None, None);
+                }
+            }
+            Self::Devious { .. } => {
+                if state.hand_type_played == HandType::Straight
+                    || state.hand_type_played == HandType::StraightFlush
+                {
+                    state.current_score.update(Some(100), None, None);
+                }
+            }
+            Self::Crafty { .. } => {
+                let s: HashSet<Suit> =
+                    HashSet::from_iter(state.selected_cards.iter().map(|c| c.suit));
+                if s.len() == 1 {
+                    state.current_score.update(Some(80), None, None);
+                }
+            }
+            Self::Half { .. } => {
+                if state.selected_cards.len() <= 3 {
+                    state.current_score.update(None, Some(20.0), None);
+                }
+            }
+            Self::Stencil { .. } => state.current_score.update(
+                None,
+                None,
+                Some((state.jokers.len() - state.joker_slots + 1) as f64),
+            ),
+            Self::Dagger { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Banner { .. } => {
+                state
+                    .current_score
+                    .update(Some((state.discards_remaining * 30) as u64), None, None)
+            }
+            Self::Mystic { .. } => {
+                if state.discards_remaining == 0 {
+                    state.current_score.update(None, Some(15.0), None);
+                }
+            }
+            Self::Loyalty { mut hands, .. } => {
+                if hands == 0 {
+                    state.current_score.update(None, None, Some(4.0));
+                    hands = 6;
+                }
+                hands -= 1;
+            }
+            Self::Misprint { .. } => {
+                todo!("randomness")
+            }
+            Self::Steel { .. } => state.current_score.update(
+                None,
+                None,
+                Some(
+                    0.2 * state
+                        .deck
+                        .iter()
+                        .filter(|c| c.enhancement == Some(Enhancement::Steel))
+                        .count() as f64,
+                ),
+            ),
+            Self::Abstract { .. } => {
+                state
+                    .current_score
+                    .update(None, Some(3.0 * state.jokers.len() as f64), None)
+            }
+            Self::Michel { .. } => state.current_score.update(None, Some(15.0), None),
+            Self::Supernova { .. } => state.current_score.update(
+                None,
+                Some(
+                    *state
+                        .scoring
+                        .scoring_times
+                        .get(&state.hand_type_played)
+                        .unwrap() as f64,
+                ),
+                None,
+            ),
+            Self::Bus { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Blackboard { .. } => {
+                if state
+                    .hand
+                    .iter()
+                    .filter(|c| !(c.is_suit(Suit::Spade, state) || c.is_suit(Suit::Club, state)))
+                    .count()
+                    == 0
+                {
+                    state.current_score.update(None, None, Some(3.0));
+                }
+            }
+            Self::Runner { chips, .. } => {
+                state.current_score.update(Some(*chips as u64), None, None);
+            }
+            Self::Cream { mut chips, .. } => {
+                state.current_score.update(Some(chips as u64), None, None);
+                chips -= 5;
+            }
+            Self::Blue { .. } => state.current_score.update(
+                Some((2 * state.remaining_deck.len()) as u64),
+                None,
+                None,
+            ),
+            Self::Constellation { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 10) as f64));
+            }
+            Self::Green { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Superposition { .. } => {
+                if (state.hand_type_played == HandType::Straight
+                    || state.hand_type_played == HandType::StraightFlush)
+                    && state
+                        .played_hand
+                        .iter()
+                        .filter(|c| c.value == Value::Ace)
+                        .count()
+                        > 0
+                    && state.consumables.len() < state.consumable_slots
+                {
+                    todo!("randomness")
+                }
+            }
+            Self::Cavendish { .. } => state.current_score.update(None, None, Some(3.0)),
+            Self::Sharp { .. } => {
+                if state
+                    .poker_hands_played
+                    .iter()
+                    .any(|t| *t == state.hand_type_played)
+                {
+                    state.current_score.update(None, None, Some(3.0));
+                }
+            }
+            Self::Red { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Madness { mult, .. } => {
+                state.current_score.update(None, None, Some(*mult as f64));
+            }
+            Self::Square { chips, .. } => {
+                state.current_score.update(Some(*chips as u64), None, None);
+            }
+            Self::Seance { .. } => {
+                if state.hand_type_played == HandType::StraightFlush
+                    && state.consumables.len() < state.consumable_slots
+                {
+                    todo!("randomness")
+                }
+            }
+            Self::Vampire { mult, .. } => {
+                state.current_score.update(None, None, Some(*mult as f64));
+            }
+            Self::Hologram { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 4) as f64));
+            }
+            Self::Vagabond { .. } => {
+                if state.money < 5 {
+                    todo!("randomness")
+                }
+            }
+            Self::Obelisk { mult, .. } => {
+                state.current_score.update(None, None, Some(*mult as f64));
+            }
+            Self::Erosion { .. } => {
+                state
+                    .current_score
+                    .update(None, Some(max(52 - state.deck.len(), 0) as f64), None);
+            }
+            Self::Fortune { .. } => {
+                state
+                    .current_score
+                    .update(None, Some(state.tarots_used as f64), None)
+            }
+            Self::Stone { .. } => state.current_score.update(
+                Some(
+                    (state
+                        .deck
+                        .iter()
+                        .filter(|c| c.enhancement == Some(Enhancement::Stone))
+                        .count()
+                        * 25) as u64,
+                ),
+                None,
+                None,
+            ),
+            Self::Lucky { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 4) as f64))
+            }
+            Self::Bull { .. } => {
+                state
+                    .current_score
+                    .update(Some((2 * state.money) as u64), None, None)
+            }
+            Self::Flash { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Popcorn { mult, .. } => {
+                state.current_score.update(None, Some(*mult as f64), None);
+            }
+            Self::Trousers { mult, .. } => {
+                state.current_score.update(None, Some(*mult as f64), None);
+            }
+            Self::Ramen { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 100) as f64));
+            }
+            Self::Castle { chips, .. } => {
+                state.current_score.update(Some(*chips as u64), None, None);
+            }
+            Self::Campfire { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 4) as f64))
+            }
+            Self::Acrobat { .. } => {
+                if state.hands_remaining == state.hands - 1 {
+                    state.current_score.update(None, None, Some(3.0));
+                }
+            }
+            Self::Swashbuckler { .. } => state.current_score.update(
+                None,
+                Some(
+                    (state
+                        .jokers
+                        .iter()
+                        .map(|j| j.get_sell_value())
+                        .sum::<usize>()
+                        - self.get_sell_value()) as f64,
+                ),
+                None,
+            ),
+            Self::Throwback { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 4) as f64))
+            }
+            Self::Glass { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 4) as f64))
+            }
+            Self::Flower { .. } => {
+                if state
+                    .scoring_cards
+                    .iter()
+                    .any(|c| c.is_suit(Suit::Spade, state))
+                    && state
+                        .scoring_cards
+                        .iter()
+                        .any(|c| c.is_suit(Suit::Heart, state))
+                    && state
+                        .scoring_cards
+                        .iter()
+                        .any(|c| c.is_suit(Suit::Club, state))
+                    && state
+                        .scoring_cards
+                        .iter()
+                        .any(|c| c.is_suit(Suit::Diamond, state))
+                {
+                    state.current_score.update(None, None, Some(3.0));
+                }
+            }
+            Self::Wee { chips, .. } => state.current_score.update(Some(*chips as u64), None, None),
+            Self::Double { .. } => {
+                if state
+                    .scoring_cards
+                    .iter()
+                    .any(|c| c.is_suit(Suit::Club, state))
+                    && state
+                        .scoring_cards
+                        .iter()
+                        .any(|c| !c.is_suit(Suit::Club, state))
+                {
+                    state.current_score.update(None, None, Some(2.0));
+                }
+            }
+            Self::Road { mult, .. } => {
+                state
+                    .current_score
+                    .update(None, None, Some((*mult / 2) as f64))
+            }
+            Self::Duo { .. } => {
+                if HashSet::<Value>::from_iter(state.scoring_cards.iter().map(|c| c.value)).len()
+                    < state.scoring_cards.len()
+                {
+                    state.current_score.update(None, None, Some(2.0));
+                }
+            }
+            Self::Trio { .. } => {
+                let s: HashSet<Value> =
+                    HashSet::from_iter(state.scoring_cards.iter().map(|c| c.value));
+                if s.len() < state.scoring_cards.len() - 1
+                    && state
+                        .scoring_cards
+                        .iter()
+                        .filter(|c| c.value == *s.iter().max().unwrap())
+                        .count()
+                        >= 3
+                {
+                    state.current_score.update(None, None, Some(3.0));
+                }
+            }
+            Self::Family { .. } => {
+                let s: HashSet<Value> =
+                    HashSet::from_iter(state.scoring_cards.iter().map(|c| c.value));
+                if s.len() < state.scoring_cards.len() - 2 {
+                    state.current_score.update(None, None, Some(4.0));
+                }
+            }
+            Self::Order { .. } => {
+                if state.hand_type_played == HandType::Straight
+                    || state.hand_type_played == HandType::StraightFlush
+                {
+                    state.current_score.update(None, None, Some(3.0));
+                }
+            }
+            Self::Tribe { .. } => {
+                if state.hand_type_played == HandType::Flush
+                    || state.hand_type_played == HandType::FlushHouse
+                    || state.hand_type_played == HandType::FlushFive
+                {
+                    state.current_score.update(None, None, Some(2.0));
+                }
+            }
+            Self::Stuntman { .. } => state.current_score.update(Some(100), None, None),
+            Self::License { .. } => {
+                if state
+                    .deck
+                    .iter()
+                    .filter(|c| c.enhancement.is_some())
+                    .count()
+                    >= 16
+                {
+                    state.current_score.update(None, None, Some(3.0));
+                }
+            }
+            Self::Bootstraps { .. } => {
+                state
+                    .current_score
+                    .update(None, Some(((state.money / 5) * 2) as f64), None);
+            }
+            Self::Canio { mult, .. } => state.current_score.update(None, None, Some(*mult as f64)),
+            Self::Yorick { mult, .. } => state.current_score.update(None, None, Some(*mult as f64)),
+            _ => {}
+        }
+    }
+
+    pub fn on_discard(&mut self, state: &mut State) {
+        match self {
+            Self::Faceless { .. } => {
+                if state
+                    .played_hand
+                    .iter()
+                    .filter(|c| c.is_face_card(&state.jokers))
+                    .count()
+                    >= 3
+                {
+                    state.money += 5;
+                }
+            }
+            Self::Green { mut mult, .. } => {
+                if mult > 0 {
+                    mult -= 1;
+                }
+            }
+            Self::Rebate { rank, .. } => state
+                .selected_cards
+                .iter()
+                .filter(|c| c.value == *rank)
+                .for_each(|_| state.money += 5),
+            Self::Trading { .. } => {
+                if state.discards_remaining == state.discards - 1 && state.selected_cards.len() == 1
+                {
+                    state.deck.remove(
+                        state
+                            .deck
+                            .iter()
+                            .position(|c| c == state.selected_cards.get(0).unwrap())
+                            .unwrap(),
+                    );
+                    state.money += 3;
+                }
+            }
+            Self::Ramen { mut mult, .. } => {
+                mult -= state.selected_cards.len();
+                if mult <= 100 {
+                    state
+                        .jokers
+                        .remove(state.jokers.iter().position(|j| j == self).unwrap());
+                }
+            }
+            Self::Castle {
+                suit, mut chips, ..
+            } => {
+                state
+                    .selected_cards
+                    .iter()
+                    .filter(|c| c.is_suit(*suit, state))
+                    .for_each(|_| chips += 3);
+            }
+            Self::Road { mut mult, .. } => mult += 1,
+            Self::Yorick {
+                mut discards,
+                mut mult,
+                ..
+            } => {
+                discards -= state.selected_cards.len();
+                if discards <= 0 {
+                    discards += 23;
+                    mult += 1;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn on_round_end(&mut self, state: &mut State) {
+        match self {
+            Self::Gratification { .. } => {
+                if state.discards_remaining == state.discards {
+                    state.money += 2 * state.discards;
+                }
+            }
+            Self::Michel { .. } => todo!("randomness"),
+            Self::Egg { mut sell_value, .. } => sell_value += 3,
+            Self::List { hand_type, .. } => todo!("randomness"),
+            Self::Cavendish { .. } => todo!("randomness"),
+            Self::Cloud { .. } => {
+                state.money += state.deck.iter().filter(|c| c.value == Value::Nine).count();
+            }
+            Self::Rocket { money, .. } => {
+                state.money += *money;
+                todo!("blinds")
+            }
+            Self::Gift { .. } => {
+                state
+                    .jokers
+                    .iter_mut()
+                    .for_each(|j| j.increase_sell_value());
+            }
+            Self::Turtle { mut hand_size, .. } => {
+                hand_size -= 1;
+                if hand_size == 0 {
+                    state
+                        .jokers
+                        .remove(state.jokers.iter().position(|j| j == self).unwrap());
+                }
+            }
+            Self::Rebate { mut rank, .. } => todo!("randomness"),
+            Self::Golden { .. } => state.money += 4,
+            Self::Popcorn { mut mult, .. } => {
+                mult -= 4;
+                if mult == 0 {
+                    state
+                        .jokers
+                        .remove(state.jokers.iter().position(|j| j == self).unwrap());
+                }
+            }
+            Self::Ancient { mut suit, .. } => todo!("randomness"),
+            Self::Castle { mut suit, .. } => todo!("randomness"),
+            Self::Campfire { mut mult, .. } => todo!("blinds"),
+            Self::Idol {
+                mut rank, mut suit, ..
+            } => todo!("randomness"),
+            Self::Road { mut mult, .. } => mult = 2,
+            Self::Invisible { mut rounds, .. } => rounds += 1,
+            Self::Satellite { .. } => state.money += state.unique_planets_used,
+            _ => {}
+        }
+    }
+
+    pub fn on_shop_close(&mut self, state: &mut State) {}
+
+    pub fn on_shop_reroll(&mut self, state: &mut State) {
+        match self {
+            Self::Flash { mut mult, .. } => mult += 2,
+            _ => {}
+        }
+    }
+
+    pub fn on_pack_open(&mut self, state: &mut State) {
+        match self {
+            Self::Hallucination { .. } => todo!("randomness"),
+            _ => {}
+        }
+    }
+
+    pub fn on_pack_skip(&mut self, state: &State) {
+        match self {
+            Self::Red { mut mult, .. } => mult += 3,
+            _ => {}
+        }
+    }
+
+    pub fn on_buy(&self, state: &mut State) {
+        match self {
+            Self::Juggler { .. } => state.hand_size += 1,
+            Self::Drunkard { .. } => {
+                state.discards += 1;
+                state.discards_remaining += 1;
+            }
+            Self::Troubadour { .. } => {
+                state.hand_size += 2;
+                state.hands -= 1;
+                state.hands_remaining -= 1;
+            }
+            Self::Andy { .. } => {
+                state.discards += 3;
+                state.discards_remaining += 3;
+                state.hand_size -= 1;
+            }
+            Self::Stuntman { .. } => state.hand_size -= 2,
+            _ => {}
+        }
+    }
+
+    pub fn on_sell(self, state: &mut State) {
+        match self {
+            Self::Luchador { .. } => todo!("blinds"),
+            Self::Juggler { .. } => state.hand_size -= 1,
+            Self::Drunkard { .. } => {
+                state.discards -= 1;
+                state.discards_remaining -= 1;
+            }
+            Self::Cola { .. } => todo!("tags"),
+            Self::Troubadour { .. } => {
+                state.hand_size -= 2;
+                state.hands += 1;
+                state.hands_remaining += 1;
+            }
+            Self::Andy { .. } => {
+                state.discards -= 3;
+                state.discards_remaining -= 3;
+                state.hand_size -= 1;
+            }
+            Self::Stuntman { .. } => state.hand_size += 2,
+            _ => {}
+        }
+    }
+
+    pub fn on_planet_use(&mut self) {
+        match self {
+            Self::Constellation { mut mult, .. } => {
+                mult += 1;
+            }
+            _ => {}
+        }
+    }
+
+    pub fn on_card_add(&mut self) {
+        match self {
+            Self::Hologram { mut mult, .. } => mult += 1,
+            _ => {}
+        }
+    }
+
+    pub fn on_card_sell(&mut self) {
+        match self {
+            Self::Campfire { mut mult, .. } => mult += 1,
+            _ => {}
+        }
+    }
+
+    pub fn on_blind_skip(&mut self) {
+        match self {
+            Self::Throwback { mut mult, .. } => mult += 1,
+            _ => {}
+        }
+    }
+
+    pub fn on_card_destroy(&mut self, card: &Card) {
+        match self {
+            Self::Glass { mut mult, .. } => {
+                if card.enhancement == Some(Enhancement::Glass) {
+                    mult += 3;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    pub fn get_cost(&self) -> usize {
+        match self {
+            Self::Joker { cost, .. }
+            | Self::Greedy { cost, .. }
+            | Self::Lusty { cost, .. }
+            | Self::Wrathful { cost, .. }
+            | Self::Gluttonous { cost, .. }
+            | Self::Jolly { cost, .. }
+            | Self::Zany { cost, .. }
+            | Self::Mad { cost, .. }
+            | Self::Crazy { cost, .. }
+            | Self::Droll { cost, .. }
+            | Self::Sly { cost, .. }
+            | Self::Wily { cost, .. }
+            | Self::Clever { cost, .. }
+            | Self::Devious { cost, .. }
+            | Self::Crafty { cost, .. }
+            | Self::Half { cost, .. }
+            | Self::Stencil { cost, .. }
+            | Self::Fingers { cost, .. }
+            | Self::Mime { cost, .. }
+            | Self::Credit { cost, .. }
+            | Self::Dagger { cost, .. }
+            | Self::Banner { cost, .. }
+            | Self::Mystic { cost, .. }
+            | Self::Marble { cost, .. }
+            | Self::Loyalty { cost, .. }
+            | Self::Ball { cost, .. }
+            | Self::Misprint { cost, .. }
+            | Self::Dusk { cost, .. }
+            | Self::Fist { cost, .. }
+            | Self::Chaos { cost, .. }
+            | Self::Fibonacci { cost, .. }
+            | Self::Steel { cost, .. }
+            | Self::Scary { cost, .. }
+            | Self::Abstract { cost, .. }
+            | Self::Gratification { cost, .. }
+            | Self::Hack { cost, .. }
+            | Self::Pareidolia { cost, .. }
+            | Self::Michel { cost, .. }
+            | Self::Steven { cost, .. }
+            | Self::Todd { cost, .. }
+            | Self::Scholar { cost, .. }
+            | Self::Business { cost, .. }
+            | Self::Supernova { cost, .. }
+            | Self::Bus { cost, .. }
+            | Self::Space { cost, .. }
+            | Self::Egg { cost, .. }
+            | Self::Burglar { cost, .. }
+            | Self::Blackboard { cost, .. }
+            | Self::Runner { cost, .. }
+            | Self::Cream { cost, .. }
+            | Self::DNA { cost, .. }
+            | Self::Splash { cost, .. }
+            | Self::Blue { cost, .. }
+            | Self::Sixth { cost, .. }
+            | Self::Constellation { cost, .. }
+            | Self::Hiker { cost, .. }
+            | Self::Faceless { cost, .. }
+            | Self::Green { cost, .. }
+            | Self::Superposition { cost, .. }
+            | Self::List { cost, .. }
+            | Self::Cavendish { cost, .. }
+            | Self::Sharp { cost, .. }
+            | Self::Red { cost, .. }
+            | Self::Madness { cost, .. }
+            | Self::Square { cost, .. }
+            | Self::Seance { cost, .. }
+            | Self::Riff { cost, .. }
+            | Self::Vampire { cost, .. }
+            | Self::Shortcut { cost, .. }
+            | Self::Hologram { cost, .. }
+            | Self::Vagabond { cost, .. }
+            | Self::Baron { cost, .. }
+            | Self::Cloud { cost, .. }
+            | Self::Rocket { cost, .. }
+            | Self::Obelisk { cost, .. }
+            | Self::Midas { cost, .. }
+            | Self::Luchador { cost, .. }
+            | Self::Photograph { cost, .. }
+            | Self::Gift { cost, .. }
+            | Self::Turtle { cost, .. }
+            | Self::Erosion { cost, .. }
+            | Self::Parking { cost, .. }
+            | Self::Rebate { cost, .. }
+            | Self::Moon { cost, .. }
+            | Self::Hallucination { cost, .. }
+            | Self::Fortune { cost, .. }
+            | Self::Juggler { cost, .. }
+            | Self::Drunkard { cost, .. }
+            | Self::Stone { cost, .. }
+            | Self::Golden { cost, .. }
+            | Self::Lucky { cost, .. }
+            | Self::Baseball { cost, .. }
+            | Self::Bull { cost, .. }
+            | Self::Cola { cost, .. }
+            | Self::Trading { cost, .. }
+            | Self::Flash { cost, .. }
+            | Self::Popcorn { cost, .. }
+            | Self::Trousers { cost, .. }
+            | Self::Ancient { cost, .. }
+            | Self::Ramen { cost, .. }
+            | Self::Walkie { cost, .. }
+            | Self::Seltzer { cost, .. }
+            | Self::Castle { cost, .. }
+            | Self::Smiley { cost, .. }
+            | Self::Campfire { cost, .. }
+            | Self::Ticket { cost, .. }
+            | Self::Bones { cost, .. }
+            | Self::Acrobat { cost, .. }
+            | Self::Sock { cost, .. }
+            | Self::Swashbuckler { cost, .. }
+            | Self::Troubadour { cost, .. }
+            | Self::Certificate { cost, .. }
+            | Self::Smeared { cost, .. }
+            | Self::Throwback { cost, .. }
+            | Self::Chad { cost, .. }
+            | Self::Gem { cost, .. }
+            | Self::Bloodstone { cost, .. }
+            | Self::Arrowhead { cost, .. }
+            | Self::Onyx { cost, .. }
+            | Self::Glass { cost, .. }
+            | Self::Showman { cost, .. }
+            | Self::Flower { cost, .. }
+            | Self::Blueprint { cost, .. }
+            | Self::Wee { cost, .. }
+            | Self::Andy { cost, .. }
+            | Self::Oops { cost, .. }
+            | Self::Idol { cost, .. }
+            | Self::Double { cost, .. }
+            | Self::Matador { cost, .. }
+            | Self::Road { cost, .. }
+            | Self::Duo { cost, .. }
+            | Self::Trio { cost, .. }
+            | Self::Family { cost, .. }
+            | Self::Order { cost, .. }
+            | Self::Tribe { cost, .. }
+            | Self::Stuntman { cost, .. }
+            | Self::Invisible { cost, .. }
+            | Self::Brainstorm { cost, .. }
+            | Self::Satellite { cost, .. }
+            | Self::Shoot { cost, .. }
+            | Self::License { cost, .. }
+            | Self::Cartomancer { cost, .. }
+            | Self::Astronomer { cost, .. }
+            | Self::Burnt { cost, .. }
+            | Self::Bootstraps { cost, .. }
+            | Self::Canio { cost, .. }
+            | Self::Triboulet { cost, .. }
+            | Self::Yorick { cost, .. }
+            | Self::Chicot { cost, .. }
+            | Self::Perkeo { cost, .. } => *cost,
+        }
+    }
+
+    pub fn get_sell_value(&self) -> usize {
+        match self {
+            Self::Joker { sell_value, .. }
+            | Self::Greedy { sell_value, .. }
+            | Self::Lusty { sell_value, .. }
+            | Self::Wrathful { sell_value, .. }
+            | Self::Gluttonous { sell_value, .. }
+            | Self::Jolly { sell_value, .. }
+            | Self::Zany { sell_value, .. }
+            | Self::Mad { sell_value, .. }
+            | Self::Crazy { sell_value, .. }
+            | Self::Droll { sell_value, .. }
+            | Self::Sly { sell_value, .. }
+            | Self::Wily { sell_value, .. }
+            | Self::Clever { sell_value, .. }
+            | Self::Devious { sell_value, .. }
+            | Self::Crafty { sell_value, .. }
+            | Self::Half { sell_value, .. }
+            | Self::Stencil { sell_value, .. }
+            | Self::Fingers { sell_value, .. }
+            | Self::Mime { sell_value, .. }
+            | Self::Credit { sell_value, .. }
+            | Self::Dagger { sell_value, .. }
+            | Self::Banner { sell_value, .. }
+            | Self::Mystic { sell_value, .. }
+            | Self::Marble { sell_value, .. }
+            | Self::Loyalty { sell_value, .. }
+            | Self::Ball { sell_value, .. }
+            | Self::Misprint { sell_value, .. }
+            | Self::Dusk { sell_value, .. }
+            | Self::Fist { sell_value, .. }
+            | Self::Chaos { sell_value, .. }
+            | Self::Fibonacci { sell_value, .. }
+            | Self::Steel { sell_value, .. }
+            | Self::Scary { sell_value, .. }
+            | Self::Abstract { sell_value, .. }
+            | Self::Gratification { sell_value, .. }
+            | Self::Hack { sell_value, .. }
+            | Self::Pareidolia { sell_value, .. }
+            | Self::Michel { sell_value, .. }
+            | Self::Steven { sell_value, .. }
+            | Self::Todd { sell_value, .. }
+            | Self::Scholar { sell_value, .. }
+            | Self::Business { sell_value, .. }
+            | Self::Supernova { sell_value, .. }
+            | Self::Bus { sell_value, .. }
+            | Self::Space { sell_value, .. }
+            | Self::Egg { sell_value, .. }
+            | Self::Burglar { sell_value, .. }
+            | Self::Blackboard { sell_value, .. }
+            | Self::Runner { sell_value, .. }
+            | Self::Cream { sell_value, .. }
+            | Self::DNA { sell_value, .. }
+            | Self::Splash { sell_value, .. }
+            | Self::Blue { sell_value, .. }
+            | Self::Sixth { sell_value, .. }
+            | Self::Constellation { sell_value, .. }
+            | Self::Hiker { sell_value, .. }
+            | Self::Faceless { sell_value, .. }
+            | Self::Green { sell_value, .. }
+            | Self::Superposition { sell_value, .. }
+            | Self::List { sell_value, .. }
+            | Self::Cavendish { sell_value, .. }
+            | Self::Sharp { sell_value, .. }
+            | Self::Red { sell_value, .. }
+            | Self::Madness { sell_value, .. }
+            | Self::Square { sell_value, .. }
+            | Self::Seance { sell_value, .. }
+            | Self::Riff { sell_value, .. }
+            | Self::Vampire { sell_value, .. }
+            | Self::Shortcut { sell_value, .. }
+            | Self::Hologram { sell_value, .. }
+            | Self::Vagabond { sell_value, .. }
+            | Self::Baron { sell_value, .. }
+            | Self::Cloud { sell_value, .. }
+            | Self::Rocket { sell_value, .. }
+            | Self::Obelisk { sell_value, .. }
+            | Self::Midas { sell_value, .. }
+            | Self::Luchador { sell_value, .. }
+            | Self::Photograph { sell_value, .. }
+            | Self::Gift { sell_value, .. }
+            | Self::Turtle { sell_value, .. }
+            | Self::Erosion { sell_value, .. }
+            | Self::Parking { sell_value, .. }
+            | Self::Rebate { sell_value, .. }
+            | Self::Moon { sell_value, .. }
+            | Self::Hallucination { sell_value, .. }
+            | Self::Fortune { sell_value, .. }
+            | Self::Juggler { sell_value, .. }
+            | Self::Drunkard { sell_value, .. }
+            | Self::Stone { sell_value, .. }
+            | Self::Golden { sell_value, .. }
+            | Self::Lucky { sell_value, .. }
+            | Self::Baseball { sell_value, .. }
+            | Self::Bull { sell_value, .. }
+            | Self::Cola { sell_value, .. }
+            | Self::Trading { sell_value, .. }
+            | Self::Flash { sell_value, .. }
+            | Self::Popcorn { sell_value, .. }
+            | Self::Trousers { sell_value, .. }
+            | Self::Ancient { sell_value, .. }
+            | Self::Ramen { sell_value, .. }
+            | Self::Walkie { sell_value, .. }
+            | Self::Seltzer { sell_value, .. }
+            | Self::Castle { sell_value, .. }
+            | Self::Smiley { sell_value, .. }
+            | Self::Campfire { sell_value, .. }
+            | Self::Ticket { sell_value, .. }
+            | Self::Bones { sell_value, .. }
+            | Self::Acrobat { sell_value, .. }
+            | Self::Sock { sell_value, .. }
+            | Self::Swashbuckler { sell_value, .. }
+            | Self::Troubadour { sell_value, .. }
+            | Self::Certificate { sell_value, .. }
+            | Self::Smeared { sell_value, .. }
+            | Self::Throwback { sell_value, .. }
+            | Self::Chad { sell_value, .. }
+            | Self::Gem { sell_value, .. }
+            | Self::Bloodstone { sell_value, .. }
+            | Self::Arrowhead { sell_value, .. }
+            | Self::Onyx { sell_value, .. }
+            | Self::Glass { sell_value, .. }
+            | Self::Showman { sell_value, .. }
+            | Self::Flower { sell_value, .. }
+            | Self::Blueprint { sell_value, .. }
+            | Self::Wee { sell_value, .. }
+            | Self::Andy { sell_value, .. }
+            | Self::Oops { sell_value, .. }
+            | Self::Idol { sell_value, .. }
+            | Self::Double { sell_value, .. }
+            | Self::Matador { sell_value, .. }
+            | Self::Road { sell_value, .. }
+            | Self::Duo { sell_value, .. }
+            | Self::Trio { sell_value, .. }
+            | Self::Family { sell_value, .. }
+            | Self::Order { sell_value, .. }
+            | Self::Tribe { sell_value, .. }
+            | Self::Stuntman { sell_value, .. }
+            | Self::Invisible { sell_value, .. }
+            | Self::Brainstorm { sell_value, .. }
+            | Self::Satellite { sell_value, .. }
+            | Self::Shoot { sell_value, .. }
+            | Self::License { sell_value, .. }
+            | Self::Cartomancer { sell_value, .. }
+            | Self::Astronomer { sell_value, .. }
+            | Self::Burnt { sell_value, .. }
+            | Self::Bootstraps { sell_value, .. }
+            | Self::Canio { sell_value, .. }
+            | Self::Triboulet { sell_value, .. }
+            | Self::Yorick { sell_value, .. }
+            | Self::Chicot { sell_value, .. }
+            | Self::Perkeo { sell_value, .. } => *sell_value,
+        }
+    }
+
+    pub fn increase_sell_value(&mut self) {
+        match self {
+            Self::Joker { mut sell_value, .. }
+            | Self::Greedy { mut sell_value, .. }
+            | Self::Lusty { mut sell_value, .. }
+            | Self::Wrathful { mut sell_value, .. }
+            | Self::Gluttonous { mut sell_value, .. }
+            | Self::Jolly { mut sell_value, .. }
+            | Self::Zany { mut sell_value, .. }
+            | Self::Mad { mut sell_value, .. }
+            | Self::Crazy { mut sell_value, .. }
+            | Self::Droll { mut sell_value, .. }
+            | Self::Sly { mut sell_value, .. }
+            | Self::Wily { mut sell_value, .. }
+            | Self::Clever { mut sell_value, .. }
+            | Self::Devious { mut sell_value, .. }
+            | Self::Crafty { mut sell_value, .. }
+            | Self::Half { mut sell_value, .. }
+            | Self::Stencil { mut sell_value, .. }
+            | Self::Fingers { mut sell_value, .. }
+            | Self::Mime { mut sell_value, .. }
+            | Self::Credit { mut sell_value, .. }
+            | Self::Dagger { mut sell_value, .. }
+            | Self::Banner { mut sell_value, .. }
+            | Self::Mystic { mut sell_value, .. }
+            | Self::Marble { mut sell_value, .. }
+            | Self::Loyalty { mut sell_value, .. }
+            | Self::Ball { mut sell_value, .. }
+            | Self::Misprint { mut sell_value, .. }
+            | Self::Dusk { mut sell_value, .. }
+            | Self::Fist { mut sell_value, .. }
+            | Self::Chaos { mut sell_value, .. }
+            | Self::Fibonacci { mut sell_value, .. }
+            | Self::Steel { mut sell_value, .. }
+            | Self::Scary { mut sell_value, .. }
+            | Self::Abstract { mut sell_value, .. }
+            | Self::Gratification { mut sell_value, .. }
+            | Self::Hack { mut sell_value, .. }
+            | Self::Pareidolia { mut sell_value, .. }
+            | Self::Michel { mut sell_value, .. }
+            | Self::Steven { mut sell_value, .. }
+            | Self::Todd { mut sell_value, .. }
+            | Self::Scholar { mut sell_value, .. }
+            | Self::Business { mut sell_value, .. }
+            | Self::Supernova { mut sell_value, .. }
+            | Self::Bus { mut sell_value, .. }
+            | Self::Space { mut sell_value, .. }
+            | Self::Egg { mut sell_value, .. }
+            | Self::Burglar { mut sell_value, .. }
+            | Self::Blackboard { mut sell_value, .. }
+            | Self::Runner { mut sell_value, .. }
+            | Self::Cream { mut sell_value, .. }
+            | Self::DNA { mut sell_value, .. }
+            | Self::Splash { mut sell_value, .. }
+            | Self::Blue { mut sell_value, .. }
+            | Self::Sixth { mut sell_value, .. }
+            | Self::Constellation { mut sell_value, .. }
+            | Self::Hiker { mut sell_value, .. }
+            | Self::Faceless { mut sell_value, .. }
+            | Self::Green { mut sell_value, .. }
+            | Self::Superposition { mut sell_value, .. }
+            | Self::List { mut sell_value, .. }
+            | Self::Cavendish { mut sell_value, .. }
+            | Self::Sharp { mut sell_value, .. }
+            | Self::Red { mut sell_value, .. }
+            | Self::Madness { mut sell_value, .. }
+            | Self::Square { mut sell_value, .. }
+            | Self::Seance { mut sell_value, .. }
+            | Self::Riff { mut sell_value, .. }
+            | Self::Vampire { mut sell_value, .. }
+            | Self::Shortcut { mut sell_value, .. }
+            | Self::Hologram { mut sell_value, .. }
+            | Self::Vagabond { mut sell_value, .. }
+            | Self::Baron { mut sell_value, .. }
+            | Self::Cloud { mut sell_value, .. }
+            | Self::Rocket { mut sell_value, .. }
+            | Self::Obelisk { mut sell_value, .. }
+            | Self::Midas { mut sell_value, .. }
+            | Self::Luchador { mut sell_value, .. }
+            | Self::Photograph { mut sell_value, .. }
+            | Self::Gift { mut sell_value, .. }
+            | Self::Turtle { mut sell_value, .. }
+            | Self::Erosion { mut sell_value, .. }
+            | Self::Parking { mut sell_value, .. }
+            | Self::Rebate { mut sell_value, .. }
+            | Self::Moon { mut sell_value, .. }
+            | Self::Hallucination { mut sell_value, .. }
+            | Self::Fortune { mut sell_value, .. }
+            | Self::Juggler { mut sell_value, .. }
+            | Self::Drunkard { mut sell_value, .. }
+            | Self::Stone { mut sell_value, .. }
+            | Self::Golden { mut sell_value, .. }
+            | Self::Lucky { mut sell_value, .. }
+            | Self::Baseball { mut sell_value, .. }
+            | Self::Bull { mut sell_value, .. }
+            | Self::Cola { mut sell_value, .. }
+            | Self::Trading { mut sell_value, .. }
+            | Self::Flash { mut sell_value, .. }
+            | Self::Popcorn { mut sell_value, .. }
+            | Self::Trousers { mut sell_value, .. }
+            | Self::Ancient { mut sell_value, .. }
+            | Self::Ramen { mut sell_value, .. }
+            | Self::Walkie { mut sell_value, .. }
+            | Self::Seltzer { mut sell_value, .. }
+            | Self::Castle { mut sell_value, .. }
+            | Self::Smiley { mut sell_value, .. }
+            | Self::Campfire { mut sell_value, .. }
+            | Self::Ticket { mut sell_value, .. }
+            | Self::Bones { mut sell_value, .. }
+            | Self::Acrobat { mut sell_value, .. }
+            | Self::Sock { mut sell_value, .. }
+            | Self::Swashbuckler { mut sell_value, .. }
+            | Self::Troubadour { mut sell_value, .. }
+            | Self::Certificate { mut sell_value, .. }
+            | Self::Smeared { mut sell_value, .. }
+            | Self::Throwback { mut sell_value, .. }
+            | Self::Chad { mut sell_value, .. }
+            | Self::Gem { mut sell_value, .. }
+            | Self::Bloodstone { mut sell_value, .. }
+            | Self::Arrowhead { mut sell_value, .. }
+            | Self::Onyx { mut sell_value, .. }
+            | Self::Glass { mut sell_value, .. }
+            | Self::Showman { mut sell_value, .. }
+            | Self::Flower { mut sell_value, .. }
+            | Self::Blueprint { mut sell_value, .. }
+            | Self::Wee { mut sell_value, .. }
+            | Self::Andy { mut sell_value, .. }
+            | Self::Oops { mut sell_value, .. }
+            | Self::Idol { mut sell_value, .. }
+            | Self::Double { mut sell_value, .. }
+            | Self::Matador { mut sell_value, .. }
+            | Self::Road { mut sell_value, .. }
+            | Self::Duo { mut sell_value, .. }
+            | Self::Trio { mut sell_value, .. }
+            | Self::Family { mut sell_value, .. }
+            | Self::Order { mut sell_value, .. }
+            | Self::Tribe { mut sell_value, .. }
+            | Self::Stuntman { mut sell_value, .. }
+            | Self::Invisible { mut sell_value, .. }
+            | Self::Brainstorm { mut sell_value, .. }
+            | Self::Satellite { mut sell_value, .. }
+            | Self::Shoot { mut sell_value, .. }
+            | Self::License { mut sell_value, .. }
+            | Self::Cartomancer { mut sell_value, .. }
+            | Self::Astronomer { mut sell_value, .. }
+            | Self::Burnt { mut sell_value, .. }
+            | Self::Bootstraps { mut sell_value, .. }
+            | Self::Canio { mut sell_value, .. }
+            | Self::Triboulet { mut sell_value, .. }
+            | Self::Yorick { mut sell_value, .. }
+            | Self::Chicot { mut sell_value, .. }
+            | Self::Perkeo { mut sell_value, .. } => sell_value += 1,
+        }
+    }
+
+    pub fn name(&self) -> &'static str {
+        match self {
+            Self::Joker { .. } => "Joker",
+            Self::Greedy { .. } => "Greedy Joker",
+            Self::Lusty { .. } => "Lusty Joker",
+            Self::Wrathful { .. } => "Wrathful Joker",
+            Self::Gluttonous { .. } => "Gluttonous Joker",
+            Self::Jolly { .. } => "Jolly Joker",
+            Self::Zany { .. } => "Zany Joker",
+            Self::Mad { .. } => "Mad Joker",
+            Self::Crazy { .. } => "Crazy Joker",
+            Self::Droll { .. } => "Droll Joker",
+            Self::Sly { .. } => "Sly Joker",
+            Self::Wily { .. } => "Wily Joker",
+            Self::Clever { .. } => "Clever Joker",
+            Self::Devious { .. } => "Devious Joker",
+            Self::Crafty { .. } => "Crafty Joker",
+            Self::Half { .. } => "Half Joker",
+            Self::Stencil { .. } => "Joker Stencil",
+            Self::Fingers { .. } => "Four Fingers",
+            Self::Mime { .. } => "Mime",
+            Self::Credit { .. } => "Credit Card",
+            Self::Dagger { .. } => "Ceremonial Dagger",
+            Self::Banner { .. } => "Banner",
+            Self::Mystic { .. } => "Mystic Summit",
+            Self::Marble { .. } => "Marble Joker",
+            Self::Loyalty { .. } => "Loyalty Card",
+            Self::Ball { .. } => "8 Ball",
+            Self::Misprint { .. } => "Misprint",
+            Self::Dusk { .. } => "Dusk",
+            Self::Fist { .. } => "Raised Fist",
+            Self::Chaos { .. } => "Chaos the Clown",
+            Self::Fibonacci { .. } => "Fibonacci",
+            Self::Steel { .. } => "Steel Joker",
+            Self::Scary { .. } => "Scary Face",
+            Self::Abstract { .. } => "Abstract Joker",
+            Self::Gratification { .. } => "Delayed Gratification",
+            Self::Hack { .. } => "Hack",
+            Self::Pareidolia { .. } => "Pareidolia",
+            Self::Michel { .. } => "Gros Michel",
+            Self::Steven { .. } => "Even Steven",
+            Self::Todd { .. } => "Odd Todd",
+            Self::Scholar { .. } => "Scholar",
+            Self::Business { .. } => "Business Card",
+            Self::Supernova { .. } => "Supernova",
+            Self::Bus { .. } => "Ride the Bus",
+            Self::Space { .. } => "Space Joker",
+            Self::Egg { .. } => "Egg",
+            Self::Burglar { .. } => "Burglar",
+            Self::Blackboard { .. } => "Blackboard",
+            Self::Runner { .. } => "Runner",
+            Self::Cream { .. } => "Ice Cream",
+            Self::DNA { .. } => "DNA",
+            Self::Splash { .. } => "Splash",
+            Self::Blue { .. } => "Blue Joker",
+            Self::Sixth { .. } => "Sixth Sense",
+            Self::Constellation { .. } => "Constellation",
+            Self::Hiker { .. } => "Hiker",
+            Self::Faceless { .. } => "Faceless Joker",
+            Self::Green { .. } => "Green Joker",
+            Self::Superposition { .. } => "Superposition",
+            Self::List { .. } => "To Do List",
+            Self::Cavendish { .. } => "Cavendish",
+            Self::Sharp { .. } => "Card Sharp",
+            Self::Red { .. } => "Red Card",
+            Self::Madness { .. } => "Madness",
+            Self::Square { .. } => "Square Joker",
+            Self::Seance { .. } => "Seance",
+            Self::Riff { .. } => "Riff-Raff",
+            Self::Vampire { .. } => "Vampire",
+            Self::Shortcut { .. } => "Shortcut",
+            Self::Hologram { .. } => "Hologram",
+            Self::Vagabond { .. } => "Vagabond",
+            Self::Baron { .. } => "Baron",
+            Self::Cloud { .. } => "Cloud 9",
+            Self::Rocket { .. } => "Rocket",
+            Self::Obelisk { .. } => "Obelisk",
+            Self::Midas { .. } => "Midas Mask",
+            Self::Luchador { .. } => "Luchador",
+            Self::Photograph { .. } => "Photograph",
+            Self::Gift { .. } => "Gift Card",
+            Self::Turtle { .. } => "Turtle Bean",
+            Self::Erosion { .. } => "Erosion",
+            Self::Parking { .. } => "Reserved Parking",
+            Self::Rebate { .. } => "Mail-In Rebate",
+            Self::Moon { .. } => "To the Moon",
+            Self::Hallucination { .. } => "Hallucination",
+            Self::Fortune { .. } => "Fortune Teller",
+            Self::Juggler { .. } => "Juggler",
+            Self::Drunkard { .. } => "Drunkard",
+            Self::Stone { .. } => "Stone Joker",
+            Self::Golden { .. } => "Golden Joker",
+            Self::Lucky { .. } => "Lucky Cat",
+            Self::Baseball { .. } => "Baseball Card",
+            Self::Bull { .. } => "Bull",
+            Self::Cola { .. } => "Diet Cola",
+            Self::Trading { .. } => "Trading Card",
+            Self::Flash { .. } => "Flash Card",
+            Self::Popcorn { .. } => "Popcorn",
+            Self::Trousers { .. } => "Spare Trousers",
+            Self::Ancient { .. } => "Ancient Joker",
+            Self::Ramen { .. } => "Ramen",
+            Self::Walkie { .. } => "Walkie Talkie",
+            Self::Seltzer { .. } => "Seltzer",
+            Self::Castle { .. } => "Castle",
+            Self::Smiley { .. } => "Smiley Face",
+            Self::Campfire { .. } => "Campfire",
+            Self::Ticket { .. } => "Golden Ticket",
+            Self::Bones { .. } => "Mr Bones",
+            Self::Acrobat { .. } => "Acrobat",
+            Self::Sock { .. } => "Sock and Buskin",
+            Self::Swashbuckler { .. } => "Swashbuckler",
+            Self::Troubadour { .. } => "Troubadour",
+            Self::Certificate { .. } => "Certificate",
+            Self::Smeared { .. } => "Smeared Joker",
+            Self::Throwback { .. } => "Throwback",
+            Self::Chad { .. } => "Hanging Chad",
+            Self::Gem { .. } => "Rough Gem",
+            Self::Bloodstone { .. } => "Bloodstone",
+            Self::Arrowhead { .. } => "Arrowhead",
+            Self::Onyx { .. } => "Onyx Agate",
+            Self::Glass { .. } => "Glass Joker",
+            Self::Showman { .. } => "Showman",
+            Self::Flower { .. } => "Flower Pot",
+            Self::Blueprint { .. } => "Blueprint",
+            Self::Wee { .. } => "Wee Joker",
+            Self::Andy { .. } => "Merry Andy",
+            Self::Oops { .. } => "Oops! All 6s",
+            Self::Idol { .. } => "The Idol",
+            Self::Double { .. } => "Seeing Double",
+            Self::Matador { .. } => "Matador",
+            Self::Road { .. } => "Hit the Road",
+            Self::Duo { .. } => "The Duo",
+            Self::Trio { .. } => "The Trio",
+            Self::Family { .. } => "The Family",
+            Self::Order { .. } => "The Order",
+            Self::Tribe { .. } => "The Tribe",
+            Self::Stuntman { .. } => "Stuntman",
+            Self::Invisible { .. } => "Invisible Joker",
+            Self::Brainstorm { .. } => "Brainstorm",
+            Self::Satellite { .. } => "Satellite",
+            Self::Shoot { .. } => "Shoot the Moon",
+            Self::License { .. } => "Driver's License",
+            Self::Cartomancer { .. } => "Cartomancer",
+            Self::Astronomer { .. } => "Astronomer",
+            Self::Burnt { .. } => "Burnt Joker",
+            Self::Bootstraps { .. } => "Bootstraps",
+            Self::Canio { .. } => "Canio",
+            Self::Triboulet { .. } => "Triboulet",
+            Self::Yorick { .. } => "Yorick",
+            Self::Chicot { .. } => "Chicot",
+            Self::Perkeo { .. } => "Perkeo",
+        }
+    }
+}

@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use crate::model::HandType;
 
 pub struct Scoring {
-    hand_scoring: HashMap<HandType, Score>,
-    scoring_times: HashMap<HandType, u32>,
+    pub hand_scoring: HashMap<HandType, Score>,
+    pub scoring_times: HashMap<HandType, u32>,
 }
 
 impl Default for Scoring {
@@ -115,7 +115,7 @@ impl Default for Scoring {
 }
 
 impl Scoring {
-    pub fn update_score(&mut self, hand_type: HandType, increasing: bool) {
+    pub fn level_hand(&mut self, hand_type: HandType, increasing: bool) {
         let direction: i8 = if increasing { 1 } else { -1 };
         match hand_type {
             HandType::High => {
@@ -210,7 +210,7 @@ impl Scoring {
     }
 }
 
-struct Score {
+pub struct Score {
     pub chips: u64,
     pub mult: f64,
 }

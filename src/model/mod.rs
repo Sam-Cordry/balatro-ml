@@ -1,3 +1,4 @@
+use jokers::Joker;
 use rand::{
     distr::{Distribution, StandardUniform},
     Rng,
@@ -6,11 +7,15 @@ use std::fmt::Display;
 use strum::EnumIter;
 
 use crate::{
-    model::{cards::Card, scoring::Scoring},
-    traits::Consumable,
+    model::{
+        cards::Card,
+        scoring::{Score, Scoring},
+    },
+    traits::{Consumable, Scoreable},
 };
 
 pub mod cards;
+pub mod jokers;
 pub mod planets;
 pub mod scoring;
 pub mod spectrals;
@@ -27,9 +32,22 @@ pub struct State {
     pub hand_size: usize,
     pub deck: Vec<Card>,
     pub remaining_deck: Vec<Card>,
+    pub current_score: Score,
+    pub hand_type_played: HandType,
+    pub played_hand: Vec<Card>,
+    pub scoring_cards: Vec<Card>,
+    pub jokers: Vec<Joker>,
+    pub joker_slots: usize,
+    pub hands: usize,
+    pub hands_remaining: usize,
+    pub discards: usize,
+    pub discards_remaining: usize,
+    pub poker_hands_played: Vec<HandType>,
+    pub tarots_used: usize,
+    pub unique_planets_used: usize,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub enum Edition {
     Base,
     Foil,
@@ -46,6 +64,17 @@ impl Display for Edition {
             Self::Holographic => write!(f, "holographic"),
             Self::Polychrome => write!(f, "polychrome"),
             Self::Negative => write!(f, "negative"),
+        }
+    }
+}
+
+impl Scoreable for Edition {
+    fn on_score(&self, state: &mut State) {
+        match self {
+            Self::Foil => state.current_score.update(Some(50), None, None),
+            Self::Holographic => state.current_score.update(None, Some(10.0), None),
+            Self::Polychrome => state.current_score.update(None, None, Some(1.5)),
+            _ => {}
         }
     }
 }
