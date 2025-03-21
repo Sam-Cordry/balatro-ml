@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::model::HandType;
+use crate::model::{HandType, ScoreModification};
 
 pub struct Scoring {
     pub hand_scoring: HashMap<HandType, Score>,
@@ -116,103 +116,78 @@ impl Default for Scoring {
 
 impl Scoring {
     pub fn level_hand(&mut self, hand_type: HandType, increasing: bool) {
-        let direction: i8 = if increasing { 1 } else { -1 };
-        match hand_type {
-            HandType::High => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(10 * direction as u64),
-                    Some(1.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::Pair => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(15 * direction as u64),
-                    Some(1.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::TwoPair => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(20 * direction as u64),
-                    Some(1.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::ThreeOfAKind => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(20 * direction as u64),
-                    Some(2.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::Straight => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(30 * direction as u64),
-                    Some(3.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::Flush => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(15 * direction as u64),
-                    Some(2.0 as f64),
-                    None,
-                );
-            }
-            HandType::FullHouse => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(25 * direction as u64),
-                    Some(2.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::FourOfAKind => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(30 * direction as u64),
-                    Some(3.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::StraightFlush => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(40 * direction as u64),
-                    Some(4.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::FiveOfAKind => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(35 * direction as u64),
-                    Some(3.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::FlushHouse => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(40 * direction as u64),
-                    Some(4.0 * direction as f64),
-                    None,
-                );
-            }
-            HandType::FlushFive => {
-                self.hand_scoring.get_mut(&hand_type).unwrap().update(
-                    Some(50 * direction as u64),
-                    Some(3.0 * direction as f64),
-                    None,
-                );
-            }
-        }
-    }
-
-    pub fn calculate(&self, hand_type: HandType) -> f64 {
-        self.hand_scoring.get(&hand_type).unwrap().calculate()
+        let direction: isize = if increasing { 1 } else { -1 };
+        self.hand_scoring
+            .get_mut(&hand_type)
+            .unwrap()
+            .apply(match hand_type {
+                HandType::High => ScoreModification {
+                    chips: 10 * direction,
+                    mult: 1 * direction,
+                    ..Default::default()
+                },
+                HandType::Pair => ScoreModification {
+                    chips: 15 * direction,
+                    mult: 1 * direction,
+                    ..Default::default()
+                },
+                HandType::TwoPair => ScoreModification {
+                    chips: 20 * direction,
+                    mult: 1 * direction,
+                    ..Default::default()
+                },
+                HandType::ThreeOfAKind => ScoreModification {
+                    chips: 20 * direction,
+                    mult: 2 * direction,
+                    ..Default::default()
+                },
+                HandType::Straight => ScoreModification {
+                    chips: 30 * direction,
+                    mult: 3 * direction,
+                    ..Default::default()
+                },
+                HandType::Flush => ScoreModification {
+                    chips: 15 * direction,
+                    mult: 2 * direction,
+                    ..Default::default()
+                },
+                HandType::FullHouse => ScoreModification {
+                    chips: 25 * direction,
+                    mult: 2 * direction,
+                    ..Default::default()
+                },
+                HandType::FourOfAKind => ScoreModification {
+                    chips: 30 * direction,
+                    mult: 3 * direction,
+                    ..Default::default()
+                },
+                HandType::StraightFlush => ScoreModification {
+                    chips: 40 * direction,
+                    mult: 4 * direction,
+                    ..Default::default()
+                },
+                HandType::FiveOfAKind => ScoreModification {
+                    chips: 35 * direction,
+                    mult: 3 * direction,
+                    ..Default::default()
+                },
+                HandType::FlushHouse => ScoreModification {
+                    chips: 40 * direction,
+                    mult: 4 * direction,
+                    ..Default::default()
+                },
+                HandType::FlushFive => ScoreModification {
+                    chips: 50 * direction,
+                    mult: 3 * direction,
+                    ..Default::default()
+                },
+            });
     }
 }
 
 pub struct Score {
-    pub chips: u64,
-    pub mult: f64,
+    chips: usize,
+    mult: f64,
 }
 
 impl Score {
@@ -220,15 +195,15 @@ impl Score {
         self.chips as f64 * self.mult
     }
 
-    pub fn update(&mut self, chips: Option<u64>, mult: Option<f64>, xmult: Option<f64>) {
-        if let Some(chips) = chips {
-            self.chips += chips;
-        }
-        if let Some(mult) = mult {
-            self.mult += mult;
-        }
-        if let Some(xmult) = xmult {
-            self.mult *= xmult;
+    pub fn apply(&mut self, modification: ScoreModification) {
+        for _ in 0..modification.triggers {
+            if modification.chips >= 0 {
+                self.chips += modification.chips as usize;
+                self.mult += modification.mult as f64;
+                self.mult *= modification.xmult;
+            } else if -modification.chips < self.chips.try_into().unwrap() {
+                todo!("implement")
+            }
         }
     }
 }

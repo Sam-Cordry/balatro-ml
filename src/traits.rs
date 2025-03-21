@@ -15,10 +15,6 @@ pub trait Consumable: Debug + Display {
     fn name(&self) -> &'static str;
 }
 
-pub trait Scoreable {
-    fn on_score(&self, state: &mut State);
-}
-
 pub trait JokerTrait: Debug + Display {
     fn on_blind_select(&mut self, state: &mut State);
     fn on_hand_played(&mut self, state: &mut State);

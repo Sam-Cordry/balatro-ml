@@ -11,14 +11,16 @@ use crate::{
         cards::Card,
         scoring::{Score, Scoring},
     },
-    traits::{Consumable, Scoreable},
+    traits::Consumable,
 };
 
+pub mod blinds;
 pub mod cards;
 pub mod jokers;
 pub mod planets;
 pub mod scoring;
 pub mod spectrals;
+pub mod tags;
 pub mod tarots;
 
 pub struct State {
@@ -68,14 +70,9 @@ impl Display for Edition {
     }
 }
 
-impl Scoreable for Edition {
-    fn on_score(&self, state: &mut State) {
-        match self {
-            Self::Foil => state.current_score.update(Some(50), None, None),
-            Self::Holographic => state.current_score.update(None, Some(10.0), None),
-            Self::Polychrome => state.current_score.update(None, None, Some(1.5)),
-            _ => {}
-        }
+impl Edition {
+    pub fn on_scored(&self) -> ScoreModification {
+        todo!("implement")
     }
 }
 
@@ -215,4 +212,34 @@ pub enum PackType {
     Normal,
     Jumbo,
     Mega,
+}
+
+pub struct ScoreModification {
+    pub chips: isize,
+    pub mult: isize,
+    pub xmult: f64,
+    pub money: isize,
+    pub triggers: isize,
+}
+
+impl Default for ScoreModification {
+    fn default() -> Self {
+        Self {
+            chips: 0,
+            mult: 0,
+            xmult: 1.0,
+            money: 0,
+            triggers: 1,
+        }
+    }
+}
+
+impl ScoreModification {
+    pub fn add(&mut self, other: ScoreModification) {
+        self.chips += other.chips;
+        self.mult += other.mult;
+        self.xmult *= other.xmult;
+        self.money += other.money;
+        self.triggers += other.triggers;
+    }
 }

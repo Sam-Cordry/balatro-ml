@@ -1,11 +1,8 @@
 use std::fmt::Display;
 
-use crate::{
-    model::{Edition, State},
-    traits::Scoreable,
-};
+use crate::model::Edition;
 
-use super::jokers::Joker;
+use super::{jokers::Joker, ScoreModification};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Card {
@@ -36,18 +33,6 @@ impl Display for Card {
     }
 }
 
-impl Scoreable for Card {
-    fn on_score(&self, state: &mut super::State) {
-        state
-            .current_score
-            .update(Some(self.chips as u64), None, None);
-        self.edition.on_score(state);
-        if let Some(e) = self.enhancement {
-            e.on_score(state);
-        }
-    }
-}
-
 impl Card {
     pub fn increment(&mut self) {
         self.rank = self.rank.increment();
@@ -61,14 +46,33 @@ impl Card {
         self.seal = other.seal;
     }
 
-    pub fn is_face_card(&self, jokers: &Vec<Joker>) -> bool {
+    pub fn is_face_card(&self, jokers: &[Joker]) -> bool {
         jokers.iter().filter(|j| j.name() == "Pareidolia").count() > 0
             || self.rank == Rank::King
             || self.rank == Rank::Queen
             || self.rank == Rank::Jack
     }
 
-    pub fn is_suit(&self, suit: Suit, state: &State) -> bool {
+    pub fn is_suit(&self, suit: Suit, jokers: &[Joker]) -> bool {
+        self.suit == suit
+            || (jokers.iter().any(|j| j.name() == "Smeared Joker")
+                && ((suit == Suit::Spade && self.suit == Suit::Club)
+                    || (suit == Suit::Club && self.suit == Suit::Spade)
+                    || (suit == Suit::Heart && self.suit == Suit::Diamond)
+                    || (suit == Suit::Diamond && self.suit == Suit::Heart)))
+    }
+
+    pub fn on_scored(&self) -> ScoreModification {
+        let mut modification = ScoreModification::default();
+        modification.chips += self.rank.get_value();
+        modification
+    }
+
+    pub fn on_held(&self) -> ScoreModification {
+        todo!("implement")
+    }
+
+    pub fn on_discard(&self) -> ScoreModification {
         todo!("implement")
     }
 }
@@ -148,7 +152,7 @@ impl Rank {
         }
     }
 
-    pub fn get_rank(&self) -> u8 {
+    pub fn get_value(&self) -> u8 {
         match self {
             Self::Two => 2,
             Self::Three => 3,
@@ -191,15 +195,9 @@ impl Display for Enhancement {
     }
 }
 
-impl Scoreable for Enhancement {
-    fn on_score(&self, state: &mut super::State) {
-        match self {
-            Self::Bonus => state.current_score.update(Some(30), None, None),
-            Self::Mult => state.current_score.update(None, Some(4.0), None),
-            Self::Glass => state.current_score.update(None, None, Some(2.0)),
-            Self::Lucky => todo!("randomness"),
-            _ => {}
-        }
+impl Enhancement {
+    fn on_scored(&self) -> ScoreModification {
+        todo!("implement")
     }
 }
 

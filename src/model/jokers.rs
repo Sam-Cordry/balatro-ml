@@ -1,11 +1,8 @@
 use std::{cmp::max, collections::HashSet, fmt::Display};
 
-use crate::{
-    model::{
-        cards::{Card, Enhancement, Rank, Suit},
-        Edition, HandType, State,
-    },
-    traits::Scoreable,
+use crate::model::{
+    cards::{Card, Enhancement, Rank, Suit},
+    Edition, HandType, ScoreModification, State,
 };
 
 #[derive(Debug, PartialEq, Eq)]
@@ -339,7 +336,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Square {
         cost: usize,
@@ -361,7 +358,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Shortcut {
         cost: usize,
@@ -372,7 +369,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Vagabond {
         cost: usize,
@@ -399,7 +396,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Midas {
         cost: usize,
@@ -483,7 +480,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Baseball {
         cost: usize,
@@ -533,7 +530,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Walkie {
         cost: usize,
@@ -561,7 +558,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Ticket {
         cost: usize,
@@ -607,7 +604,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Chad {
         cost: usize,
@@ -638,7 +635,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Showman {
         cost: usize,
@@ -692,7 +689,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Duo {
         cost: usize,
@@ -774,7 +771,7 @@ pub enum Joker {
         cost: usize,
         sell_rank: usize,
         edition: Edition,
-        mult: usize,
+        xmult: usize,
     },
     Triboulet {
         cost: usize,
@@ -786,7 +783,7 @@ pub enum Joker {
         sell_rank: usize,
         edition: Edition,
         discards: usize,
-        mult: usize,
+        xmult: usize,
     },
     Chicot {
         cost: usize,
@@ -814,7 +811,7 @@ impl Joker {
                     mult += state
                         .jokers
                         .remove(state.jokers.iter().position(|j| j == self).unwrap() + 1)
-                        .get_sell_rank();
+                        .get_sell_value();
                 }
             }
             Self::Marble { .. } => {
@@ -824,7 +821,7 @@ impl Joker {
                 state.hands_remaining += 3;
                 state.discards_remaining = 0;
             }
-            Self::Madness { mut mult, .. } => todo!("blinds"),
+            Self::Madness { mut xmult, .. } => todo!("blinds"),
             Self::Riff { .. } => todo!("randomness"),
             Self::Certificate { .. } => todo!("randomness"),
             Self::Cartomancer { .. } => todo!("randomness"),
@@ -832,7 +829,7 @@ impl Joker {
         }
     }
 
-    pub fn on_hand_played(&mut self, state: &mut State) {
+    pub fn on_played(&mut self, state: &mut State) {
         match self {
             Self::Fist { mut min, .. } => {
                 min = Some(state.hand.iter().map(|c| c.rank).min().unwrap());
@@ -891,17 +888,17 @@ impl Joker {
                     chips += 4;
                 }
             }
-            Self::Vampire { mut mult, .. } => {
+            Self::Vampire { mut xmult, .. } => {
                 state
                     .scoring_cards
                     .iter_mut()
                     .filter(|c| c.enhancement.is_some())
                     .for_each(|c| {
                         c.enhancement = None;
-                        mult += 1;
+                        xmult += 1;
                     });
             }
-            Self::Obelisk { mut mult, .. } => {
+            Self::Obelisk { mut xmult, .. } => {
                 if state
                     .scoring
                     .scoring_times
@@ -918,9 +915,9 @@ impl Joker {
                     .map(|(k, _)| k)
                     .any(|k| *k == state.hand_type_played)
                 {
-                    mult = 5;
+                    xmult = 5;
                 } else {
-                    mult += 1;
+                    xmult += 1;
                 }
             }
             Self::Midas { .. } => {
@@ -958,26 +955,27 @@ impl Joker {
         }
     }
 
-    pub fn on_card_score(&mut self, state: &mut State, card: &mut Card) {
+    pub fn on_scored(&mut self, state: &mut State, card: &mut Card) -> ScoreModification {
+        let mut modification = ScoreModification::default();
         match self {
             Self::Greedy { .. } => {
-                if card.suit == Suit::Diamond {
-                    state.current_score.update(None, Some(3.0), None);
+                if card.is_suit(Suit::Diamond, &state.jokers) {
+                    modification.mult += 3;
                 }
             }
             Self::Lusty { .. } => {
-                if card.suit == Suit::Heart {
-                    state.current_score.update(None, Some(3.0), None);
+                if card.is_suit(Suit::Heart, &state.jokers) {
+                    modification.mult += 3;
                 }
             }
             Self::Wrathful { .. } => {
-                if card.suit == Suit::Spade {
-                    state.current_score.update(None, Some(3.0), None);
+                if card.is_suit(Suit::Spade, &state.jokers) {
+                    modification.mult += 3;
                 }
             }
             Self::Gluttonous { .. } => {
-                if card.suit == Suit::Club {
-                    state.current_score.update(None, Some(3.0), None);
+                if card.is_suit(Suit::Club, &state.jokers) {
+                    modification.mult += 3;
                 }
             }
             Self::Ball { .. } => {
@@ -986,7 +984,9 @@ impl Joker {
                 }
             }
             Self::Dusk { .. } => {
-                card.on_score(state);
+                if state.hands_remaining == 0 {
+                    modification.triggers += 1;
+                }
             }
             Self::Fibonacci { .. } => {
                 if card.rank == Rank::Ace
@@ -995,11 +995,11 @@ impl Joker {
                     || card.rank == Rank::Five
                     || card.rank == Rank::Eight
                 {
-                    state.current_score.update(None, Some(8.0), None);
+                    modification.mult += 9;
                 }
             }
             Self::Scary { .. } => {
-                state.current_score.update(Some(30), None, None);
+                modification.chips += 30;
             }
             Self::Hack { .. } => {
                 if card.rank == Rank::Two
@@ -1007,7 +1007,7 @@ impl Joker {
                     || card.rank == Rank::Four
                     || card.rank == Rank::Five
                 {
-                    card.on_score(state);
+                    modification.triggers += 1;
                 }
             }
             Self::Steven { .. } => {
@@ -1017,7 +1017,7 @@ impl Joker {
                     || card.rank == Rank::Eight
                     || card.rank == Rank::Ten
                 {
-                    state.current_score.update(None, Some(4.0), None);
+                    modification.mult += 4;
                 }
             }
             Self::Todd { .. } => {
@@ -1027,12 +1027,13 @@ impl Joker {
                     || card.rank == Rank::Seven
                     || card.rank == Rank::Nine
                 {
-                    state.current_score.update(Some(31), None, None);
+                    modification.chips += 31;
                 }
             }
             Self::Scholar { .. } => {
                 if card.rank == Rank::Ace {
-                    state.current_score.update(Some(20), Some(4.0), None);
+                    modification.chips += 20;
+                    modification.mult += 4;
                 }
             }
             Self::Business { .. } => {
@@ -1046,23 +1047,24 @@ impl Joker {
             Self::Photograph { mut used, .. } => {
                 if !used && card.is_face_card(&state.jokers) {
                     used = true;
-                    state.current_score.update(None, None, Some(2.0));
+                    modification.xmult += 2.0;
                 }
             }
             Self::Ancient { suit, .. } => {
-                if card.suit == *suit {
-                    state.current_score.update(None, None, Some(1.5));
+                if card.is_suit(*suit, &state.jokers) {
+                    modification.xmult += 1.5;
                 }
             }
             Self::Walkie { .. } => {
                 if card.rank == Rank::Ten || card.rank == Rank::Four {
-                    state.current_score.update(Some(10), Some(4.0), None);
+                    modification.chips += 10;
+                    modification.mult += 4;
                 }
             }
-            Self::Seltzer { .. } => card.on_score(state),
+            Self::Seltzer { .. } => modification.triggers += 1,
             Self::Smiley { .. } => {
                 if card.is_face_card(&state.jokers) {
-                    state.current_score.update(None, Some(5.0), None);
+                    modification.mult += 5;
                 }
             }
             Self::Ticket { .. } => state
@@ -1072,27 +1074,26 @@ impl Joker {
                 .for_each(|c| state.money += 4),
             Self::Sock { .. } => {
                 if card.is_face_card(&state.jokers) {
-                    card.on_score(state);
+                    modification.triggers += 1;
                 }
             }
             Self::Chad { .. } => {
-                card.on_score(state);
-                card.on_score(state);
+                modification.triggers += 2;
             }
             Self::Gem { .. } => {
-                if card.is_suit(Suit::Diamond, state) {
+                if card.is_suit(Suit::Diamond, &state.jokers) {
                     state.money += 1;
                 }
             }
             Self::Bloodstone { .. } => todo!("randomness"),
             Self::Arrowhead { .. } => {
-                if card.is_suit(Suit::Spade, state) {
-                    state.current_score.update(Some(50), None, None);
+                if card.is_suit(Suit::Spade, &state.jokers) {
+                    modification.chips += 50;
                 }
             }
             Self::Onyx { .. } => {
-                if card.is_suit(Suit::Club, state) {
-                    state.current_score.update(None, Some(7.0), None);
+                if card.is_suit(Suit::Club, &state.jokers) {
+                    modification.mult += 7;
                 }
             }
             Self::Wee { mut chips, .. } => {
@@ -1101,58 +1102,58 @@ impl Joker {
                 }
             }
             Self::Idol { rank, suit, .. } => {
-                if card.is_suit(*suit, state) && card.rank == *rank {
-                    state.current_score.update(None, None, Some(2.0));
+                if card.is_suit(*suit, &state.jokers) && card.rank == *rank {
+                    modification.xmult += 2.0;
                 }
             }
             Self::Triboulet { .. } => {
                 if card.rank == Rank::King || card.rank == Rank::Queen {
-                    state.current_score.update(None, None, Some(2.0));
+                    modification.xmult += 2.0;
                 }
             }
             _ => {}
         }
+        modification
     }
 
-    pub fn on_card_in_hand_score(&mut self, state: &mut State, card: &Card) {
+    pub fn on_held(&mut self, state: &mut State, card: &Card) -> ScoreModification {
+        let mut modification = ScoreModification::default();
         match self {
-            Self::Mime { .. } => card.on_score(state),
+            Self::Mime { .. } => modification.triggers += 1,
             Self::Fist { mut min, .. } => {
                 if let Some(m) = min {
                     if m == card.rank {
-                        state.current_score.update(
-                            None,
-                            Some((card.rank.get_rank() * 2) as f64),
-                            None,
-                        );
+                        modification.mult += (card.rank.get_value() * 2) as isize;
                     }
                     min = None;
                 }
             }
             Self::Baron { .. } => {
                 if card.rank == Rank::King {
-                    state.current_score.update(None, None, Some(1.5));
+                    modification.xmult += 1.5;
                 }
             }
             Self::Parking { .. } => todo!("randomness"),
             Self::Shoot { .. } => {
                 if card.rank == Rank::Queen {
-                    state.current_score.update(None, Some(13.0), None);
+                    modification.mult += 13;
                 }
             }
             _ => {}
         }
+        modification
     }
 
-    pub fn on_independent(&mut self, state: &mut State) {
+    pub fn on_independent(&mut self, state: &mut State) -> ScoreModification {
+        let mut modification = ScoreModification::default();
         match self {
-            Self::Joker { .. } => state.current_score.update(None, Some(4.0), None),
+            Self::Joker { .. } => modification.mult += 4,
             Self::Jolly { .. } => {
                 if HashSet::<Rank>::from_iter(state.selected_cards.iter().cloned().map(|c| c.rank))
                     .len()
                     < state.selected_cards.len()
                 {
-                    state.current_score.update(None, Some(8.0), None);
+                    modification.mult += 8;
                 }
             }
             Self::Zany { .. } => {
@@ -1172,7 +1173,7 @@ impl Joker {
                 }
 
                 if result {
-                    state.current_score.update(None, Some(12.0), None);
+                    modification.mult += 12;
                 }
             }
             Self::Mad { .. } => {
@@ -1195,21 +1196,21 @@ impl Joker {
                 }
 
                 if result == 2 {
-                    state.current_score.update(None, Some(10.0), None);
+                    modification.mult += 10;
                 }
             }
             Self::Crazy { .. } => {
                 if state.hand_type_played == HandType::Straight
                     || state.hand_type_played == HandType::StraightFlush
                 {
-                    state.current_score.update(None, Some(12.0), None);
+                    modification.mult += 12;
                 }
             }
             Self::Droll { .. } => {
                 let s: HashSet<Suit> =
                     HashSet::from_iter(state.selected_cards.iter().map(|c| c.suit));
                 if s.len() == 1 {
-                    state.current_score.update(None, Some(10.0), None);
+                    modification.mult += 10;
                 }
             }
             Self::Sly { .. } => {
@@ -1217,7 +1218,7 @@ impl Joker {
                     .len()
                     < state.selected_cards.len()
                 {
-                    state.current_score.update(Some(50), None, None);
+                    modification.chips += 50;
                 }
             }
             Self::Wily { .. } => {
@@ -1237,7 +1238,7 @@ impl Joker {
                 }
 
                 if result {
-                    state.current_score.update(Some(100), None, None);
+                    modification.chips += 100;
                 }
             }
             Self::Clever { .. } => {
@@ -1260,47 +1261,44 @@ impl Joker {
                 }
 
                 if result == 2 {
-                    state.current_score.update(Some(80), None, None);
+                    modification.chips += 80;
                 }
             }
             Self::Devious { .. } => {
                 if state.hand_type_played == HandType::Straight
                     || state.hand_type_played == HandType::StraightFlush
                 {
-                    state.current_score.update(Some(100), None, None);
+                    modification.chips += 100;
                 }
             }
             Self::Crafty { .. } => {
                 let s: HashSet<Suit> =
                     HashSet::from_iter(state.selected_cards.iter().map(|c| c.suit));
                 if s.len() == 1 {
-                    state.current_score.update(Some(80), None, None);
+                    modification.chips += 80;
                 }
             }
             Self::Half { .. } => {
                 if state.selected_cards.len() <= 3 {
-                    state.current_score.update(None, Some(20.0), None);
+                    // state.current_score.update(None, Some(20.0), None);
+                    modification.mult += 20;
                 }
             }
-            Self::Stencil { .. } => state.current_score.update(
-                None,
-                None,
-                Some((state.jokers.len() - state.joker_slots + 1) as f64),
-            ),
-            Self::Dagger { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Stencil { .. } => {
+                modification.xmult += (state.jokers.len() - state.joker_slots + 1) as f64;
+            }
+            Self::Dagger { mult, .. } => modification.mult += *mult as isize,
             Self::Banner { .. } => {
-                state
-                    .current_score
-                    .update(Some((state.discards_remaining * 30) as u64), None, None)
+                modification.chips += (state.discards_remaining * 30) as isize;
             }
             Self::Mystic { .. } => {
                 if state.discards_remaining == 0 {
-                    state.current_score.update(None, Some(15.0), None);
+                    modification.mult += 15;
                 }
             }
             Self::Loyalty { mut hands, .. } => {
                 if hands == 0 {
-                    state.current_score.update(None, None, Some(4.0));
+                    modification.xmult += 4.0;
                     hands = 6;
                 }
                 hands -= 1;
@@ -1308,64 +1306,50 @@ impl Joker {
             Self::Misprint { .. } => {
                 todo!("randomness")
             }
-            Self::Steel { .. } => state.current_score.update(
-                None,
-                None,
-                Some(
-                    0.2 * state
+            Self::Steel { .. } => {
+                modification.xmult += 0.2
+                    * state
                         .deck
                         .iter()
                         .filter(|c| c.enhancement == Some(Enhancement::Steel))
-                        .count() as f64,
-                ),
-            ),
-            Self::Abstract { .. } => {
-                state
-                    .current_score
-                    .update(None, Some(3.0 * state.jokers.len() as f64), None)
+                        .count() as f64;
             }
-            Self::Michel { .. } => state.current_score.update(None, Some(15.0), None),
-            Self::Supernova { .. } => state.current_score.update(
-                None,
-                Some(
-                    *state
-                        .scoring
-                        .scoring_times
-                        .get(&state.hand_type_played)
-                        .unwrap() as f64,
-                ),
-                None,
-            ),
-            Self::Bus { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Abstract { .. } => {
+                modification.mult += 3 * state.jokers.len() as isize;
+            }
+            Self::Michel { .. } => modification.mult += 15,
+            Self::Supernova { .. } => {
+                modification.mult += *state
+                    .scoring
+                    .scoring_times
+                    .get(&state.hand_type_played)
+                    .unwrap() as isize;
+            }
+            Self::Bus { mult, .. } => modification.mult += *mult as isize,
             Self::Blackboard { .. } => {
                 if state
                     .hand
                     .iter()
-                    .filter(|c| !(c.is_suit(Suit::Spade, state) || c.is_suit(Suit::Club, state)))
+                    .filter(|c| {
+                        !(c.is_suit(Suit::Spade, &state.jokers)
+                            || c.is_suit(Suit::Club, &state.jokers))
+                    })
                     .count()
                     == 0
                 {
-                    state.current_score.update(None, None, Some(3.0));
+                    modification.xmult += 3.0;
                 }
             }
             Self::Runner { chips, .. } => {
-                state.current_score.update(Some(*chips as u64), None, None);
+                modification.chips += *chips as isize;
             }
             Self::Cream { mut chips, .. } => {
-                state.current_score.update(Some(chips as u64), None, None);
+                modification.chips += chips as isize;
                 chips -= 5;
             }
-            Self::Blue { .. } => state.current_score.update(
-                Some((2 * state.remaining_deck.len()) as u64),
-                None,
-                None,
-            ),
-            Self::Constellation { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 10) as f64));
-            }
-            Self::Green { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
+            Self::Blue { .. } => modification.chips += 2 * state.remaining_deck.len() as isize,
+            Self::Constellation { mult, .. } => modification.xmult += (*mult / 10) as f64,
+            Self::Green { mult, .. } => modification.mult += *mult as isize,
             Self::Superposition { .. } => {
                 if (state.hand_type_played == HandType::Straight
                     || state.hand_type_played == HandType::StraightFlush)
@@ -1380,23 +1364,19 @@ impl Joker {
                     todo!("randomness")
                 }
             }
-            Self::Cavendish { .. } => state.current_score.update(None, None, Some(3.0)),
+            Self::Cavendish { .. } => modification.xmult += 3.0,
             Self::Sharp { .. } => {
                 if state
                     .poker_hands_played
                     .iter()
                     .any(|t| *t == state.hand_type_played)
                 {
-                    state.current_score.update(None, None, Some(3.0));
+                    modification.xmult += 3.0;
                 }
             }
-            Self::Red { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
-            Self::Madness { mult, .. } => {
-                state.current_score.update(None, None, Some(*mult as f64));
-            }
-            Self::Square { chips, .. } => {
-                state.current_score.update(Some(*chips as u64), None, None);
-            }
+            Self::Red { mult, .. } => modification.mult += *mult as isize,
+            Self::Madness { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
+            Self::Square { chips, .. } => modification.chips += *chips as isize,
             Self::Seance { .. } => {
                 if state.hand_type_played == HandType::StraightFlush
                     && state.consumables.len() < state.consumable_slots
@@ -1404,146 +1384,88 @@ impl Joker {
                     todo!("randomness")
                 }
             }
-            Self::Vampire { mult, .. } => {
-                state.current_score.update(None, None, Some(*mult as f64));
-            }
-            Self::Hologram { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 4) as f64));
-            }
+            Self::Vampire { xmult, .. } => modification.xmult += (*xmult / 10) as f64,
+            Self::Hologram { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
             Self::Vagabond { .. } => {
                 if state.money < 5 {
                     todo!("randomness")
                 }
             }
-            Self::Obelisk { mult, .. } => {
-                state.current_score.update(None, None, Some(*mult as f64));
+            Self::Obelisk { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
+            Self::Erosion { .. } => modification.mult += max(52 - state.deck.len(), 0) as isize,
+            Self::Fortune { .. } => modification.mult += state.tarots_used as isize,
+            Self::Stone { .. } => {
+                modification.chips += (state
+                    .deck
+                    .iter()
+                    .filter(|c| c.enhancement == Some(Enhancement::Stone))
+                    .count()
+                    * 25) as isize;
             }
-            Self::Erosion { .. } => {
-                state
-                    .current_score
-                    .update(None, Some(max(52 - state.deck.len(), 0) as f64), None);
-            }
-            Self::Fortune { .. } => {
-                state
-                    .current_score
-                    .update(None, Some(state.tarots_used as f64), None)
-            }
-            Self::Stone { .. } => state.current_score.update(
-                Some(
-                    (state
-                        .deck
-                        .iter()
-                        .filter(|c| c.enhancement == Some(Enhancement::Stone))
-                        .count()
-                        * 25) as u64,
-                ),
-                None,
-                None,
-            ),
-            Self::Lucky { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 4) as f64))
-            }
-            Self::Bull { .. } => {
-                state
-                    .current_score
-                    .update(Some((2 * state.money) as u64), None, None)
-            }
-            Self::Flash { mult, .. } => state.current_score.update(None, Some(*mult as f64), None),
-            Self::Popcorn { mult, .. } => {
-                state.current_score.update(None, Some(*mult as f64), None);
-            }
-            Self::Trousers { mult, .. } => {
-                state.current_score.update(None, Some(*mult as f64), None);
-            }
-            Self::Ramen { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 100) as f64));
-            }
-            Self::Castle { chips, .. } => {
-                state.current_score.update(Some(*chips as u64), None, None);
-            }
-            Self::Campfire { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 4) as f64))
-            }
+            Self::Lucky { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
+            Self::Bull { .. } => modification.chips += 2 * state.money as isize,
+            Self::Flash { mult, .. } => modification.mult += *mult as isize,
+            Self::Popcorn { mult, .. } => modification.mult += *mult as isize,
+            Self::Trousers { mult, .. } => modification.mult += *mult as isize,
+            Self::Ramen { xmult, .. } => modification.xmult += (*xmult / 100) as f64,
+            Self::Castle { chips, .. } => modification.chips += *chips as isize,
+            Self::Campfire { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
             Self::Acrobat { .. } => {
                 if state.hands_remaining == state.hands - 1 {
-                    state.current_score.update(None, None, Some(3.0));
+                    modification.xmult += 3.0;
                 }
             }
-            Self::Swashbuckler { .. } => state.current_score.update(
-                None,
-                Some(
-                    (state
-                        .jokers
-                        .iter()
-                        .map(|j| j.get_sell_rank())
-                        .sum::<usize>()
-                        - self.get_sell_rank()) as f64,
-                ),
-                None,
-            ),
-            Self::Throwback { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 4) as f64))
+            Self::Swashbuckler { .. } => {
+                modification.mult += (state
+                    .jokers
+                    .iter()
+                    .map(|j| j.get_sell_value())
+                    .sum::<usize>()
+                    - self.get_sell_value()) as isize
             }
-            Self::Glass { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 4) as f64))
-            }
+            Self::Throwback { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
+            Self::Glass { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
             Self::Flower { .. } => {
                 if state
                     .scoring_cards
                     .iter()
-                    .any(|c| c.is_suit(Suit::Spade, state))
+                    .any(|c| c.is_suit(Suit::Spade, &state.jokers))
                     && state
                         .scoring_cards
                         .iter()
-                        .any(|c| c.is_suit(Suit::Heart, state))
+                        .any(|c| c.is_suit(Suit::Heart, &state.jokers))
                     && state
                         .scoring_cards
                         .iter()
-                        .any(|c| c.is_suit(Suit::Club, state))
+                        .any(|c| c.is_suit(Suit::Club, &state.jokers))
                     && state
                         .scoring_cards
                         .iter()
-                        .any(|c| c.is_suit(Suit::Diamond, state))
+                        .any(|c| c.is_suit(Suit::Diamond, &state.jokers))
                 {
-                    state.current_score.update(None, None, Some(3.0));
+                    modification.xmult += 3.0;
                 }
             }
-            Self::Wee { chips, .. } => state.current_score.update(Some(*chips as u64), None, None),
+            Self::Wee { chips, .. } => modification.chips += *chips as isize,
             Self::Double { .. } => {
                 if state
                     .scoring_cards
                     .iter()
-                    .any(|c| c.is_suit(Suit::Club, state))
+                    .any(|c| c.is_suit(Suit::Club, &state.jokers))
                     && state
                         .scoring_cards
                         .iter()
-                        .any(|c| !c.is_suit(Suit::Club, state))
+                        .any(|c| !c.is_suit(Suit::Club, &state.jokers))
                 {
-                    state.current_score.update(None, None, Some(2.0));
+                    modification.xmult += 2.0;
                 }
             }
-            Self::Road { mult, .. } => {
-                state
-                    .current_score
-                    .update(None, None, Some((*mult / 2) as f64))
-            }
+            Self::Road { xmult, .. } => modification.xmult += (*xmult / 2) as f64,
             Self::Duo { .. } => {
                 if HashSet::<Rank>::from_iter(state.scoring_cards.iter().map(|c| c.rank)).len()
                     < state.scoring_cards.len()
                 {
-                    state.current_score.update(None, None, Some(2.0));
+                    modification.xmult += 2.0;
                 }
             }
             Self::Trio { .. } => {
@@ -1557,21 +1479,21 @@ impl Joker {
                         .count()
                         >= 3
                 {
-                    state.current_score.update(None, None, Some(3.0));
+                    modification.xmult += 3.0;
                 }
             }
             Self::Family { .. } => {
                 let s: HashSet<Rank> =
                     HashSet::from_iter(state.scoring_cards.iter().map(|c| c.rank));
                 if s.len() < state.scoring_cards.len() - 2 {
-                    state.current_score.update(None, None, Some(4.0));
+                    modification.xmult += 4.0;
                 }
             }
             Self::Order { .. } => {
                 if state.hand_type_played == HandType::Straight
                     || state.hand_type_played == HandType::StraightFlush
                 {
-                    state.current_score.update(None, None, Some(3.0));
+                    modification.xmult += 3.0;
                 }
             }
             Self::Tribe { .. } => {
@@ -1579,10 +1501,10 @@ impl Joker {
                     || state.hand_type_played == HandType::FlushHouse
                     || state.hand_type_played == HandType::FlushFive
                 {
-                    state.current_score.update(None, None, Some(2.0));
+                    modification.xmult += 2.0;
                 }
             }
-            Self::Stuntman { .. } => state.current_score.update(Some(100), None, None),
+            Self::Stuntman { .. } => modification.chips += 100,
             Self::License { .. } => {
                 if state
                     .deck
@@ -1591,18 +1513,15 @@ impl Joker {
                     .count()
                     >= 16
                 {
-                    state.current_score.update(None, None, Some(3.0));
+                    modification.xmult += 3.0;
                 }
             }
-            Self::Bootstraps { .. } => {
-                state
-                    .current_score
-                    .update(None, Some(((state.money / 5) * 2) as f64), None);
-            }
-            Self::Canio { mult, .. } => state.current_score.update(None, None, Some(*mult as f64)),
-            Self::Yorick { mult, .. } => state.current_score.update(None, None, Some(*mult as f64)),
+            Self::Bootstraps { .. } => modification.mult += ((state.money / 5) * 2) as isize,
+            Self::Canio { xmult, .. } => modification.xmult += *xmult as f64,
+            Self::Yorick { xmult, .. } => modification.xmult += *xmult as f64,
             _ => {}
         }
+        modification
     }
 
     pub fn on_discard(&mut self, state: &mut State) {
@@ -1641,9 +1560,9 @@ impl Joker {
                     state.money += 3;
                 }
             }
-            Self::Ramen { mut mult, .. } => {
-                mult -= state.selected_cards.len();
-                if mult <= 100 {
+            Self::Ramen { mut xmult, .. } => {
+                xmult -= state.selected_cards.len();
+                if xmult <= 100 {
                     state
                         .jokers
                         .remove(state.jokers.iter().position(|j| j == self).unwrap());
@@ -1655,19 +1574,19 @@ impl Joker {
                 state
                     .selected_cards
                     .iter()
-                    .filter(|c| c.is_suit(*suit, state))
+                    .filter(|c| c.is_suit(*suit, &state.jokers))
                     .for_each(|_| chips += 3);
             }
-            Self::Road { mut mult, .. } => mult += 1,
+            Self::Road { mut xmult, .. } => xmult += 1,
             Self::Yorick {
                 mut discards,
-                mut mult,
+                mut xmult,
                 ..
             } => {
                 discards -= state.selected_cards.len();
                 if discards <= 0 {
                     discards += 23;
-                    mult += 1;
+                    xmult += 1;
                 }
             }
             _ => {}
@@ -1715,11 +1634,11 @@ impl Joker {
             }
             Self::Ancient { mut suit, .. } => todo!("randomness"),
             Self::Castle { mut suit, .. } => todo!("randomness"),
-            Self::Campfire { mut mult, .. } => todo!("blinds"),
+            Self::Campfire { mut xmult, .. } => todo!("blinds"),
             Self::Idol {
                 mut rank, mut suit, ..
             } => todo!("randomness"),
-            Self::Road { mut mult, .. } => mult = 2,
+            Self::Road { mut xmult, .. } => xmult = 2,
             Self::Invisible { mut rounds, .. } => rounds += 1,
             Self::Satellite { .. } => state.money += state.unique_planets_used,
             _ => {}
@@ -1806,30 +1725,30 @@ impl Joker {
 
     pub fn on_card_add(&mut self) {
         match self {
-            Self::Hologram { mut mult, .. } => mult += 1,
+            Self::Hologram { mut xmult, .. } => xmult += 1,
             _ => {}
         }
     }
 
     pub fn on_card_sell(&mut self) {
         match self {
-            Self::Campfire { mut mult, .. } => mult += 1,
+            Self::Campfire { mut xmult, .. } => xmult += 1,
             _ => {}
         }
     }
 
     pub fn on_blind_skip(&mut self) {
         match self {
-            Self::Throwback { mut mult, .. } => mult += 1,
+            Self::Throwback { mut xmult, .. } => xmult += 1,
             _ => {}
         }
     }
 
     pub fn on_card_destroy(&mut self, card: &Card) {
         match self {
-            Self::Glass { mut mult, .. } => {
+            Self::Glass { mut xmult, .. } => {
                 if card.enhancement == Some(Enhancement::Glass) {
-                    mult += 3;
+                    xmult += 3;
                 }
             }
             _ => {}
@@ -1991,7 +1910,7 @@ impl Joker {
         }
     }
 
-    pub fn get_sell_rank(&self) -> usize {
+    pub fn get_sell_value(&self) -> usize {
         match self {
             Self::Joker { sell_rank, .. }
             | Self::Greedy { sell_rank, .. }
