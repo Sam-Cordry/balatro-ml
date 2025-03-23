@@ -1,8 +1,22 @@
 use std::fmt::Display;
+use strum::{EnumIter, IntoEnumIterator};
 
-use crate::model::Edition;
+use crate::model::{jokers::Joker, Edition, ScoreModification};
 
-use super::{jokers::Joker, ScoreModification};
+pub fn get_standard_deck() -> Vec<Card> {
+    let mut deck: Vec<Card> = vec![];
+    for suit in Suit::iter() {
+        for rank in Rank::iter() {
+            deck.push(Card {
+                suit,
+                rank,
+                chips: rank.get_value() as usize,
+                ..Default::default()
+            });
+        }
+    }
+    deck
+}
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Card {
@@ -29,6 +43,19 @@ impl Display for Card {
                 self.edition, self.rank, self.suit, s
             ),
             (None, None) => write!(f, "{} {} of {}", self.edition, self.rank, self.suit),
+        }
+    }
+}
+
+impl Default for Card {
+    fn default() -> Self {
+        Self {
+            suit: Suit::Spade,
+            rank: Rank::Ace,
+            edition: Edition::Base,
+            enhancement: None,
+            seal: None,
+            chips: 11,
         }
     }
 }
@@ -64,7 +91,7 @@ impl Card {
 
     pub fn on_scored(&self) -> ScoreModification {
         let mut modification = ScoreModification::default();
-        modification.chips += self.rank.get_value();
+        modification.chips += self.rank.get_value() as isize;
         modification
     }
 
@@ -77,7 +104,7 @@ impl Card {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, EnumIter)]
 pub enum Suit {
     Spade,
     Heart,
@@ -96,7 +123,7 @@ impl Display for Suit {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, EnumIter)]
 pub enum Rank {
     Two,
     Three,

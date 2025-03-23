@@ -46,6 +46,63 @@ impl Display for Blind {
 }
 
 impl Blind {
+    pub fn valid_boss_blinds(ante: usize) -> Vec<Self> {
+        if ante % 8 == 0 {
+            return vec![
+                Self::Acorn,
+                Self::Leaf,
+                Self::Vessel,
+                Self::Heart,
+                Self::Bell,
+            ];
+        }
+
+        let mut blinds: Vec<Self> = vec![];
+        if ante >= 1 {
+            blinds.append(&mut vec![
+                Self::Hook,
+                Self::Club,
+                Self::Psychic,
+                Self::Goad,
+                Self::Window,
+                Self::Manacle,
+                Self::Pillar,
+                Self::Head,
+            ]);
+
+            if ante >= 2 {
+                blinds.append(&mut vec![
+                    Self::House,
+                    Self::Wheel,
+                    Self::Arm,
+                    Self::Fish,
+                    Self::Water,
+                    Self::Mouth,
+                    Self::Needle,
+                    Self::Flint,
+                    Self::Mark,
+                ]);
+
+                if ante >= 3 {
+                    blinds.append(&mut vec![Self::Eye, Self::Tooth]);
+
+                    if ante >= 4 {
+                        blinds.push(Self::Plant);
+
+                        if ante >= 5 {
+                            blinds.push(Self::Serpent);
+
+                            if ante >= 6 {
+                                blinds.push(Self::Ox);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        blinds
+    }
+
     pub fn chips_required(&self, base: usize) -> usize {
         match self {
             Self::Small | Self::Needle => base,
