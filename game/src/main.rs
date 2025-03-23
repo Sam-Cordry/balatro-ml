@@ -1,5 +1,4 @@
-mod model;
-mod traits;
+mod game;
 
 fn main() {
     println!("Hello, world!");
