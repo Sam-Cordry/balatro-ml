@@ -6,22 +6,21 @@ use rand::{
 use std::fmt::Display;
 use strum::EnumIter;
 
-use crate::{
-    model::{
-        cards::Card,
-        scoring::{Score, Scoring},
-    },
+use crate::model::{
+    cards::Card,
+    scoring::{Score, Scoring},
     traits::Consumable,
 };
 
-pub mod blinds;
-pub mod cards;
-pub mod jokers;
-pub mod planets;
-pub mod scoring;
-pub mod spectrals;
-pub mod tags;
-pub mod tarots;
+mod blinds;
+mod cards;
+mod jokers;
+mod planets;
+mod scoring;
+mod spectrals;
+mod tags;
+mod tarots;
+mod traits;
 
 pub struct State {
     pub scoring: Scoring,

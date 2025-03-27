@@ -1,11 +1,9 @@
 use std::fmt::Display;
 
-use crate::{
-    model::{
-        cards::{Card, Enhancement, Suit},
-        State,
-    },
+use crate::model::{
+    cards::{Card, Enhancement, Suit},
     traits::Consumable,
+    State,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]

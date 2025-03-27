@@ -201,7 +201,8 @@ impl Score {
                 self.chips += modification.chips as usize;
                 self.mult += modification.mult as f64;
                 self.mult *= modification.xmult;
-            } else if -modification.chips < self.chips.try_into().unwrap() {
+            } else if -modification.chips < <usize as TryInto<isize>>::try_into(self.chips).unwrap()
+            {
                 todo!("implement")
             }
         }

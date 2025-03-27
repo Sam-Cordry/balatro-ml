@@ -1,9 +1,6 @@
 use std::fmt::Display;
 
-use crate::{
-    model::{HandType, State},
-    traits::Consumable,
-};
+use crate::model::{Consumable, HandType, State};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum Planet {

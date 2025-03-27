@@ -1,7 +1,6 @@
 use actix_web::{App, HttpServer};
 
 mod api;
-mod game;
 mod model;
 
 #[actix_web::main]
