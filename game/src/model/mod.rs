@@ -14,6 +14,7 @@ use crate::model::{
 
 mod blinds;
 mod cards;
+mod db;
 mod jokers;
 mod planets;
 mod scoring;
@@ -46,10 +47,12 @@ pub struct State {
     pub poker_hands_played: Vec<HandType>,
     pub tarots_used: usize,
     pub unique_planets_used: usize,
+    pub redeemed_vouchers: Vec<Voucher>,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
-pub enum Edition {
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, sqlx::Type)]
+#[sqlx(type_name = "joker_edition", rename_all = "lowercase")]
+pub enum JokerEdition {
     Base,
     Foil,
     Holographic,
@@ -57,7 +60,7 @@ pub enum Edition {
     Negative,
 }
 
-impl Display for Edition {
+impl Display for JokerEdition {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::Base => write!(f, "base"),
@@ -69,7 +72,7 @@ impl Display for Edition {
     }
 }
 
-impl Edition {
+impl JokerEdition {
     pub fn on_scored(&self) -> ScoreModification {
         todo!("implement")
     }

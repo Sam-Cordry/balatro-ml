@@ -1,7 +1,7 @@
 use std::fmt::Display;
 use strum::{EnumIter, IntoEnumIterator};
 
-use crate::model::{jokers::Joker, Edition, ScoreModification};
+use crate::model::{jokers::Joker, ScoreModification};
 
 pub fn get_standard_deck() -> Vec<Card> {
     let mut deck: Vec<Card> = vec![];
@@ -22,7 +22,7 @@ pub fn get_standard_deck() -> Vec<Card> {
 pub struct Card {
     pub suit: Suit,
     pub rank: Rank,
-    pub edition: Edition,
+    pub edition: CardEdition,
     pub enhancement: Option<Enhancement>,
     pub seal: Option<Seal>,
     pub chips: usize,
@@ -52,7 +52,7 @@ impl Default for Card {
         Self {
             suit: Suit::Spade,
             rank: Rank::Ace,
-            edition: Edition::Base,
+            edition: CardEdition::Base,
             enhancement: None,
             seal: None,
             chips: 11,
@@ -104,7 +104,34 @@ impl Card {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, EnumIter)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, sqlx::Type)]
+#[sqlx(type_name = "card_edition", rename_all = "lowercase")]
+pub enum CardEdition {
+    Base,
+    Foil,
+    Holographic,
+    Polychrome,
+}
+
+impl Display for CardEdition {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Base => write!(f, "base"),
+            Self::Foil => write!(f, "foil"),
+            Self::Holographic => write!(f, "holographic"),
+            Self::Polychrome => write!(f, "polychrome"),
+        }
+    }
+}
+
+impl CardEdition {
+    pub fn on_scored(&self) -> ScoreModification {
+        todo!("implement")
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, EnumIter, sqlx::Type)]
+#[sqlx(type_name = "card_suit", rename_all = "lowercase")]
 pub enum Suit {
     Spade,
     Heart,
@@ -123,7 +150,8 @@ impl Display for Suit {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, EnumIter)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, EnumIter, sqlx::Type)]
+#[sqlx(type_name = "card_rank", rename_all = "lowercase")]
 pub enum Rank {
     Two,
     Three,
@@ -195,7 +223,8 @@ impl Rank {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, sqlx::Type)]
+#[sqlx(type_name = "card_enhancement", rename_all = "lowercase")]
 pub enum Enhancement {
     Bonus,
     Mult,
@@ -228,7 +257,8 @@ impl Enhancement {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, sqlx::Type)]
+#[sqlx(type_name = "card_seal", rename_all = "lowercase")]
 pub enum Seal {
     Red,
     Purple,
