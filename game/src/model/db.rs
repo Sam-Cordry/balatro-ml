@@ -335,6 +335,9 @@ pub struct CardRow {
     enhancement: Option<Enhancement>,
     edition: CardEdition,
     seal: Option<Seal>,
+    in_deck: bool,
+    in_hand: bool,
+    index: i32,
 }
 
 #[derive(Debug, sqlx::FromRow)]
