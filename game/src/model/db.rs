@@ -5,7 +5,9 @@ use crate::model::{
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, sqlx::Type, Serialize, Deserialize)]
+use super::{planets::Planet, spectrals::Spectral, tarots::Tarot, traits};
+
+#[derive(Debug, sqlx::Type, Serialize, Deserialize, PartialEq, Eq)]
 #[sqlx(type_name = "consumable")]
 pub enum Consumable {
     #[sqlx(rename = "The Fool")]
@@ -328,37 +330,99 @@ pub enum JokerType {
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct CardRow {
-    session: i32,
-    rank: Rank,
-    suit: Suit,
-    chips: i32,
-    enhancement: Option<Enhancement>,
-    edition: CardEdition,
-    seal: Option<Seal>,
-    in_deck: bool,
-    in_hand: bool,
-    index: i32,
+    pub session: i32,
+    pub rank: Rank,
+    pub suit: Suit,
+    pub chips: i32,
+    pub enhancement: Option<Enhancement>,
+    pub edition: CardEdition,
+    pub seal: Option<Seal>,
+    pub in_deck: bool,
+    pub in_hand: bool,
+    pub index: i32,
 }
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct ConsumableRow {
-    session: i32,
-    consumable: Consumable,
-    negative: bool,
+    pub session: i32,
+    pub consumable: Consumable,
+    pub negative: bool,
+}
+
+impl Into<Box<dyn traits::Consumable>> for ConsumableRow {
+    fn into(self) -> Box<dyn traits::Consumable> {
+        match self.consumable {
+            Consumable::Fool => Box::new(Tarot::Fool(self.negative)),
+            Consumable::Magician => Box::new(Tarot::Magician(self.negative)),
+            Consumable::Priestess => Box::new(Tarot::Priestess(self.negative)),
+            Consumable::Empress => Box::new(Tarot::Empress(self.negative)),
+            Consumable::Emperor => Box::new(Tarot::Emperor(self.negative)),
+            Consumable::Hierophant => Box::new(Tarot::Hierophant(self.negative)),
+            Consumable::Lovers => Box::new(Tarot::Lovers(self.negative)),
+            Consumable::Chariot => Box::new(Tarot::Chariot(self.negative)),
+            Consumable::Justice => Box::new(Tarot::Justice(self.negative)),
+            Consumable::Hermit => Box::new(Tarot::Hermit(self.negative)),
+            Consumable::Wheel => Box::new(Tarot::Wheel(self.negative)),
+            Consumable::Strength => Box::new(Tarot::Strength(self.negative)),
+            Consumable::Hanged => Box::new(Tarot::Hanged(self.negative)),
+            Consumable::Death => Box::new(Tarot::Death(self.negative)),
+            Consumable::Temperance => Box::new(Tarot::Temperance(self.negative)),
+            Consumable::Devil => Box::new(Tarot::Devil(self.negative)),
+            Consumable::Tower => Box::new(Tarot::Tower(self.negative)),
+            Consumable::Star => Box::new(Tarot::Star(self.negative)),
+            Consumable::Moon => Box::new(Tarot::Moon(self.negative)),
+            Consumable::Sun => Box::new(Tarot::Sun(self.negative)),
+            Consumable::Judgement => Box::new(Tarot::Judgement(self.negative)),
+            Consumable::World => Box::new(Tarot::World(self.negative)),
+            Consumable::Pluto => Box::new(Planet::Pluto(self.negative)),
+            Consumable::Mercury => Box::new(Planet::Mercury(self.negative)),
+            Consumable::Uranus => Box::new(Planet::Uranus(self.negative)),
+            Consumable::Venus => Box::new(Planet::Venus(self.negative)),
+            Consumable::Saturn => Box::new(Planet::Saturn(self.negative)),
+            Consumable::Jupiter => Box::new(Planet::Jupiter(self.negative)),
+            Consumable::Earth => Box::new(Planet::Earth(self.negative)),
+            Consumable::Mars => Box::new(Planet::Mars(self.negative)),
+            Consumable::Neptune => Box::new(Planet::Neptune(self.negative)),
+            Consumable::PlanetX => Box::new(Planet::PlanetX(self.negative)),
+            Consumable::Ceres => Box::new(Planet::Ceres(self.negative)),
+            Consumable::Eris => Box::new(Planet::Eris(self.negative)),
+            Consumable::Familiar => Box::new(Spectral::Familiar(self.negative)),
+            Consumable::Grim => Box::new(Spectral::Grim(self.negative)),
+            Consumable::Incantation => Box::new(Spectral::Incantation(self.negative)),
+            Consumable::Talisman => Box::new(Spectral::Talisman(self.negative)),
+            Consumable::Aura => Box::new(Spectral::Aura(self.negative)),
+            Consumable::Wraith => Box::new(Spectral::Wraith(self.negative)),
+            Consumable::Sigil => Box::new(Spectral::Sigil(self.negative)),
+            Consumable::Ouija => Box::new(Spectral::Ouija(self.negative)),
+            Consumable::Ectoplasm => Box::new(Spectral::Ectoplasm(self.negative)),
+            Consumable::Immolate => Box::new(Spectral::Immolate(self.negative)),
+            Consumable::Ankh => Box::new(Spectral::Ankh(self.negative)),
+            Consumable::DejaVu => Box::new(Spectral::DejaVu(self.negative)),
+            Consumable::Hex => Box::new(Spectral::Hex(self.negative)),
+            Consumable::Trance => Box::new(Spectral::Trance(self.negative)),
+            Consumable::Medium => Box::new(Spectral::Medium(self.negative)),
+            Consumable::Cryptid => Box::new(Spectral::Cryptid(self.negative)),
+            Consumable::Soul => Box::new(Spectral::Soul(self.negative)),
+            Consumable::BlackHole => Box::new(Spectral::BlackHole(self.negative)),
+        }
+    }
 }
 
 #[derive(Debug, sqlx::FromRow)]
 pub struct JokerRow {
-    session: i32,
-    joker: JokerType,
-    edition: JokerEdition,
-    index: i32,
-    mult: Option<i32>,
-    xmult: Option<f32>,
-    chips: Option<i32>,
-    rank: Option<Rank>,
-    suit: Option<Suit>,
-    money: Option<i32>,
+    pub session: i32,
+    pub joker: JokerType,
+    pub edition: JokerEdition,
+    pub index: i32,
+    pub mult: Option<i32>,
+    pub xmult: Option<f32>,
+    pub chips: Option<i32>,
+    pub rank: Option<Rank>,
+    pub suit: Option<Suit>,
+    pub money: Option<i32>,
+    pub sell_value: i32,
+    pub hands: Option<i32>,
+    pub hand_type: Option<i32>,
 }
 
 #[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]
@@ -440,4 +504,10 @@ pub struct SessionRow {
     pub retcon_redeemed: bool,
     pub paint_brush_redeemed: bool,
     pub palette_redeemed: bool,
+    pub seed: i64,
+    pub consumable_slots: i32,
+    pub joker_slots: i32,
+    pub hands_remaining: i32,
+    pub discards_remaining: i32,
+    pub tarots_used: i32,
 }
