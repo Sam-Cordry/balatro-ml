@@ -12,6 +12,7 @@ CREATE TABLE public.jokers (
     sell_value int4 NOT NULL,
     hands int4 NULL,
     "hand_type" public."hand_type" NULL,
+    hand_size int4 NULL,
     CONSTRAINT jokers_sessions_fk FOREIGN KEY (
         "session"
     ) REFERENCES public.sessions ("session") ON DELETE CASCADE ON UPDATE CASCADE

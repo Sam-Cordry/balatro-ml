@@ -3,7 +3,7 @@ use crate::model::{
     planets::Planet,
     spectrals::Spectral,
     tarots::Tarot,
-    traits, JokerEdition,
+    traits, HandType, JokerEdition,
 };
 
 use serde::{Deserialize, Serialize};
@@ -424,6 +424,7 @@ pub struct JokerRow {
     pub sell_value: i32,
     pub hands: Option<i32>,
     pub hand_type: Option<HandType>,
+    pub hand_size: Option<i32>,
 }
 
 #[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]
