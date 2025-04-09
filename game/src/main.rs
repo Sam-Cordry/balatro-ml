@@ -4,6 +4,7 @@ use dotenvy::dotenv;
 mod api;
 mod app;
 mod model;
+mod util;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
