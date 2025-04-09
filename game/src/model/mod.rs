@@ -1,16 +1,13 @@
 use jokers::Joker;
+use planets::Planet;
 use rand::{
     distr::{Distribution, StandardUniform},
     Rng,
 };
-use std::fmt::Display;
+use std::{collections::HashSet, fmt::Display};
 use strum::EnumIter;
 
-use crate::model::{
-    cards::Card,
-    scoring::{Score, Scoring},
-    traits::Consumable,
-};
+use crate::model::{cards::Card, scoring::Scoring, traits::Consumable};
 
 pub mod blinds;
 pub mod cards;
@@ -24,9 +21,9 @@ pub mod tarots;
 pub mod traits;
 
 pub struct State {
+    pub seed: usize,
     pub scoring: Scoring,
-    pub last_tarot_planet_used: Box<dyn Consumable>,
-    pub selected_cards: Vec<Card>,
+    pub last_tarot_planet_used: Option<db::Consumable>,
     pub consumables: Vec<Box<dyn Consumable>>,
     pub consumable_slots: usize,
     pub money: usize,
@@ -34,19 +31,14 @@ pub struct State {
     pub hand_size: usize,
     pub deck: Vec<Card>,
     pub remaining_deck: Vec<Card>,
-    pub current_score: Score,
-    pub hand_type_played: HandType,
-    pub played_hand: Vec<Card>,
-    pub scoring_cards: Vec<Card>,
     pub jokers: Vec<Joker>,
     pub joker_slots: usize,
     pub hands: usize,
     pub hands_remaining: usize,
     pub discards: usize,
     pub discards_remaining: usize,
-    pub poker_hands_played: Vec<HandType>,
     pub tarots_used: usize,
-    pub unique_planets_used: usize,
+    pub planets_used: HashSet<Planet>,
     pub redeemed_vouchers: Vec<Voucher>,
 }
 
@@ -78,19 +70,29 @@ impl JokerEdition {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, EnumIter)]
+#[derive(Debug, PartialEq, Eq, Hash, EnumIter, sqlx::Type)]
+#[sqlx(type_name = "hand_type", rename_all = "lowercase")]
 pub enum HandType {
+    #[sqlx(rename = "high card")]
     High,
     Pair,
+    #[sqlx(rename = "two pair")]
     TwoPair,
+    #[sqlx(rename = "three of a kind")]
     ThreeOfAKind,
     Straight,
     Flush,
+    #[sqlx(rename = "full house")]
     FullHouse,
+    #[sqlx(rename = "four of a kind")]
     FourOfAKind,
+    #[sqlx(rename = "straight flush")]
     StraightFlush,
+    #[sqlx(rename = "five of a kind")]
     FiveOfAKind,
+    #[sqlx(rename = "flush house")]
     FlushHouse,
+    #[sqlx(rename = "flush five")]
     FlushFive,
 }
 
