@@ -1,9 +1,10 @@
 use std::fmt::Display;
 use strum::IntoEnumIterator;
 
-use crate::model::{cards::Seal, Consumable, HandType, State};
-
-use super::cards::Card;
+use crate::model::{
+    cards::{Card, Seal},
+    Consumable, HandType, State,
+};
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Spectral {

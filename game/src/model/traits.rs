@@ -1,4 +1,4 @@
-use super::{cards::Card, State};
+use crate::model::{cards::Card, State};
 
 pub trait Consumable {
     fn can_use(&self, state: &State, selected_cards: &mut [Card]) -> bool;

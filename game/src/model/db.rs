@@ -1,11 +1,12 @@
 use crate::model::{
     cards::{CardEdition, Enhancement, Rank, Seal, Suit},
-    JokerEdition,
+    planets::Planet,
+    spectrals::Spectral,
+    tarots::Tarot,
+    traits, JokerEdition,
 };
 
 use serde::{Deserialize, Serialize};
-
-use super::{planets::Planet, spectrals::Spectral, tarots::Tarot, traits};
 
 #[derive(Debug, sqlx::Type, Serialize, Deserialize, PartialEq, Eq)]
 #[sqlx(type_name = "consumable")]

@@ -1,9 +1,7 @@
 use std::fmt::Display;
 use strum::{EnumIter, IntoEnumIterator};
 
-use crate::model::{jokers::Joker, ScoreModification};
-
-use super::db::CardRow;
+use crate::model::{db::CardRow, jokers::Joker, ScoreModification};
 
 pub fn get_standard_deck() -> Vec<Card> {
     let mut deck: Vec<Card> = vec![];

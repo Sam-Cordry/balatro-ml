@@ -1,6 +1,6 @@
 use std::fmt::Display;
 
-use super::State;
+use crate::model::State;
 
 #[derive(Debug)]
 pub enum Tag {
