@@ -115,73 +115,81 @@ impl Default for Scoring {
 }
 
 impl Scoring {
-    pub fn level_hand(&mut self, hand_type: HandType, increasing: bool) {
-        let direction: isize = if increasing { 1 } else { -1 };
+    pub fn level_hand(&mut self, hand_type: &HandType, levels: i32) {
         self.hand_scoring
             .get_mut(&hand_type)
             .unwrap()
             .apply(match hand_type {
                 HandType::High => ScoreModification {
-                    chips: 10 * direction,
-                    mult: 1 * direction,
+                    chips: 10 * levels as isize,
+                    mult: 1 * levels as isize,
                     ..Default::default()
                 },
                 HandType::Pair => ScoreModification {
-                    chips: 15 * direction,
-                    mult: 1 * direction,
+                    chips: 15 * levels as isize,
+                    mult: 1 * levels as isize,
                     ..Default::default()
                 },
                 HandType::TwoPair => ScoreModification {
-                    chips: 20 * direction,
-                    mult: 1 * direction,
+                    chips: 20 * levels as isize,
+                    mult: 1 * levels as isize,
                     ..Default::default()
                 },
                 HandType::ThreeOfAKind => ScoreModification {
-                    chips: 20 * direction,
-                    mult: 2 * direction,
+                    chips: 20 * levels as isize,
+                    mult: 2 * levels as isize,
                     ..Default::default()
                 },
                 HandType::Straight => ScoreModification {
-                    chips: 30 * direction,
-                    mult: 3 * direction,
+                    chips: 30 * levels as isize,
+                    mult: 3 * levels as isize,
                     ..Default::default()
                 },
                 HandType::Flush => ScoreModification {
-                    chips: 15 * direction,
-                    mult: 2 * direction,
+                    chips: 15 * levels as isize,
+                    mult: 2 * levels as isize,
                     ..Default::default()
                 },
                 HandType::FullHouse => ScoreModification {
-                    chips: 25 * direction,
-                    mult: 2 * direction,
+                    chips: 25 * levels as isize,
+                    mult: 2 * levels as isize,
                     ..Default::default()
                 },
                 HandType::FourOfAKind => ScoreModification {
-                    chips: 30 * direction,
-                    mult: 3 * direction,
+                    chips: 30 * levels as isize,
+                    mult: 3 * levels as isize,
                     ..Default::default()
                 },
                 HandType::StraightFlush => ScoreModification {
-                    chips: 40 * direction,
-                    mult: 4 * direction,
+                    chips: 40 * levels as isize,
+                    mult: 4 * levels as isize,
                     ..Default::default()
                 },
                 HandType::FiveOfAKind => ScoreModification {
-                    chips: 35 * direction,
-                    mult: 3 * direction,
+                    chips: 35 * levels as isize,
+                    mult: 3 * levels as isize,
                     ..Default::default()
                 },
                 HandType::FlushHouse => ScoreModification {
-                    chips: 40 * direction,
-                    mult: 4 * direction,
+                    chips: 40 * levels as isize,
+                    mult: 4 * levels as isize,
                     ..Default::default()
                 },
                 HandType::FlushFive => ScoreModification {
-                    chips: 50 * direction,
-                    mult: 3 * direction,
+                    chips: 50 * levels as isize,
+                    mult: 3 * levels as isize,
                     ..Default::default()
                 },
             });
+    }
+
+    pub fn new(levels: HashMap<HandType, (i32, i32)>) -> Self {
+        let mut new = Self::default();
+        levels.into_iter().for_each(|e| {
+            new.level_hand(&e.0, e.1 .0);
+            new.scoring_times.insert(e.0, e.1 .1 as u32);
+        });
+        new
     }
 }
 

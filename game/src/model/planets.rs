@@ -2,6 +2,8 @@ use std::fmt::Display;
 
 use crate::model::{Consumable, HandType, State};
 
+use super::cards::Card;
+
 #[derive(Debug, PartialEq, Eq)]
 pub enum Planet {
     Pluto(bool),
@@ -38,11 +40,11 @@ impl Display for Planet {
 }
 
 impl Consumable for Planet {
-    fn can_use(&self, state: &State) -> bool {
+    fn can_use(&self, state: &State, selected_cards: &mut [Card]) -> bool {
         true
     }
 
-    fn consume(&self, state: &mut State) {
+    fn consume(&self, state: &mut State, selected_cards: &mut [Card]) {
         let hand_type: HandType = match self {
             Self::Pluto { .. } => HandType::High,
             Self::Mercury { .. } => HandType::Pair,
@@ -57,7 +59,7 @@ impl Consumable for Planet {
             Self::Eris { .. } => HandType::FlushHouse,
             Self::Ceres { .. } => HandType::FlushFive,
         };
-        state.scoring.level_hand(hand_type, true);
+        state.scoring.level_hand(&hand_type, 1);
     }
 
     fn is_negative(&self) -> bool {

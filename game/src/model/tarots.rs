@@ -2,8 +2,7 @@ use std::fmt::Display;
 
 use crate::model::{
     cards::{Card, Enhancement, Suit},
-    traits::Consumable,
-    State,
+    db, Consumable, State,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -62,15 +61,20 @@ impl Display for Tarot {
 }
 
 impl Consumable for Tarot {
-    fn can_use(&self, state: &State) -> bool {
+    fn can_use(&self, state: &State, selected_cards: &mut [Card]) -> bool {
         match self {
             Self::Hermit(_) | Self::Temperance(_) => true,
-            Self::Fool(_) => state.last_tarot_planet_used.name() != "The Fool",
+            Self::Fool(_) => {
+                if let Some(c) = &state.last_tarot_planet_used {
+                    return *c == db::Consumable::Fool;
+                }
+                false
+            }
             Self::Magician(_)
             | Self::Empress(_)
             | Self::Hierophant(_)
             | Self::Strength(_)
-            | Self::Hanged(_) => state.selected_cards.len() == 1 || state.selected_cards.len() == 2,
+            | Self::Hanged(_) => selected_cards.len() == 1 || selected_cards.len() == 2,
             Self::Priestess(negative) | Self::Emperor(negative) => {
                 if *negative {
                     state.consumable_slots > state.consumables.len()
@@ -82,23 +86,21 @@ impl Consumable for Tarot {
             | Self::Chariot(_)
             | Self::Justice(_)
             | Self::Devil(_)
-            | Self::Tower(_) => state.selected_cards.len() == 1,
+            | Self::Tower(_) => selected_cards.len() == 1,
             Self::Wheel(_) => todo!("can be done once jokers are implememted"),
-            Self::Death(_) => state.selected_cards.len() == 2,
+            Self::Death(_) => selected_cards.len() == 2,
             Self::Star(_) | Self::Moon(_) | Self::Sun(_) | Self::World(_) => {
-                state.selected_cards.len() == 1
-                    || state.selected_cards.len() == 2
-                    || state.selected_cards.len() == 3
+                selected_cards.len() == 1 || selected_cards.len() == 2 || selected_cards.len() == 3
             }
             Self::Judgement(_) => todo!("can be done once jokers are implemented"),
         }
     }
 
-    fn consume(&self, state: &mut State) {
+    fn consume(&self, state: &mut State, selected_cards: &mut [Card]) {
         match self {
             Self::Fool(_) => todo!("can implement once random is implemented for consumables"),
             Self::Magician(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.enhancement = Some(Enhancement::Lucky);
                 }
             }
@@ -106,34 +108,34 @@ impl Consumable for Tarot {
                 todo!("can implement once random is implemented for consumables")
             }
             Self::Empress(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.enhancement = Some(Enhancement::Mult);
                 }
             }
             Self::Emperor(_) => todo!("can implement once jokers are implemented"),
             Self::Hierophant(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.enhancement = Some(Enhancement::Bonus);
                 }
             }
             Self::Lovers(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Wild);
+                selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Wild);
             }
             Self::Chariot(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Steel);
+                selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Steel);
             }
             Self::Justice(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Glass);
+                selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Glass);
             }
             Self::Hermit(_) => state.money += state.money.clamp(0, 20),
             Self::Wheel(_) => todo!("can implement once jokers are implemented"),
             Self::Strength(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.increment();
                 }
             }
             Self::Hanged(_) => {
-                for card in state.selected_cards.iter() {
+                for card in selected_cards.iter() {
                     state
                         .hand
                         .remove(state.hand.iter().position(|c| *c == *card).unwrap());
@@ -143,34 +145,34 @@ impl Consumable for Tarot {
                 }
             }
             Self::Death(_) => {
-                let copied: Card = state.selected_cards.get(1).unwrap().clone();
-                state.selected_cards.get_mut(0).unwrap().duplicate(&copied);
+                let copied: Card = selected_cards.get(1).unwrap().clone();
+                selected_cards.get_mut(0).unwrap().duplicate(&copied);
             }
             Self::Temperance(_) => todo!("can implement once jokers are implemented"),
             Self::Devil(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Gold);
+                selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Gold);
             }
             Self::Tower(_) => {
-                state.selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Stone);
+                selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Stone);
             }
             Self::Star(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.suit = Suit::Diamond
                 }
             }
             Self::Moon(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.suit = Suit::Club
                 }
             }
             Self::Sun(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.suit = Suit::Heart;
                 }
             }
             Self::Judgement(_) => todo!("can implement once jokers are implemented"),
             Self::World(_) => {
-                for card in state.selected_cards.iter_mut() {
+                for card in selected_cards.iter_mut() {
                     card.suit = Suit::Spade;
                 }
             }

@@ -1,7 +1,9 @@
 use std::fmt::Display;
 use strum::IntoEnumIterator;
 
-use crate::model::{cards::Seal, Consumable, HandType};
+use crate::model::{cards::Seal, Consumable, HandType, State};
+
+use super::cards::Card;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Spectral {
@@ -51,7 +53,7 @@ impl Display for Spectral {
 }
 
 impl Consumable for Spectral {
-    fn can_use(&self, state: &super::State) -> bool {
+    fn can_use(&self, state: &State, selected_cards: &mut [Card]) -> bool {
         match self {
             Self::Familiar(_)
             | Self::Grim(_)
@@ -63,7 +65,7 @@ impl Consumable for Spectral {
             | Self::DejaVu(_)
             | Self::Trance(_)
             | Self::Medium(_)
-            | Self::Cryptid(_) => state.selected_cards.len() == 1,
+            | Self::Cryptid(_) => selected_cards.len() == 1,
             Self::Aura(_) => !state.hand.is_empty(),
             Self::Wraith(_) | Self::Soul(_) => todo!("can implement once jokers are implemented"),
             Self::Ectoplasm(_) | Self::Ankh(_) | Self::Hex(_) => {
@@ -73,12 +75,12 @@ impl Consumable for Spectral {
         }
     }
 
-    fn consume(&self, state: &mut super::State) {
+    fn consume(&self, state: &mut State, selected_cards: &mut [Card]) {
         match self {
             Self::Familiar(_) => todo!("randomness required"),
             Self::Grim(_) => todo!("randomness required"),
             Self::Incantation(_) => todo!("randomness required"),
-            Self::Talisman(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Gold),
+            Self::Talisman(_) => selected_cards.get_mut(0).unwrap().seal = Some(Seal::Gold),
             Self::Aura(_) => todo!("randomness"),
             Self::Wraith(_) => todo!("randomness"),
             Self::Sigil(_) => todo!("randomness"),
@@ -86,24 +88,20 @@ impl Consumable for Spectral {
             Self::Ectoplasm(_) => todo!("randomness"),
             Self::Immolate(_) => todo!("randomness"),
             Self::Ankh(_) => todo!("randomness"),
-            Self::DejaVu(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Red),
+            Self::DejaVu(_) => selected_cards.get_mut(0).unwrap().seal = Some(Seal::Red),
             Self::Hex(_) => todo!("randomness"),
-            Self::Trance(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Blue),
-            Self::Medium(_) => state.selected_cards.get_mut(0).unwrap().seal = Some(Seal::Purple),
+            Self::Trance(_) => selected_cards.get_mut(0).unwrap().seal = Some(Seal::Blue),
+            Self::Medium(_) => selected_cards.get_mut(0).unwrap().seal = Some(Seal::Purple),
             Self::Cryptid(_) => {
                 for _ in 0..2 {
-                    state
-                        .hand
-                        .push(state.selected_cards.get(0).unwrap().clone());
-                    state
-                        .deck
-                        .push(state.selected_cards.get(0).unwrap().clone())
+                    state.hand.push(selected_cards.get(0).unwrap().clone());
+                    state.deck.push(selected_cards.get(0).unwrap().clone())
                 }
             }
             Self::Soul(_) => todo!("randomness/jokers"),
             Self::BlackHole(_) => {
                 for hand_type in HandType::iter() {
-                    state.scoring.level_hand(hand_type, true);
+                    state.scoring.level_hand(&hand_type, 1);
                 }
             }
         }
