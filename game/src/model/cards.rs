@@ -3,6 +3,8 @@ use strum::{EnumIter, IntoEnumIterator};
 
 use crate::model::{jokers::Joker, ScoreModification};
 
+use super::db::CardRow;
+
 pub fn get_standard_deck() -> Vec<Card> {
     let mut deck: Vec<Card> = vec![];
     for suit in Suit::iter() {
@@ -56,6 +58,19 @@ impl Default for Card {
             enhancement: None,
             seal: None,
             chips: 11,
+        }
+    }
+}
+
+impl From<CardRow> for Card {
+    fn from(value: CardRow) -> Self {
+        Self {
+            suit: value.suit,
+            rank: value.rank,
+            edition: value.edition,
+            enhancement: value.enhancement,
+            seal: value.seal,
+            chips: value.chips as usize,
         }
     }
 }
