@@ -39,7 +39,7 @@ pub struct State {
     pub discards_remaining: usize,
     pub tarots_used: usize,
     pub planets_used: HashSet<Planet>,
-    pub redeemed_vouchers: Vec<Voucher>,
+    pub redeemed_vouchers: HashSet<Voucher>,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, sqlx::Type)]
@@ -137,7 +137,7 @@ impl Distribution<HandType> for StandardUniform {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Hash, EnumIter, PartialEq, Eq)]
 pub enum Voucher {
     Overstock,
     OverstockPlus,

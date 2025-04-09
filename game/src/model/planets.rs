@@ -1,8 +1,9 @@
 use std::fmt::Display;
+use strum::EnumIter;
 
 use crate::model::{cards::Card, Consumable, HandType, State};
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, EnumIter, Hash)]
 pub enum Planet {
     Pluto(bool),
     Mercury(bool),

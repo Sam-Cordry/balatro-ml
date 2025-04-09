@@ -211,7 +211,7 @@ pub enum Joker {
     },
     Cream {
         sell_value: usize,
-        edition: usize,
+        edition: JokerEdition,
         chips: usize,
     },
     DNA {
@@ -304,7 +304,7 @@ pub enum Joker {
     },
     Vagabond {
         sell_value: usize,
-        ediiton: JokerEdition,
+        edition: JokerEdition,
     },
     Baron {
         sell_value: usize,
@@ -753,7 +753,7 @@ impl From<JokerRow> for Joker {
             JokerType::Loyalty => Self::Loyalty {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                hands: value.hands.unwrap() as usize,
+                hands: value.hands.unwrap() as u8,
             },
             JokerType::Ball => Self::Ball {
                 sell_value: value.sell_value as usize,
@@ -770,6 +770,7 @@ impl From<JokerRow> for Joker {
             JokerType::Fist => Self::Fist {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
+                min: None,
             },
             JokerType::Chaos => Self::Chaos {
                 sell_value: value.sell_value as usize,
@@ -830,7 +831,7 @@ impl From<JokerRow> for Joker {
             JokerType::Bus => Self::Bus {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                mult: value.mult.unwrap(),
+                mult: value.mult.unwrap() as usize,
             },
             JokerType::Space => Self::Space {
                 sell_value: value.sell_value as usize,
@@ -851,12 +852,12 @@ impl From<JokerRow> for Joker {
             JokerType::Runner => Self::Runner {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                chips: value.chips.unwrap(),
+                chips: value.chips.unwrap() as usize,
             },
             JokerType::Cream => Self::Cream {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                chips: value.chips.unwrap(),
+                chips: value.chips.unwrap() as usize,
             },
             JokerType::DNA => Self::DNA {
                 sell_value: value.sell_value as usize,
@@ -877,7 +878,7 @@ impl From<JokerRow> for Joker {
             JokerType::Constellation => Self::Constellation {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                xmult: value.xmult.unwrap() as usize,
+                mult: value.xmult.unwrap() as usize,
             },
             JokerType::Hiker => Self::Hiker {
                 sell_value: value.sell_value as usize,
@@ -899,7 +900,7 @@ impl From<JokerRow> for Joker {
             JokerType::List => Self::List {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                hand_type: value.hand_type.unwrap() as usize,
+                hand_type: value.hand_type.unwrap(),
             },
             JokerType::Cavendish => Self::Cavendish {
                 sell_value: value.sell_value as usize,
@@ -979,6 +980,7 @@ impl From<JokerRow> for Joker {
             JokerType::Photograph => Self::Photograph {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
+                used: false,
             },
             JokerType::Gift => Self::Gift {
                 sell_value: value.sell_value as usize,
@@ -987,12 +989,11 @@ impl From<JokerRow> for Joker {
             JokerType::Turtle => Self::Turtle {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                hand_size: value.hand_size.unwrap() as usize,
+                hand_size: value.hand_size.unwrap() as u8,
             },
             JokerType::Erosion => Self::Erosion {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                mult: value.mult.unwrap() as usize,
             },
             JokerType::Parking => Self::Parking {
                 sell_value: value.sell_value as usize,
@@ -1070,7 +1071,7 @@ impl From<JokerRow> for Joker {
             JokerType::Ancient => Self::Ancient {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
-                suit: value.suit.unwrap() as usize,
+                suit: value.suit.unwrap(),
             },
             JokerType::Ramen => Self::Ramen {
                 sell_value: value.sell_value as usize,
@@ -1237,6 +1238,7 @@ impl From<JokerRow> for Joker {
             JokerType::Invisible => Self::Invisible {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
+                rounds: value.rounds.unwrap() as usize,
             },
             JokerType::Brainstorm => Self::Brainstorm {
                 sell_value: value.sell_value as usize,
@@ -1283,6 +1285,7 @@ impl From<JokerRow> for Joker {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
                 xmult: value.xmult.unwrap() as usize,
+                discards: value.discards.unwrap() as usize,
             },
             JokerType::Chicot => Self::Chicot {
                 sell_value: value.sell_value as usize,

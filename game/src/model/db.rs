@@ -329,7 +329,7 @@ pub enum JokerType {
     Perkeo,
 }
 
-#[derive(Debug, sqlx::FromRow)]
+#[derive(Debug, sqlx::FromRow, Clone)]
 pub struct CardRow {
     pub session: i32,
     pub rank: Rank,
@@ -425,6 +425,8 @@ pub struct JokerRow {
     pub hands: Option<i32>,
     pub hand_type: Option<HandType>,
     pub hand_size: Option<i32>,
+    pub rounds: Option<i32>,
+    pub discards: Option<i32>,
 }
 
 #[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]

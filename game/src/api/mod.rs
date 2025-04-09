@@ -49,7 +49,7 @@ pub async fn get_game_state(path: Path<i32>, state: Data<AppState>) -> impl Resp
     };
     let jokers = match sqlx::query_as!(
         JokerRow,
-        r#"SELECT session, joker as "joker: JokerType", edition as "edition: JokerEdition", index, mult, xmult, chips, rank as "rank: Rank", suit as "suit: Suit", money, sell_value, hands, hand_type as "hand_type: HandType" FROM jokers WHERE session = $1"#,
+        r#"SELECT session, joker as "joker: JokerType", edition as "edition: JokerEdition", index, mult, xmult, chips, rank as "rank: Rank", suit as "suit: Suit", money, sell_value, hands, hand_type as "hand_type: HandType", hand_size, rounds, discards FROM jokers WHERE session = $1"#,
         session_id
     ).fetch_all(&state.db).await {
         Ok(data) => data,
