@@ -423,7 +423,7 @@ pub struct JokerRow {
     pub money: Option<i32>,
     pub sell_value: i32,
     pub hands: Option<i32>,
-    pub hand_type: Option<i32>,
+    pub hand_type: Option<HandType>,
 }
 
 #[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]
