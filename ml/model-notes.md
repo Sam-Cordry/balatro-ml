@@ -30,6 +30,7 @@ Disclaimer: this is not the final design right now, it's just a slightly better 
 5 fully connected hidden layers
 lots of sigmoid
 Actor-Critic (Reinforcement Learning)
+Huber Loss function
 
 ==Input Neurons==
 
