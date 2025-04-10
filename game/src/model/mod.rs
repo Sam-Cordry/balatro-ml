@@ -70,7 +70,7 @@ impl JokerEdition {
     }
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, EnumIter, sqlx::Type)]
+#[derive(Debug, PartialEq, Eq, Hash, EnumIter, sqlx::Type, Clone)]
 #[sqlx(type_name = "hand_type", rename_all = "lowercase")]
 pub enum HandType {
     #[sqlx(rename = "high card")]
