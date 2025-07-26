@@ -264,7 +264,7 @@ pub enum Joker {
         index: usize,
         chips: usize,
     },
-    DNA {
+    Dna {
         sell_value: usize,
         edition: JokerEdition,
         index: usize,
@@ -1063,7 +1063,7 @@ impl From<JokerRow> for Joker {
                 index: value.index as usize,
                 chips: value.chips.unwrap() as usize,
             },
-            JokerType::DNA => Self::DNA {
+            JokerType::Dna => Self::Dna {
                 sell_value: value.sell_value as usize,
                 edition: value.edition,
                 index: value.index as usize,
@@ -1653,22 +1653,22 @@ impl Joker {
                     *chips += 15;
                 }
             }
-            Self::DNA { .. } => {
+            Self::Dna { .. } => {
                 if state.hands_remaining == state.hands - 1 && played_cards.len() == 1 {
-                    state.deck.push(played_cards.get(0).unwrap().clone());
-                    state.hand.push(played_cards.get(0).unwrap().clone());
+                    state.deck.push(*played_cards.first().unwrap());
+                    state.hand.push(*played_cards.first().unwrap());
                 }
             }
             // Self::Splash { .. } => {
             //     scoring_cards = played_cards;
             // }
             Self::Sixth { .. } => {
-                if played_cards.len() == 1 && played_cards.get(0).unwrap().rank == Rank::Six {
+                if played_cards.len() == 1 && played_cards.first().unwrap().rank == Rank::Six {
                     state.deck.remove(
                         state
                             .deck
                             .iter()
-                            .position(|c| c == played_cards.get(0).unwrap())
+                            .position(|c| c == played_cards.first().unwrap())
                             .unwrap(),
                     );
                 }
@@ -2560,7 +2560,7 @@ impl Joker {
             Self::Blackboard { .. } => 6,
             Self::Runner { .. } => 5,
             Self::Cream { .. } => 5,
-            Self::DNA { .. } => 8,
+            Self::Dna { .. } => 8,
             Self::Splash { .. } => 3,
             Self::Blue { .. } => 5,
             Self::Sixth { .. } => 6,
@@ -2715,7 +2715,7 @@ impl Joker {
             | Self::Blackboard { sell_value, .. }
             | Self::Runner { sell_value, .. }
             | Self::Cream { sell_value, .. }
-            | Self::DNA { sell_value, .. }
+            | Self::Dna { sell_value, .. }
             | Self::Splash { sell_value, .. }
             | Self::Blue { sell_value, .. }
             | Self::Sixth { sell_value, .. }
@@ -2870,7 +2870,7 @@ impl Joker {
             | Self::Blackboard { sell_value, .. }
             | Self::Runner { sell_value, .. }
             | Self::Cream { sell_value, .. }
-            | Self::DNA { sell_value, .. }
+            | Self::Dna { sell_value, .. }
             | Self::Splash { sell_value, .. }
             | Self::Blue { sell_value, .. }
             | Self::Sixth { sell_value, .. }
@@ -3025,7 +3025,7 @@ impl Joker {
             Self::Blackboard { .. } => "Blackboard",
             Self::Runner { .. } => "Runner",
             Self::Cream { .. } => "Ice Cream",
-            Self::DNA { .. } => "DNA",
+            Self::Dna { .. } => "DNA",
             Self::Splash { .. } => "Splash",
             Self::Blue { .. } => "Blue Joker",
             Self::Sixth { .. } => "Sixth Sense",

@@ -22,18 +22,18 @@ pub enum Planet {
 impl Display for Planet {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::Pluto(negative) => write!(f, "Pluto ({})", negative),
-            Self::Mercury(negative) => write!(f, "Mercury ({})", negative),
-            Self::Uranus(negative) => write!(f, "Uranus ({})", negative),
-            Self::Venus(negative) => write!(f, "Venus ({})", negative),
-            Self::Saturn(negative) => write!(f, "Saturn ({})", negative),
-            Self::Jupiter(negative) => write!(f, "Jupiter ({})", negative),
-            Self::Earth(negative) => write!(f, "Earth ({})", negative),
-            Self::Mars(negative) => write!(f, "Mars ({})", negative),
-            Self::Neptune(negative) => write!(f, "Neptune ({})", negative),
-            Self::PlanetX(negative) => write!(f, "Planet X ({})", negative),
-            Self::Eris(negative) => write!(f, "Eris ({})", negative),
-            Self::Ceres(negative) => write!(f, "Ceres ({})", negative),
+            Self::Pluto(negative) => write!(f, "Pluto ({negative})"),
+            Self::Mercury(negative) => write!(f, "Mercury ({negative})"),
+            Self::Uranus(negative) => write!(f, "Uranus ({negative})"),
+            Self::Venus(negative) => write!(f, "Venus ({negative})"),
+            Self::Saturn(negative) => write!(f, "Saturn ({negative})"),
+            Self::Jupiter(negative) => write!(f, "Jupiter ({negative})"),
+            Self::Earth(negative) => write!(f, "Earth ({negative})"),
+            Self::Mars(negative) => write!(f, "Mars ({negative})"),
+            Self::Neptune(negative) => write!(f, "Neptune ({negative})"),
+            Self::PlanetX(negative) => write!(f, "Planet X ({negative})"),
+            Self::Eris(negative) => write!(f, "Eris ({negative})"),
+            Self::Ceres(negative) => write!(f, "Ceres ({negative})"),
         }
     }
 }

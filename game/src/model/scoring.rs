@@ -117,22 +117,22 @@ impl Default for Scoring {
 impl Scoring {
     pub fn level_hand(&mut self, hand_type: &HandType, levels: i32) {
         self.hand_scoring
-            .get_mut(&hand_type)
+            .get_mut(hand_type)
             .unwrap()
             .apply(match hand_type {
                 HandType::High => ScoreModification {
                     chips: 10 * levels as isize,
-                    mult: 1 * levels as isize,
+                    mult: levels as isize,
                     ..Default::default()
                 },
                 HandType::Pair => ScoreModification {
                     chips: 15 * levels as isize,
-                    mult: 1 * levels as isize,
+                    mult: levels as isize,
                     ..Default::default()
                 },
                 HandType::TwoPair => ScoreModification {
                     chips: 20 * levels as isize,
-                    mult: 1 * levels as isize,
+                    mult: levels as isize,
                     ..Default::default()
                 },
                 HandType::ThreeOfAKind => ScoreModification {

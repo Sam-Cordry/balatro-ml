@@ -95,8 +95,8 @@ impl Consumable for Spectral {
             Self::Medium(_) => selected_cards.get_mut(0).unwrap().seal = Some(Seal::Purple),
             Self::Cryptid(_) => {
                 for _ in 0..2 {
-                    state.hand.push(selected_cards.get(0).unwrap().clone());
-                    state.deck.push(selected_cards.get(0).unwrap().clone())
+                    state.hand.push(*selected_cards.first().unwrap());
+                    state.deck.push(*selected_cards.first().unwrap());
                 }
             }
             Self::Soul(_) => todo!("randomness/jokers"),

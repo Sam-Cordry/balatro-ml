@@ -145,7 +145,7 @@ impl Consumable for Tarot {
                 }
             }
             Self::Death(_) => {
-                let copied: Card = selected_cards.get(1).unwrap().clone();
+                let copied: Card = *selected_cards.get(1).unwrap();
                 selected_cards.get_mut(0).unwrap().duplicate(&copied);
             }
             Self::Temperance(_) => todo!("can implement once jokers are implemented"),
