@@ -79,20 +79,20 @@ impl Consumable for Planet {
     }
 
     fn make_negative(&mut self) {
-        match self {
-            Self::Pluto(mut negative)
-            | Self::Mercury(mut negative)
-            | Self::Venus(mut negative)
-            | Self::Uranus(mut negative)
-            | Self::Saturn(mut negative)
-            | Self::Jupiter(mut negative)
-            | Self::Earth(mut negative)
-            | Self::Mars(mut negative)
-            | Self::Neptune(mut negative)
-            | Self::PlanetX(mut negative)
-            | Self::Eris(mut negative)
-            | Self::Ceres(mut negative) => {
-                negative = true;
+        match *self {
+            Self::Pluto(ref mut negative)
+            | Self::Mercury(ref mut negative)
+            | Self::Venus(ref mut negative)
+            | Self::Uranus(ref mut negative)
+            | Self::Saturn(ref mut negative)
+            | Self::Jupiter(ref mut negative)
+            | Self::Earth(ref mut negative)
+            | Self::Mars(ref mut negative)
+            | Self::Neptune(ref mut negative)
+            | Self::PlanetX(ref mut negative)
+            | Self::Eris(ref mut negative)
+            | Self::Ceres(ref mut negative) => {
+                *negative = true;
             }
         }
     }

@@ -210,29 +210,29 @@ impl Consumable for Tarot {
     }
 
     fn make_negative(&mut self) {
-        match self {
-            Self::Fool(mut negative)
-            | Self::Magician(mut negative)
-            | Self::Priestess(mut negative)
-            | Self::Empress(mut negative)
-            | Self::Emperor(mut negative)
-            | Self::Hierophant(mut negative)
-            | Self::Lovers(mut negative)
-            | Self::Chariot(mut negative)
-            | Self::Justice(mut negative)
-            | Self::Hermit(mut negative)
-            | Self::Wheel(mut negative)
-            | Self::Strength(mut negative)
-            | Self::Hanged(mut negative)
-            | Self::Death(mut negative)
-            | Self::Temperance(mut negative)
-            | Self::Devil(mut negative)
-            | Self::Tower(mut negative)
-            | Self::Star(mut negative)
-            | Self::Moon(mut negative)
-            | Self::Sun(mut negative)
-            | Self::Judgement(mut negative)
-            | Self::World(mut negative) => negative = true,
+        match *self {
+            Self::Fool(ref mut negative)
+            | Self::Magician(ref mut negative)
+            | Self::Priestess(ref mut negative)
+            | Self::Empress(ref mut negative)
+            | Self::Emperor(ref mut negative)
+            | Self::Hierophant(ref mut negative)
+            | Self::Lovers(ref mut negative)
+            | Self::Chariot(ref mut negative)
+            | Self::Justice(ref mut negative)
+            | Self::Hermit(ref mut negative)
+            | Self::Wheel(ref mut negative)
+            | Self::Strength(ref mut negative)
+            | Self::Hanged(ref mut negative)
+            | Self::Death(ref mut negative)
+            | Self::Temperance(ref mut negative)
+            | Self::Devil(ref mut negative)
+            | Self::Tower(ref mut negative)
+            | Self::Star(ref mut negative)
+            | Self::Moon(ref mut negative)
+            | Self::Sun(ref mut negative)
+            | Self::Judgement(ref mut negative)
+            | Self::World(ref mut negative) => *negative = true,
         }
     }
 

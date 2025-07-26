@@ -1,0 +1,94 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT session, consumable as \"consumable: Consumable\", negative FROM consumables WHERE session = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "session",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "consumable: Consumable",
+        "type_info": {
+          "Custom": {
+            "name": "consumable",
+            "kind": {
+              "Enum": [
+                "The Fool",
+                "The Magician",
+                "The High Prestess",
+                "The Empress",
+                "The Emperor",
+                "The Hierophant",
+                "The Lovers",
+                "The Chariot",
+                "Justice",
+                "The Hermit",
+                "The Wheel of Fortune",
+                "Strength",
+                "The Hanged Man",
+                "Death",
+                "Temperance",
+                "The Devil",
+                "The Tower",
+                "The Star",
+                "The Moon",
+                "The Sun",
+                "Judgement",
+                "The World",
+                "Pluto",
+                "Mercury",
+                "Uranus",
+                "Venus",
+                "Saturn",
+                "Jupiter",
+                "Earth",
+                "Mars",
+                "Neptune",
+                "Planet X",
+                "Ceres",
+                "Eris",
+                "Familiar",
+                "Grim",
+                "Incantation",
+                "Talisman",
+                "Aura",
+                "Wraith",
+                "Sigil",
+                "Ouija",
+                "Ectoplasm",
+                "Immolate",
+                "Ankh",
+                "Deja Vu",
+                "Hex",
+                "Trance",
+                "Medium",
+                "Cryptid",
+                "The Soul",
+                "Black Hole"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "negative",
+        "type_info": "Bool"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "1901d8af448760cafd75f316c8f553a2cbb8cacb94ca2e1e27be0d81df0cc7fb"
+}

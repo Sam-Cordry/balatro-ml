@@ -1,0 +1,149 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT session, rank as \"rank: Rank\", suit as \"suit: Suit\", chips, enhancement as \"enhancement: Enhancement\", edition as \"edition: CardEdition\", seal as \"seal: Seal\", in_deck, in_hand, index FROM cards WHERE session = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "session",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "rank: Rank",
+        "type_info": {
+          "Custom": {
+            "name": "card_rank",
+            "kind": {
+              "Enum": [
+                "ace",
+                "two",
+                "three",
+                "four",
+                "five",
+                "six",
+                "seven",
+                "eight",
+                "nine",
+                "ten",
+                "jack",
+                "queen",
+                "king"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "suit: Suit",
+        "type_info": {
+          "Custom": {
+            "name": "card_suit",
+            "kind": {
+              "Enum": [
+                "spade",
+                "heart",
+                "club",
+                "diamond"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "chips",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "enhancement: Enhancement",
+        "type_info": {
+          "Custom": {
+            "name": "card_enhancement",
+            "kind": {
+              "Enum": [
+                "bonus",
+                "mult",
+                "wild",
+                "glass",
+                "steel",
+                "stone",
+                "gold",
+                "lucky"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "edition: CardEdition",
+        "type_info": {
+          "Custom": {
+            "name": "card_edition",
+            "kind": {
+              "Enum": [
+                "base",
+                "foil",
+                "holographic",
+                "polychrome"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "seal: Seal",
+        "type_info": {
+          "Custom": {
+            "name": "card_seal",
+            "kind": {
+              "Enum": [
+                "gold",
+                "red",
+                "blue",
+                "purple"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "in_deck",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 8,
+        "name": "in_hand",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 9,
+        "name": "index",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7ed7049375c1df5e372315962599e0c4f15b60f0c381da1e3ae5c18d187ff6e3"
+}

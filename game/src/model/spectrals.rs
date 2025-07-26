@@ -135,25 +135,25 @@ impl Consumable for Spectral {
     }
 
     fn make_negative(&mut self) {
-        match self {
-            Self::Familiar(mut negative)
-            | Self::Grim(mut negative)
-            | Self::Incantation(mut negative)
-            | Self::Talisman(mut negative)
-            | Self::Aura(mut negative)
-            | Self::Wraith(mut negative)
-            | Self::Sigil(mut negative)
-            | Self::Ouija(mut negative)
-            | Self::Ectoplasm(mut negative)
-            | Self::Immolate(mut negative)
-            | Self::Ankh(mut negative)
-            | Self::DejaVu(mut negative)
-            | Self::Hex(mut negative)
-            | Self::Trance(mut negative)
-            | Self::Medium(mut negative)
-            | Self::Cryptid(mut negative)
-            | Self::Soul(mut negative)
-            | Self::BlackHole(mut negative) => negative = true,
+        match *self {
+            Self::Familiar(ref mut negative)
+            | Self::Grim(ref mut negative)
+            | Self::Incantation(ref mut negative)
+            | Self::Talisman(ref mut negative)
+            | Self::Aura(ref mut negative)
+            | Self::Wraith(ref mut negative)
+            | Self::Sigil(ref mut negative)
+            | Self::Ouija(ref mut negative)
+            | Self::Ectoplasm(ref mut negative)
+            | Self::Immolate(ref mut negative)
+            | Self::Ankh(ref mut negative)
+            | Self::DejaVu(ref mut negative)
+            | Self::Hex(ref mut negative)
+            | Self::Trance(ref mut negative)
+            | Self::Medium(ref mut negative)
+            | Self::Cryptid(ref mut negative)
+            | Self::Soul(ref mut negative)
+            | Self::BlackHole(ref mut negative) => *negative = true,
         }
     }
 

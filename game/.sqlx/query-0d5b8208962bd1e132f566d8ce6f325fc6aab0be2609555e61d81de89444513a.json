@@ -1,0 +1,574 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT session, money, ante, rounds_completed, rounds_skipped, hands, discards, hand_size, last_consumable as \"last_consumable: Consumable\", high_card_level, pair_level, two_pair_level, three_of_a_kind_level, straight_level, flush_level, full_house_level, four_of_a_kind_level, straight_flush_level, five_of_a_kind_level, flush_house_level, flush_five_level, high_card_played, pair_played, two_pair_played, three_of_a_kind_played, straight_played, flush_played, full_house_played, four_of_a_kind_played, straight_flush_played, five_of_a_kind_played, flush_house_played, flush_five_played, pluto_used, mercury_used, uranus_used, venus_used, saturn_used, jupiter_used, earth_used, mars_used, neptune_used, planet_x_used, ceres_used, eris_used, overstock_redeemed, overstock_plus_redeemed, clearance_sale_redeemed, liquidation_redeemed, hone_redeemed, glow_up_redeemed, reroll_surplus_redeemed, reroll_glut_redeemed, crystal_ball_redeemed, omen_globe_redeemed, telescope_redeemed, observatory_redeemed, grabber_redeemed, nacho_tong_redeemed, wasteful_redeemed, recyclomancy_redeemed, tarot_merchant_redeemed, tarot_tycoon_redeemed, planet_merchant_redeemed, planet_tycoon_redeemed, seed_money_redeemed, money_tree_redeemed, blank_redeemed, antimatter_redeemed, magic_trick_redeemed, illusion_redeemed, hieroglyph_redeemed, petroglyph_redeemed, directors_cut_redeemed, retcon_redeemed, paint_brush_redeemed, palette_redeemed, seed, consumable_slots, joker_slots, hands_remaining, discards_remaining, tarots_used FROM sessions WHERE session = $1",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "session",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 1,
+        "name": "money",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "ante",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 3,
+        "name": "rounds_completed",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "rounds_skipped",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 5,
+        "name": "hands",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 6,
+        "name": "discards",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "hand_size",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "last_consumable: Consumable",
+        "type_info": {
+          "Custom": {
+            "name": "consumable",
+            "kind": {
+              "Enum": [
+                "The Fool",
+                "The Magician",
+                "The High Prestess",
+                "The Empress",
+                "The Emperor",
+                "The Hierophant",
+                "The Lovers",
+                "The Chariot",
+                "Justice",
+                "The Hermit",
+                "The Wheel of Fortune",
+                "Strength",
+                "The Hanged Man",
+                "Death",
+                "Temperance",
+                "The Devil",
+                "The Tower",
+                "The Star",
+                "The Moon",
+                "The Sun",
+                "Judgement",
+                "The World",
+                "Pluto",
+                "Mercury",
+                "Uranus",
+                "Venus",
+                "Saturn",
+                "Jupiter",
+                "Earth",
+                "Mars",
+                "Neptune",
+                "Planet X",
+                "Ceres",
+                "Eris",
+                "Familiar",
+                "Grim",
+                "Incantation",
+                "Talisman",
+                "Aura",
+                "Wraith",
+                "Sigil",
+                "Ouija",
+                "Ectoplasm",
+                "Immolate",
+                "Ankh",
+                "Deja Vu",
+                "Hex",
+                "Trance",
+                "Medium",
+                "Cryptid",
+                "The Soul",
+                "Black Hole"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "high_card_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "pair_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 11,
+        "name": "two_pair_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 12,
+        "name": "three_of_a_kind_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 13,
+        "name": "straight_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 14,
+        "name": "flush_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 15,
+        "name": "full_house_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 16,
+        "name": "four_of_a_kind_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 17,
+        "name": "straight_flush_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 18,
+        "name": "five_of_a_kind_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 19,
+        "name": "flush_house_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 20,
+        "name": "flush_five_level",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 21,
+        "name": "high_card_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 22,
+        "name": "pair_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 23,
+        "name": "two_pair_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 24,
+        "name": "three_of_a_kind_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 25,
+        "name": "straight_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 26,
+        "name": "flush_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 27,
+        "name": "full_house_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 28,
+        "name": "four_of_a_kind_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 29,
+        "name": "straight_flush_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 30,
+        "name": "five_of_a_kind_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 31,
+        "name": "flush_house_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 32,
+        "name": "flush_five_played",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 33,
+        "name": "pluto_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 34,
+        "name": "mercury_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 35,
+        "name": "uranus_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 36,
+        "name": "venus_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 37,
+        "name": "saturn_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 38,
+        "name": "jupiter_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 39,
+        "name": "earth_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 40,
+        "name": "mars_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 41,
+        "name": "neptune_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 42,
+        "name": "planet_x_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 43,
+        "name": "ceres_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 44,
+        "name": "eris_used",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 45,
+        "name": "overstock_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 46,
+        "name": "overstock_plus_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 47,
+        "name": "clearance_sale_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 48,
+        "name": "liquidation_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 49,
+        "name": "hone_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 50,
+        "name": "glow_up_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 51,
+        "name": "reroll_surplus_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 52,
+        "name": "reroll_glut_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 53,
+        "name": "crystal_ball_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 54,
+        "name": "omen_globe_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 55,
+        "name": "telescope_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 56,
+        "name": "observatory_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 57,
+        "name": "grabber_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 58,
+        "name": "nacho_tong_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 59,
+        "name": "wasteful_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 60,
+        "name": "recyclomancy_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 61,
+        "name": "tarot_merchant_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 62,
+        "name": "tarot_tycoon_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 63,
+        "name": "planet_merchant_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 64,
+        "name": "planet_tycoon_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 65,
+        "name": "seed_money_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 66,
+        "name": "money_tree_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 67,
+        "name": "blank_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 68,
+        "name": "antimatter_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 69,
+        "name": "magic_trick_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 70,
+        "name": "illusion_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 71,
+        "name": "hieroglyph_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 72,
+        "name": "petroglyph_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 73,
+        "name": "directors_cut_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 74,
+        "name": "retcon_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 75,
+        "name": "paint_brush_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 76,
+        "name": "palette_redeemed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 77,
+        "name": "seed",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 78,
+        "name": "consumable_slots",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 79,
+        "name": "joker_slots",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 80,
+        "name": "hands_remaining",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 81,
+        "name": "discards_remaining",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 82,
+        "name": "tarots_used",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "0d5b8208962bd1e132f566d8ce6f325fc6aab0be2609555e61d81de89444513a"
+}
