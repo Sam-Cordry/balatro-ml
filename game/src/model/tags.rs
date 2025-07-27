@@ -1,8 +1,10 @@
+use serde::{Deserialize, Serialize};
 use std::fmt::Display;
 
 use crate::model::State;
 
-#[derive(Debug)]
+#[derive(Debug, sqlx::Type, Serialize, Deserialize)]
+#[sqlx(type_name = "tag")]
 pub enum Tag {
     Uncommon,
     Rare,
@@ -24,6 +26,7 @@ pub enum Tag {
     Double,
     Juggle,
     D6,
+    #[sqlx(rename = "Top-up")]
     TopUp,
     Speed,
     Orbital,
