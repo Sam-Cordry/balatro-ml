@@ -1,8 +1,13 @@
+use rand::{
+    distr::{Distribution, StandardUniform},
+    Rng,
+};
 use std::fmt::Display;
 
 use crate::model::{
     cards::{Card, Enhancement, Suit},
-    db, Consumable, State,
+    db::ConsumableType,
+    Consumable, State,
 };
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
@@ -66,7 +71,7 @@ impl Consumable for Tarot {
             Self::Hermit(_) | Self::Temperance(_) => true,
             Self::Fool(_) => {
                 if let Some(c) = &state.last_tarot_planet_used {
-                    return *c == db::Consumable::Fool;
+                    return *c == ConsumableType::Fool;
                 }
                 false
             }
@@ -260,6 +265,35 @@ impl Consumable for Tarot {
             Self::Sun(_) => "The Sun",
             Self::Judgement(_) => "Judgement",
             Self::World(_) => "The World",
+        }
+    }
+}
+
+impl Tarot {
+    pub fn sample<R: rand::Rng + ?Sized>(rng: &mut R) -> Self {
+        match rng.random_range(0..22) {
+            0 => Self::Fool(false),
+            1 => Self::Magician(false),
+            2 => Self::Priestess(false),
+            3 => Self::Empress(false),
+            4 => Self::Emperor(false),
+            5 => Self::Hierophant(false),
+            6 => Self::Lovers(false),
+            7 => Self::Chariot(false),
+            8 => Self::Justice(false),
+            9 => Self::Hermit(false),
+            10 => Self::Wheel(false),
+            11 => Self::Strength(false),
+            12 => Self::Hanged(false),
+            13 => Self::Death(false),
+            14 => Self::Temperance(false),
+            15 => Self::Devil(false),
+            16 => Self::Tower(false),
+            17 => Self::Star(false),
+            18 => Self::Moon(false),
+            19 => Self::Sun(false),
+            20 => Self::Judgement(false),
+            _ => Self::World(false),
         }
     }
 }

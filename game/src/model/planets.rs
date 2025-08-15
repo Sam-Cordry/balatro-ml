@@ -1,3 +1,4 @@
+use rand::distr::{Distribution, StandardUniform};
 use std::fmt::Display;
 use strum::EnumIter;
 
@@ -39,11 +40,11 @@ impl Display for Planet {
 }
 
 impl Consumable for Planet {
-    fn can_use(&self, state: &State, selected_cards: &mut [Card]) -> bool {
+    fn can_use(&self, _state: &State, _selected_cards: &mut [Card]) -> bool {
         true
     }
 
-    fn consume(&self, state: &mut State, selected_cards: &mut [Card]) {
+    fn consume(&self, state: &mut State, _selected_cards: &mut [Card]) {
         let hand_type: HandType = match self {
             Self::Pluto { .. } => HandType::High,
             Self::Mercury { .. } => HandType::Pair,
@@ -111,6 +112,25 @@ impl Consumable for Planet {
             Self::PlanetX(_) => "Planet X",
             Self::Eris(_) => "Eris",
             Self::Ceres(_) => "Ceres",
+        }
+    }
+}
+
+impl Planet {
+    pub fn sample<R: rand::Rng + ?Sized>(rng: &mut R) -> Self {
+        match rng.random_range(0..12) {
+            0 => Self::Pluto(false),
+            1 => Self::Mercury(false),
+            2 => Self::Uranus(false),
+            3 => Self::Venus(false),
+            4 => Self::Saturn(false),
+            5 => Self::Jupiter(false),
+            6 => Self::Earth(false),
+            7 => Self::Mars(false),
+            8 => Self::Neptune(false),
+            9 => Self::PlanetX(false),
+            10 => Self::Eris(false),
+            _ => Self::Ceres(false),
         }
     }
 }

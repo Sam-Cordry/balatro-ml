@@ -1,3 +1,4 @@
+use rand::distr::{Distribution, StandardUniform};
 use std::fmt::Display;
 use strum::IntoEnumIterator;
 
@@ -177,6 +178,29 @@ impl Consumable for Spectral {
             Self::Cryptid(_) => "Cryptid",
             Self::Soul(_) => "The Soul",
             Self::BlackHole(_) => "Black Hole",
+        }
+    }
+}
+
+impl Spectral {
+    pub fn sample<R: rand::Rng + ?Sized>(rng: &mut R) -> Self {
+        match rng.random_range(0..16) {
+            0 => Self::Familiar(false),
+            1 => Self::Grim(false),
+            2 => Self::Incantation(false),
+            3 => Self::Talisman(false),
+            4 => Self::Aura(false),
+            5 => Self::Wraith(false),
+            6 => Self::Sigil(false),
+            7 => Self::Ouija(false),
+            8 => Self::Ectoplasm(false),
+            9 => Self::Immolate(false),
+            10 => Self::Ankh(false),
+            11 => Self::DejaVu(false),
+            12 => Self::Hex(false),
+            13 => Self::Trance(false),
+            14 => Self::Medium(false),
+            _ => Self::Cryptid(false),
         }
     }
 }

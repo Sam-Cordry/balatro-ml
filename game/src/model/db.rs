@@ -1,3 +1,6 @@
+use serde::{Deserialize, Serialize};
+use sqlx_pg_uint::PgU64;
+
 use crate::model::{
     cards::{CardEdition, Enhancement, Rank, Seal, Suit},
     planets::Planet,
@@ -6,11 +9,9 @@ use crate::model::{
     traits, HandType, JokerEdition,
 };
 
-use serde::{Deserialize, Serialize};
-
 #[derive(Debug, sqlx::Type, Serialize, Deserialize, PartialEq, Eq)]
 #[sqlx(type_name = "consumable")]
-pub enum Consumable {
+pub enum ConsumableType {
     #[sqlx(rename = "The Fool")]
     Fool,
     #[sqlx(rename = "The Magician")]
@@ -347,65 +348,65 @@ pub struct CardRow {
 #[derive(Debug, sqlx::FromRow)]
 pub struct ConsumableRow {
     pub session: i32,
-    pub consumable: Consumable,
+    pub consumable: ConsumableType,
     pub negative: bool,
 }
 
 impl From<ConsumableRow> for Box<dyn traits::Consumable> {
     fn from(val: ConsumableRow) -> Self {
         match val.consumable {
-            Consumable::Fool => Box::new(Tarot::Fool(val.negative)),
-            Consumable::Magician => Box::new(Tarot::Magician(val.negative)),
-            Consumable::Priestess => Box::new(Tarot::Priestess(val.negative)),
-            Consumable::Empress => Box::new(Tarot::Empress(val.negative)),
-            Consumable::Emperor => Box::new(Tarot::Emperor(val.negative)),
-            Consumable::Hierophant => Box::new(Tarot::Hierophant(val.negative)),
-            Consumable::Lovers => Box::new(Tarot::Lovers(val.negative)),
-            Consumable::Chariot => Box::new(Tarot::Chariot(val.negative)),
-            Consumable::Justice => Box::new(Tarot::Justice(val.negative)),
-            Consumable::Hermit => Box::new(Tarot::Hermit(val.negative)),
-            Consumable::Wheel => Box::new(Tarot::Wheel(val.negative)),
-            Consumable::Strength => Box::new(Tarot::Strength(val.negative)),
-            Consumable::Hanged => Box::new(Tarot::Hanged(val.negative)),
-            Consumable::Death => Box::new(Tarot::Death(val.negative)),
-            Consumable::Temperance => Box::new(Tarot::Temperance(val.negative)),
-            Consumable::Devil => Box::new(Tarot::Devil(val.negative)),
-            Consumable::Tower => Box::new(Tarot::Tower(val.negative)),
-            Consumable::Star => Box::new(Tarot::Star(val.negative)),
-            Consumable::Moon => Box::new(Tarot::Moon(val.negative)),
-            Consumable::Sun => Box::new(Tarot::Sun(val.negative)),
-            Consumable::Judgement => Box::new(Tarot::Judgement(val.negative)),
-            Consumable::World => Box::new(Tarot::World(val.negative)),
-            Consumable::Pluto => Box::new(Planet::Pluto(val.negative)),
-            Consumable::Mercury => Box::new(Planet::Mercury(val.negative)),
-            Consumable::Uranus => Box::new(Planet::Uranus(val.negative)),
-            Consumable::Venus => Box::new(Planet::Venus(val.negative)),
-            Consumable::Saturn => Box::new(Planet::Saturn(val.negative)),
-            Consumable::Jupiter => Box::new(Planet::Jupiter(val.negative)),
-            Consumable::Earth => Box::new(Planet::Earth(val.negative)),
-            Consumable::Mars => Box::new(Planet::Mars(val.negative)),
-            Consumable::Neptune => Box::new(Planet::Neptune(val.negative)),
-            Consumable::PlanetX => Box::new(Planet::PlanetX(val.negative)),
-            Consumable::Ceres => Box::new(Planet::Ceres(val.negative)),
-            Consumable::Eris => Box::new(Planet::Eris(val.negative)),
-            Consumable::Familiar => Box::new(Spectral::Familiar(val.negative)),
-            Consumable::Grim => Box::new(Spectral::Grim(val.negative)),
-            Consumable::Incantation => Box::new(Spectral::Incantation(val.negative)),
-            Consumable::Talisman => Box::new(Spectral::Talisman(val.negative)),
-            Consumable::Aura => Box::new(Spectral::Aura(val.negative)),
-            Consumable::Wraith => Box::new(Spectral::Wraith(val.negative)),
-            Consumable::Sigil => Box::new(Spectral::Sigil(val.negative)),
-            Consumable::Ouija => Box::new(Spectral::Ouija(val.negative)),
-            Consumable::Ectoplasm => Box::new(Spectral::Ectoplasm(val.negative)),
-            Consumable::Immolate => Box::new(Spectral::Immolate(val.negative)),
-            Consumable::Ankh => Box::new(Spectral::Ankh(val.negative)),
-            Consumable::DejaVu => Box::new(Spectral::DejaVu(val.negative)),
-            Consumable::Hex => Box::new(Spectral::Hex(val.negative)),
-            Consumable::Trance => Box::new(Spectral::Trance(val.negative)),
-            Consumable::Medium => Box::new(Spectral::Medium(val.negative)),
-            Consumable::Cryptid => Box::new(Spectral::Cryptid(val.negative)),
-            Consumable::Soul => Box::new(Spectral::Soul(val.negative)),
-            Consumable::BlackHole => Box::new(Spectral::BlackHole(val.negative)),
+            ConsumableType::Fool => Box::new(Tarot::Fool(val.negative)),
+            ConsumableType::Magician => Box::new(Tarot::Magician(val.negative)),
+            ConsumableType::Priestess => Box::new(Tarot::Priestess(val.negative)),
+            ConsumableType::Empress => Box::new(Tarot::Empress(val.negative)),
+            ConsumableType::Emperor => Box::new(Tarot::Emperor(val.negative)),
+            ConsumableType::Hierophant => Box::new(Tarot::Hierophant(val.negative)),
+            ConsumableType::Lovers => Box::new(Tarot::Lovers(val.negative)),
+            ConsumableType::Chariot => Box::new(Tarot::Chariot(val.negative)),
+            ConsumableType::Justice => Box::new(Tarot::Justice(val.negative)),
+            ConsumableType::Hermit => Box::new(Tarot::Hermit(val.negative)),
+            ConsumableType::Wheel => Box::new(Tarot::Wheel(val.negative)),
+            ConsumableType::Strength => Box::new(Tarot::Strength(val.negative)),
+            ConsumableType::Hanged => Box::new(Tarot::Hanged(val.negative)),
+            ConsumableType::Death => Box::new(Tarot::Death(val.negative)),
+            ConsumableType::Temperance => Box::new(Tarot::Temperance(val.negative)),
+            ConsumableType::Devil => Box::new(Tarot::Devil(val.negative)),
+            ConsumableType::Tower => Box::new(Tarot::Tower(val.negative)),
+            ConsumableType::Star => Box::new(Tarot::Star(val.negative)),
+            ConsumableType::Moon => Box::new(Tarot::Moon(val.negative)),
+            ConsumableType::Sun => Box::new(Tarot::Sun(val.negative)),
+            ConsumableType::Judgement => Box::new(Tarot::Judgement(val.negative)),
+            ConsumableType::World => Box::new(Tarot::World(val.negative)),
+            ConsumableType::Pluto => Box::new(Planet::Pluto(val.negative)),
+            ConsumableType::Mercury => Box::new(Planet::Mercury(val.negative)),
+            ConsumableType::Uranus => Box::new(Planet::Uranus(val.negative)),
+            ConsumableType::Venus => Box::new(Planet::Venus(val.negative)),
+            ConsumableType::Saturn => Box::new(Planet::Saturn(val.negative)),
+            ConsumableType::Jupiter => Box::new(Planet::Jupiter(val.negative)),
+            ConsumableType::Earth => Box::new(Planet::Earth(val.negative)),
+            ConsumableType::Mars => Box::new(Planet::Mars(val.negative)),
+            ConsumableType::Neptune => Box::new(Planet::Neptune(val.negative)),
+            ConsumableType::PlanetX => Box::new(Planet::PlanetX(val.negative)),
+            ConsumableType::Ceres => Box::new(Planet::Ceres(val.negative)),
+            ConsumableType::Eris => Box::new(Planet::Eris(val.negative)),
+            ConsumableType::Familiar => Box::new(Spectral::Familiar(val.negative)),
+            ConsumableType::Grim => Box::new(Spectral::Grim(val.negative)),
+            ConsumableType::Incantation => Box::new(Spectral::Incantation(val.negative)),
+            ConsumableType::Talisman => Box::new(Spectral::Talisman(val.negative)),
+            ConsumableType::Aura => Box::new(Spectral::Aura(val.negative)),
+            ConsumableType::Wraith => Box::new(Spectral::Wraith(val.negative)),
+            ConsumableType::Sigil => Box::new(Spectral::Sigil(val.negative)),
+            ConsumableType::Ouija => Box::new(Spectral::Ouija(val.negative)),
+            ConsumableType::Ectoplasm => Box::new(Spectral::Ectoplasm(val.negative)),
+            ConsumableType::Immolate => Box::new(Spectral::Immolate(val.negative)),
+            ConsumableType::Ankh => Box::new(Spectral::Ankh(val.negative)),
+            ConsumableType::DejaVu => Box::new(Spectral::DejaVu(val.negative)),
+            ConsumableType::Hex => Box::new(Spectral::Hex(val.negative)),
+            ConsumableType::Trance => Box::new(Spectral::Trance(val.negative)),
+            ConsumableType::Medium => Box::new(Spectral::Medium(val.negative)),
+            ConsumableType::Cryptid => Box::new(Spectral::Cryptid(val.negative)),
+            ConsumableType::Soul => Box::new(Spectral::Soul(val.negative)),
+            ConsumableType::BlackHole => Box::new(Spectral::BlackHole(val.negative)),
         }
     }
 }
@@ -430,7 +431,7 @@ pub struct JokerRow {
     pub discards: Option<i32>,
 }
 
-#[derive(Debug, sqlx::FromRow, Serialize, Deserialize)]
+#[derive(Debug, sqlx::FromRow)]
 pub struct SessionRow {
     pub session: i32,
     pub money: i32,
@@ -440,7 +441,7 @@ pub struct SessionRow {
     pub hands: i32,
     pub discards: i32,
     pub hand_size: i32,
-    pub last_consumable: Option<Consumable>,
+    pub last_consumable: Option<ConsumableType>,
     pub high_card_level: i32,
     pub pair_level: i32,
     pub two_pair_level: i32,
@@ -509,7 +510,7 @@ pub struct SessionRow {
     pub retcon_redeemed: bool,
     pub paint_brush_redeemed: bool,
     pub palette_redeemed: bool,
-    pub seed: i64,
+    pub seed: PgU64,
     pub consumable_slots: i32,
     pub joker_slots: i32,
     pub hands_remaining: i32,

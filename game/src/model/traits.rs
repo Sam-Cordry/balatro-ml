@@ -9,3 +9,7 @@ pub trait Consumable {
 
     fn name(&self) -> &'static str;
 }
+//
+// pub trait Generate {
+//     fn choose(rng: Rng, negative: bool) -> Self {}
+// }

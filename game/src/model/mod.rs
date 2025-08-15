@@ -2,12 +2,13 @@ use jokers::Joker;
 use planets::Planet;
 use rand::{
     distr::{Distribution, StandardUniform},
+    rngs::SmallRng,
     Rng,
 };
 use std::{collections::HashSet, fmt::Display};
 use strum::EnumIter;
 
-use crate::model::{cards::Card, scoring::Scoring, traits::Consumable};
+use crate::model::{cards::Card, db::ConsumableType, scoring::Scoring, traits::Consumable};
 
 pub mod blinds;
 pub mod cards;
@@ -21,9 +22,9 @@ pub mod tarots;
 pub mod traits;
 
 pub struct State {
-    pub seed: usize,
+    pub rng: SmallRng,
     pub scoring: Scoring,
-    pub last_tarot_planet_used: Option<db::Consumable>,
+    pub last_tarot_planet_used: Option<ConsumableType>,
     pub consumables: Vec<Box<dyn Consumable>>,
     pub consumable_slots: usize,
     pub money: usize,
@@ -129,10 +130,7 @@ impl Distribution<HandType> for StandardUniform {
             8 => HandType::StraightFlush,
             9 => HandType::FiveOfAKind,
             10 => HandType::FlushHouse,
-            11 => HandType::FlushFive,
-            _ => {
-                panic!("Random range produced out of range result");
-            }
+            _ => HandType::FlushFive,
         }
     }
 }

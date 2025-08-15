@@ -1,3 +1,7 @@
+use rand::{
+    distr::{Distribution, StandardUniform},
+    Rng,
+};
 use std::fmt::Display;
 use strum::{EnumIter, IntoEnumIterator};
 
@@ -163,6 +167,17 @@ impl Display for Suit {
     }
 }
 
+impl Distribution<Suit> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Suit {
+        match rng.random_range(0..4) {
+            0 => Suit::Spade,
+            1 => Suit::Heart,
+            2 => Suit::Club,
+            _ => Suit::Diamond,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Clone, Copy, Hash, PartialOrd, Ord, EnumIter, sqlx::Type)]
 #[sqlx(type_name = "card_rank", rename_all = "lowercase")]
 pub enum Rank {
@@ -197,6 +212,26 @@ impl Display for Rank {
             Self::Queen => write!(f, "Queen"),
             Self::King => write!(f, "King"),
             Self::Ace => write!(f, "Ace"),
+        }
+    }
+}
+
+impl Distribution<Rank> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Rank {
+        match rng.random_range(0..13) {
+            0 => Rank::Two,
+            1 => Rank::Three,
+            2 => Rank::Four,
+            3 => Rank::Five,
+            4 => Rank::Six,
+            5 => Rank::Seven,
+            6 => Rank::Eight,
+            7 => Rank::Nine,
+            8 => Rank::Ten,
+            9 => Rank::Jack,
+            10 => Rank::Queen,
+            11 => Rank::King,
+            _ => Rank::Ace,
         }
     }
 }
@@ -264,6 +299,21 @@ impl Display for Enhancement {
     }
 }
 
+impl Distribution<Enhancement> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Enhancement {
+        match rng.random_range(0..8) {
+            0 => Enhancement::Bonus,
+            1 => Enhancement::Mult,
+            2 => Enhancement::Wild,
+            3 => Enhancement::Glass,
+            4 => Enhancement::Steel,
+            5 => Enhancement::Stone,
+            6 => Enhancement::Gold,
+            _ => Enhancement::Lucky,
+        }
+    }
+}
+
 impl Enhancement {
     fn on_scored(&self) -> ScoreModification {
         todo!("implement")
@@ -286,6 +336,17 @@ impl Display for Seal {
             Self::Purple => write!(f, "purple"),
             Self::Blue => write!(f, "blue"),
             Self::Gold => write!(f, "gold"),
+        }
+    }
+}
+
+impl Distribution<Seal> for StandardUniform {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Seal {
+        match rng.random_range(0..4) {
+            0 => Seal::Red,
+            1 => Seal::Purple,
+            2 => Seal::Blue,
+            _ => Seal::Gold,
         }
     }
 }

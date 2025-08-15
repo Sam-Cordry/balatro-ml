@@ -1,3 +1,4 @@
+use rand::{rngs::SmallRng, SeedableRng};
 use std::collections::{HashMap, HashSet};
 use strum::IntoEnumIterator;
 
@@ -83,7 +84,7 @@ pub fn create_game_state(
     }
 
     State {
-        seed: session.seed as usize,
+        rng: SmallRng::seed_from_u64(session.seed.into()),
         scoring: Scoring::new(HashMap::from([
             (
                 HandType::High,

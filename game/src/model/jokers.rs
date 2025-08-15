@@ -1,13 +1,19 @@
+use rand::{distr::StandardUniform, prelude::IteratorRandom, Rng};
 use std::{cmp::max, collections::HashSet, fmt::Display};
 
 use crate::model::{
     cards::{Card, Enhancement, Rank, Suit},
     db::{JokerRow, JokerType},
+    spectrals::Spectral,
+    tarots::Tarot,
     HandType, JokerEdition, ScoreModification, State,
 };
 
+use super::cards::CardEdition;
+
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub enum Joker {
+    #[allow(clippy::enum_variant_names)]
     Joker {
         sell_value: usize,
         edition: JokerEdition,
@@ -1608,7 +1614,17 @@ impl Joker {
                 }
             }
             Self::Marble { .. } => {
-                todo!("randomness needed")
+                let mut card = Card {
+                    suit: state.rng.sample(StandardUniform),
+                    rank: state.rng.sample(StandardUniform),
+                    edition: CardEdition::Base,
+                    enhancement: Some(Enhancement::Stone),
+                    seal: None,
+                    chips: 0,
+                };
+                card.chips = card.rank.get_value() as usize;
+                state.deck.push(card);
+                state.remaining_deck.push(card);
             }
             Self::Burglar { .. } => {
                 state.hands_remaining += 3;
@@ -1616,8 +1632,26 @@ impl Joker {
             }
             Self::Madness { xmult, .. } => todo!("blinds"),
             Self::Riff { .. } => todo!("randomness"),
-            Self::Certificate { .. } => todo!("randomness"),
-            Self::Cartomancer { .. } => todo!("randomness"),
+            Self::Certificate { .. } => {
+                let mut card = Card {
+                    suit: state.rng.sample(StandardUniform),
+                    rank: state.rng.sample(StandardUniform),
+                    edition: CardEdition::Base,
+                    enhancement: None,
+                    seal: Some(state.rng.sample(StandardUniform)),
+                    chips: 0,
+                };
+                card.chips = card.rank.get_value() as usize;
+                state.deck.push(card);
+                state.hand.push(card);
+            }
+            Self::Cartomancer { .. } => {
+                if state.consumables.len() < state.consumable_slots {
+                    state
+                        .consumables
+                        .push(Box::from(Tarot::sample(&mut state.rng)));
+                }
+            }
             _ => {}
         }
     }
@@ -1645,7 +1679,11 @@ impl Joker {
                     *mult = 0;
                 }
             }
-            Self::Space { .. } => todo!("randomness"),
+            Self::Space { .. } => {
+                if state.rng.random_range(0..4) == 0 {
+                    state.scoring.level_hand(hand_type_played, 1);
+                }
+            }
             Self::Runner { chips, .. } => {
                 if *hand_type_played == HandType::Straight
                     || *hand_type_played == HandType::StraightFlush
@@ -1660,7 +1698,7 @@ impl Joker {
                 }
             }
             // Self::Splash { .. } => {
-            //     scoring_cards = played_cards;
+            //     *scoring_cards = *played_cards;
             // }
             Self::Sixth { .. } => {
                 if played_cards.len() == 1 && played_cards.first().unwrap().rank == Rank::Six {
@@ -1771,8 +1809,13 @@ impl Joker {
                 }
             }
             Self::Ball { .. } => {
-                if card.rank == Rank::Eight {
-                    todo!("randomness")
+                if card.rank == Rank::Eight
+                    && state.consumables.len() < state.consumable_slots
+                    && state.rng.random_range(0..4) == 0
+                {
+                    state
+                        .consumables
+                        .push(Box::from(Tarot::sample(&mut state.rng)));
                 }
             }
             Self::Dusk { .. } => {
@@ -1829,8 +1872,8 @@ impl Joker {
                 }
             }
             Self::Business { .. } => {
-                if card.is_face_card(&state.jokers) {
-                    todo!("randomness");
+                if card.is_face_card(&state.jokers) && state.rng.random_range(0..2) == 0 {
+                    state.money += 2;
                 }
             }
             Self::Hiker { .. } => {
@@ -1877,7 +1920,11 @@ impl Joker {
                     state.money += 1;
                 }
             }
-            Self::Bloodstone { .. } => todo!("randomness"),
+            Self::Bloodstone { .. } => {
+                if card.is_suit(Suit::Heart, &state.jokers) && state.rng.random_range(0..2) == 0 {
+                    modification.xmult += 1.5;
+                }
+            }
             Self::Arrowhead { .. } => {
                 if card.is_suit(Suit::Spade, &state.jokers) {
                     modification.chips += 50;
@@ -1925,7 +1972,11 @@ impl Joker {
                     modification.xmult += 1.5;
                 }
             }
-            Self::Parking { .. } => todo!("randomness"),
+            Self::Parking { .. } => {
+                if card.is_face_card(&state.jokers) && state.rng.random_range(0..2) == 0 {
+                    state.money += 1;
+                }
+            }
             Self::Shoot { .. } => {
                 if card.rank == Rank::Queen {
                     modification.mult += 13;
@@ -2066,7 +2117,6 @@ impl Joker {
             }
             Self::Half { .. } => {
                 if played_cards.len() <= 3 {
-                    // state.current_score.update(None, Some(20.0), None);
                     modification.mult += 20;
                 }
             }
@@ -2090,7 +2140,7 @@ impl Joker {
                 *hands -= 1;
             }
             Self::Misprint { .. } => {
-                todo!("randomness")
+                modification.mult += state.rng.random_range(0..24) as isize;
             }
             Self::Steel { .. } => {
                 modification.xmult += 0.2
@@ -2139,7 +2189,9 @@ impl Joker {
                     && played_cards.iter().filter(|c| c.rank == Rank::Ace).count() > 0
                     && state.consumables.len() < state.consumable_slots
                 {
-                    todo!("randomness")
+                    state
+                        .consumables
+                        .push(Box::from(Tarot::sample(&mut state.rng)));
                 }
             }
             Self::Cavendish { .. } => modification.xmult += 3.0,
@@ -2162,14 +2214,18 @@ impl Joker {
                 if *hand_type_played == HandType::StraightFlush
                     && state.consumables.len() < state.consumable_slots
                 {
-                    todo!("randomness")
+                    state
+                        .consumables
+                        .push(Box::from(Spectral::sample(&mut state.rng)));
                 }
             }
             Self::Vampire { xmult, .. } => modification.xmult += (*xmult / 10) as f64,
             Self::Hologram { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
             Self::Vagabond { .. } => {
-                if state.money < 5 {
-                    todo!("randomness")
+                if state.money < 5 && state.consumables.len() < state.consumable_slots {
+                    state
+                        .consumables
+                        .push(Box::from(Tarot::sample(&mut state.rng)));
                 }
             }
             Self::Obelisk { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
@@ -2364,10 +2420,24 @@ impl Joker {
                     state.money += 2 * state.discards;
                 }
             }
-            Self::Michel { .. } => todo!("randomness"),
+            Self::Michel { .. } => {
+                if state.rng.random_range(0..6) == 0 {
+                    state
+                        .jokers
+                        .remove(state.jokers.iter().position(|j| *j == *self).unwrap());
+                }
+            }
             Self::Egg { sell_value, .. } => *sell_value += 3,
-            Self::List { hand_type, .. } => todo!("randomness"),
-            Self::Cavendish { .. } => todo!("randomness"),
+            Self::List { hand_type, .. } => {
+                *hand_type = state.rng.sample(StandardUniform);
+            }
+            Self::Cavendish { .. } => {
+                if state.rng.random_range(0..1000) == 0 {
+                    state
+                        .jokers
+                        .remove(state.jokers.iter().position(|j| *j == *self).unwrap());
+                }
+            }
             Self::Cloud { .. } => {
                 state.money += state.deck.iter().filter(|c| c.rank == Rank::Nine).count();
             }
@@ -2389,7 +2459,9 @@ impl Joker {
                         .remove(state.jokers.iter().position(|j| j == self).unwrap());
                 }
             }
-            Self::Rebate { rank, .. } => todo!("randomness"),
+            Self::Rebate { rank, .. } => {
+                *rank = state.rng.sample(StandardUniform);
+            }
             Self::Golden { .. } => state.money += 4,
             Self::Popcorn { mult, .. } => {
                 *mult -= 4;
@@ -2399,10 +2471,21 @@ impl Joker {
                         .remove(state.jokers.iter().position(|j| j == self).unwrap());
                 }
             }
-            Self::Ancient { suit, .. } => todo!("randomness"),
-            Self::Castle { suit, .. } => todo!("randomness"),
+            Self::Ancient { suit, .. } => {
+                *suit = state.rng.sample(StandardUniform);
+            }
+            Self::Castle { suit, .. } => {
+                *suit = state.rng.sample(StandardUniform);
+            }
             Self::Campfire { xmult, .. } => todo!("blinds"),
-            Self::Idol { rank, suit, .. } => todo!("randomness"),
+            Self::Idol { rank, suit, .. } => {
+                (*rank, *suit) = state
+                    .deck
+                    .iter()
+                    .map(|c| (c.rank, c.suit))
+                    .choose(&mut state.rng)
+                    .unwrap();
+            }
             Self::Road { xmult, .. } => *xmult = 2,
             Self::Invisible { rounds, .. } => *rounds += 1,
             Self::Satellite { .. } => state.money += state.planets_used.len(),
@@ -2419,8 +2502,13 @@ impl Joker {
     }
 
     pub fn on_pack_open(&mut self, state: &mut State) {
-        if let Self::Hallucination { .. } = self {
-            todo!("randomness");
+        if let Self::Hallucination { .. } = self
+            && state.consumables.len() < state.consumable_slots
+            && state.rng.random_range(0..2) == 0
+        {
+            state
+                .consumables
+                .push(Box::from(Tarot::sample(&mut state.rng)));
         }
     }
 

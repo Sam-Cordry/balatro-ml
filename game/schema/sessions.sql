@@ -76,7 +76,7 @@ CREATE TABLE sessions (
     retcon_redeemed bool DEFAULT false NOT NULL,
     paint_brush_redeemed bool DEFAULT false NOT NULL,
     palette_redeemed bool DEFAULT false NOT NULL,
-    seed int8 NOT NULL,
+    seed numeric(20) NOT NULL,
     consumable_slots int4 DEFAULT 2 NOT NULL,
     joker_slots int4 DEFAULT 5 NOT NULL,
     hands_remaining int4 DEFAULT 4 NOT NULL,
