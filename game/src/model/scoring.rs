@@ -4,7 +4,7 @@ use crate::model::{HandType, ScoreModification};
 
 pub struct Scoring {
     pub hand_scoring: HashMap<HandType, Score>,
-    pub scoring_times: HashMap<HandType, u32>,
+    pub scoring_times: HashMap<HandType, usize>,
 }
 
 impl Default for Scoring {
@@ -187,7 +187,7 @@ impl Scoring {
         let mut new = Self::default();
         levels.into_iter().for_each(|e| {
             new.level_hand(&e.0, e.1 .0);
-            new.scoring_times.insert(e.0, e.1 .1 as u32);
+            new.scoring_times.insert(e.0, e.1 .1 as usize);
         });
         new
     }

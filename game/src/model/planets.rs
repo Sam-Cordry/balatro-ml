@@ -1,9 +1,14 @@
+use crate::model::{
+    cards::Card,
+    spectrals::Spectral,
+    traits::{Consumable, Generatable},
+    HandType, State,
+};
+use rand::{distr::StandardUniform, prelude::IteratorRandom, Rng};
 use std::fmt::Display;
 use strum::EnumIter;
 
-use crate::model::{cards::Card, Consumable, HandType, State};
-
-#[derive(Debug, PartialEq, Eq, EnumIter, Hash)]
+#[derive(Debug, PartialEq, Eq, EnumIter, Hash, Clone, Copy)]
 pub enum Planet {
     Pluto(bool),
     Mercury(bool),
@@ -115,21 +120,38 @@ impl Consumable for Planet {
     }
 }
 
-impl Planet {
-    pub fn sample<R: rand::Rng + ?Sized>(rng: &mut R) -> Self {
-        match rng.random_range(0..12) {
-            0 => Self::Pluto(false),
-            1 => Self::Mercury(false),
-            2 => Self::Uranus(false),
-            3 => Self::Venus(false),
-            4 => Self::Saturn(false),
-            5 => Self::Jupiter(false),
-            6 => Self::Earth(false),
-            7 => Self::Mars(false),
-            8 => Self::Neptune(false),
-            9 => Self::PlanetX(false),
-            10 => Self::Eris(false),
-            _ => Self::Ceres(false),
+impl Generatable for Planet {
+    fn gen_single(state: &mut State, negative: bool) -> Self {
+        let mut poss = vec![
+            Self::Pluto(negative),
+            Self::Mercury(negative),
+            Self::Uranus(negative),
+            Self::Venus(negative),
+            Self::Saturn(negative),
+            Self::Jupiter(negative),
+            Self::Earth(negative),
+            Self::Mars(negative),
+            Self::Neptune(negative),
+        ];
+
+        if state.scoring.scoring_times[&HandType::FiveOfAKind] > 0 {
+            poss.push(Self::PlanetX(negative));
+        }
+        if state.scoring.scoring_times[&HandType::FlushHouse] > 0 {
+            poss.push(Self::Ceres(negative));
+        }
+        if state.scoring.scoring_times[&HandType::FlushFive] > 0 {
+            poss.push(Self::Eris(negative));
+        }
+
+        *poss.iter().choose(&mut state.rng).unwrap()
+    }
+
+    fn gen_pack_single(state: &mut State) -> Box<dyn Consumable> {
+        if state.rng.random_range(0..1000) < 3 {
+            Box::new(Spectral::BlackHole(false))
+        } else {
+            Box::new(Self::gen_single(state, false))
         }
     }
 }

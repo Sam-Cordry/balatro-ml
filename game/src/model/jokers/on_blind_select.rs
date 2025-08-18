@@ -3,6 +3,7 @@ use super::Joker;
 use crate::model::{
     cards::{Card, CardEdition, Enhancement},
     tarots::Tarot,
+    traits::Generatable,
     State,
 };
 use rand::{distr::StandardUniform, Rng};
@@ -49,9 +50,8 @@ impl Joker {
             }
             Self::Cartomancer { .. } => {
                 if state.consumables.len() < state.consumable_slots {
-                    state
-                        .consumables
-                        .push(Box::from(Tarot::sample(&mut state.rng)));
+                    let new = Box::new(Tarot::gen_single(state, false));
+                    state.consumables.push(new);
                 }
             }
             _ => {}

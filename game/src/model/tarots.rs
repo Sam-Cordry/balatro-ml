@@ -3,8 +3,11 @@ use std::fmt::Display;
 use crate::model::{
     cards::{Card, Enhancement, Suit},
     db::ConsumableType,
+    spectrals::Spectral,
+    traits::Generatable,
     Consumable, State,
 };
+use rand::Rng;
 
 #[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub enum Tarot {
@@ -265,31 +268,39 @@ impl Consumable for Tarot {
     }
 }
 
-impl Tarot {
-    pub fn sample<R: rand::Rng + ?Sized>(rng: &mut R) -> Self {
-        match rng.random_range(0..22) {
-            0 => Self::Fool(false),
-            1 => Self::Magician(false),
-            2 => Self::Priestess(false),
-            3 => Self::Empress(false),
-            4 => Self::Emperor(false),
-            5 => Self::Hierophant(false),
-            6 => Self::Lovers(false),
-            7 => Self::Chariot(false),
-            8 => Self::Justice(false),
-            9 => Self::Hermit(false),
-            10 => Self::Wheel(false),
-            11 => Self::Strength(false),
-            12 => Self::Hanged(false),
-            13 => Self::Death(false),
-            14 => Self::Temperance(false),
-            15 => Self::Devil(false),
-            16 => Self::Tower(false),
-            17 => Self::Star(false),
-            18 => Self::Moon(false),
-            19 => Self::Sun(false),
-            20 => Self::Judgement(false),
-            _ => Self::World(false),
+impl Generatable for Tarot {
+    fn gen_single(state: &mut State, negative: bool) -> Self {
+        match state.rng.random_range(0..22) {
+            0 => Self::Fool(negative),
+            1 => Self::Magician(negative),
+            2 => Self::Priestess(negative),
+            3 => Self::Empress(negative),
+            4 => Self::Emperor(negative),
+            5 => Self::Hierophant(negative),
+            6 => Self::Lovers(negative),
+            7 => Self::Chariot(negative),
+            8 => Self::Justice(negative),
+            9 => Self::Hermit(negative),
+            10 => Self::Wheel(negative),
+            11 => Self::Strength(negative),
+            12 => Self::Hanged(negative),
+            13 => Self::Death(negative),
+            14 => Self::Temperance(negative),
+            15 => Self::Devil(negative),
+            16 => Self::Tower(negative),
+            17 => Self::Star(negative),
+            18 => Self::Moon(negative),
+            19 => Self::Sun(negative),
+            20 => Self::Judgement(negative),
+            _ => Self::World(negative),
+        }
+    }
+
+    fn gen_pack_single(state: &mut State) -> Box<dyn Consumable> {
+        if state.rng.random_range(0..1000) < 3 {
+            Box::new(Spectral::Soul(false))
+        } else {
+            Box::new(Self::gen_single(state, false))
         }
     }
 }

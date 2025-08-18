@@ -4,6 +4,7 @@ use crate::model::{
     cards::{Card, Enhancement, Rank, Suit},
     spectrals::Spectral,
     tarots::Tarot,
+    traits::Generatable,
     HandType, ScoreModification, State,
 };
 use rand::Rng;
@@ -163,7 +164,7 @@ impl Joker {
                 *hands -= 1;
             }
             Self::Misprint { .. } => {
-                modification.mult += state.rng.random_range(0..24) as isize;
+                modification.mult += state.rng.random_range(0u8..24u8) as isize;
             }
             Self::Steel { .. } => {
                 modification.xmult += 0.2
@@ -212,9 +213,8 @@ impl Joker {
                     && played_cards.iter().filter(|c| c.rank == Rank::Ace).count() > 0
                     && state.consumables.len() < state.consumable_slots
                 {
-                    state
-                        .consumables
-                        .push(Box::from(Tarot::sample(&mut state.rng)));
+                    let new = Box::new(Tarot::gen_single(state, false));
+                    state.consumables.push(new);
                 }
             }
             Self::Cavendish { .. } => modification.xmult += 3.0,
@@ -237,18 +237,16 @@ impl Joker {
                 if *hand_type_played == HandType::StraightFlush
                     && state.consumables.len() < state.consumable_slots
                 {
-                    state
-                        .consumables
-                        .push(Box::from(Spectral::sample(&mut state.rng)));
+                    let new = Box::new(Spectral::gen_single(state, false));
+                    state.consumables.push(new);
                 }
             }
             Self::Vampire { xmult, .. } => modification.xmult += (*xmult / 10) as f64,
             Self::Hologram { xmult, .. } => modification.xmult += (*xmult / 4) as f64,
             Self::Vagabond { .. } => {
                 if state.money < 5 && state.consumables.len() < state.consumable_slots {
-                    state
-                        .consumables
-                        .push(Box::from(Tarot::sample(&mut state.rng)));
+                    let new = Box::new(Tarot::gen_single(state, false));
+                    state.consumables.push(new);
                 }
             }
             Self::Obelisk { xmult, .. } => modification.xmult += (*xmult / 4) as f64,

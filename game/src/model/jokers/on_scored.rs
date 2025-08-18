@@ -3,6 +3,7 @@ use super::Joker;
 use crate::model::{
     cards::{Card, Enhancement, Rank, Suit},
     tarots::Tarot,
+    traits::Generatable,
     ScoreModification, State,
 };
 use rand::Rng;
@@ -36,9 +37,8 @@ impl Joker {
                     && state.consumables.len() < state.consumable_slots
                     && state.rng.random_range(0..4) == 0
                 {
-                    state
-                        .consumables
-                        .push(Box::from(Tarot::sample(&mut state.rng)));
+                    let new = Box::new(Tarot::gen_single(state, false));
+                    state.consumables.push(new);
                 }
             }
             Self::Dusk { .. } => {

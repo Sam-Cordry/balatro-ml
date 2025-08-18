@@ -1,8 +1,10 @@
+use rand::Rng;
 use std::fmt::Display;
 use strum::IntoEnumIterator;
 
 use crate::model::{
     cards::{Card, Seal},
+    traits::Generatable,
     Consumable, HandType, State,
 };
 
@@ -181,25 +183,36 @@ impl Consumable for Spectral {
     }
 }
 
-impl Spectral {
-    pub fn sample<R: rand::Rng + ?Sized>(rng: &mut R) -> Self {
-        match rng.random_range(0..16) {
-            0 => Self::Familiar(false),
-            1 => Self::Grim(false),
-            2 => Self::Incantation(false),
-            3 => Self::Talisman(false),
-            4 => Self::Aura(false),
-            5 => Self::Wraith(false),
-            6 => Self::Sigil(false),
-            7 => Self::Ouija(false),
-            8 => Self::Ectoplasm(false),
-            9 => Self::Immolate(false),
-            10 => Self::Ankh(false),
-            11 => Self::DejaVu(false),
-            12 => Self::Hex(false),
-            13 => Self::Trance(false),
-            14 => Self::Medium(false),
-            _ => Self::Cryptid(false),
+impl Generatable for Spectral {
+    fn gen_single(state: &mut State, negative: bool) -> Self {
+        match state.rng.random_range(0..16) {
+            0 => Self::Familiar(negative),
+            1 => Self::Grim(negative),
+            2 => Self::Incantation(negative),
+            3 => Self::Talisman(negative),
+            4 => Self::Aura(negative),
+            5 => Self::Wraith(negative),
+            6 => Self::Sigil(negative),
+            7 => Self::Ouija(negative),
+            8 => Self::Ectoplasm(negative),
+            9 => Self::Immolate(negative),
+            10 => Self::Ankh(negative),
+            11 => Self::DejaVu(negative),
+            12 => Self::Hex(negative),
+            13 => Self::Trance(negative),
+            14 => Self::Medium(negative),
+            _ => Self::Cryptid(negative),
+        }
+    }
+
+    fn gen_pack_single(state: &mut State) -> Box<dyn Consumable> {
+        let check = state.rng.random_range(0..1000);
+        if check < 3 {
+            Box::new(Self::Soul(false))
+        } else if check < 6 {
+            Box::new(Self::BlackHole(false))
+        } else {
+            Box::new(Self::gen_single(state, false))
         }
     }
 }
