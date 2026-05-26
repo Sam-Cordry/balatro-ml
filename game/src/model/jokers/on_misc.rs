@@ -34,8 +34,8 @@ impl Joker {
     }
 
     pub fn on_planet_use(&mut self) {
-        if let Self::Constellation { mult, .. } = self {
-            *mult += 1;
+        if let Self::Constellation { xmult, .. } = self {
+            *xmult += 1;
         }
     }
 

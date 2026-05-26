@@ -1,11 +1,14 @@
+use rand::prelude::IteratorRandom;
 use std::fmt::Display;
 
 use crate::model::{
     cards::{Card, Enhancement, Suit},
     db::ConsumableType,
+    jokers::Joker,
+    planets::Planet,
     spectrals::Spectral,
     traits::Generatable,
-    Consumable, State,
+    Consumable, JokerEdition, State,
 };
 use rand::Rng;
 
@@ -91,32 +94,53 @@ impl Consumable for Tarot {
             | Self::Justice(_)
             | Self::Devil(_)
             | Self::Tower(_) => selected_cards.len() == 1,
-            Self::Wheel(_) => todo!("can be done once jokers are implememted"),
+            Self::Wheel(_) => state
+                .jokers
+                .iter()
+                .any(|j| j.get_edition() == JokerEdition::Base),
             Self::Death(_) => selected_cards.len() == 2,
             Self::Star(_) | Self::Moon(_) | Self::Sun(_) | Self::World(_) => {
                 selected_cards.len() == 1 || selected_cards.len() == 2 || selected_cards.len() == 3
             }
-            Self::Judgement(_) => todo!("can be done once jokers are implemented"),
+            Self::Judgement(_) => state.jokers.len() < state.joker_slots,
         }
     }
 
     fn consume(&self, state: &mut State, selected_cards: &mut [Card]) {
         match self {
-            Self::Fool(_) => todo!("can implement once random is implemented for consumables"),
+            Self::Fool(_) => todo!("implement"),
             Self::Magician(_) => {
                 for card in selected_cards.iter_mut() {
                     card.enhancement = Some(Enhancement::Lucky);
                 }
             }
             Self::Priestess(_) => {
-                todo!("can implement once random is implemented for consumables")
+                let first = Planet::gen_single(state, false);
+                state.consumables.push(Box::new(first));
+                if state.consumables.len() < state.consumable_slots {
+                    let mut second = Planet::gen_single(state, false);
+                    while second == first && !state.jokers.iter().any(|j| j.name() == "Showman") {
+                        second = Planet::gen_single(state, false);
+                    }
+                    state.consumables.push(Box::new(second));
+                }
             }
             Self::Empress(_) => {
                 for card in selected_cards.iter_mut() {
                     card.enhancement = Some(Enhancement::Mult);
                 }
             }
-            Self::Emperor(_) => todo!("can implement once jokers are implemented"),
+            Self::Emperor(_) => {
+                let first = Tarot::gen_single(state, false);
+                state.consumables.push(Box::new(first));
+                if state.consumables.len() < state.consumable_slots {
+                    let mut second = Tarot::gen_single(state, false);
+                    while second == first && !state.jokers.iter().any(|j| j.name() == "Showman") {
+                        second = Tarot::gen_single(state, false);
+                    }
+                    state.consumables.push(Box::new(second));
+                }
+            }
             Self::Hierophant(_) => {
                 for card in selected_cards.iter_mut() {
                     card.enhancement = Some(Enhancement::Bonus);
@@ -132,7 +156,24 @@ impl Consumable for Tarot {
                 selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Glass);
             }
             Self::Hermit(_) => state.money += state.money.clamp(0, 20),
-            Self::Wheel(_) => todo!("can implement once jokers are implemented"),
+            Self::Wheel(_) => {
+                let check = state.rng.random_range(0..400);
+                state
+                    .jokers
+                    .iter_mut()
+                    .filter(|j| j.get_edition() == JokerEdition::Base)
+                    .choose(&mut state.rng)
+                    .unwrap()
+                    .change_edition(if check < 50 {
+                        JokerEdition::Foil
+                    } else if check < 85 {
+                        JokerEdition::Holographic
+                    } else if check < 100 {
+                        JokerEdition::Polychrome
+                    } else {
+                        JokerEdition::Base
+                    });
+            }
             Self::Strength(_) => {
                 for card in selected_cards.iter_mut() {
                     card.increment();
@@ -152,7 +193,13 @@ impl Consumable for Tarot {
                 let copied: Card = *selected_cards.get(1).unwrap();
                 selected_cards.get_mut(0).unwrap().duplicate(&copied);
             }
-            Self::Temperance(_) => todo!("can implement once jokers are implemented"),
+            Self::Temperance(_) => {
+                state.money += state
+                    .jokers
+                    .iter()
+                    .map(|j| j.get_sell_value())
+                    .sum::<usize>()
+            }
             Self::Devil(_) => {
                 selected_cards.get_mut(0).unwrap().enhancement = Some(Enhancement::Gold);
             }
@@ -174,7 +221,15 @@ impl Consumable for Tarot {
                     card.suit = Suit::Heart;
                 }
             }
-            Self::Judgement(_) => todo!("can implement once jokers are implemented"),
+            Self::Judgement(_) => {
+                let mut new = Joker::gen_single(state);
+                while state.jokers.contains(&new)
+                    && !state.jokers.iter().any(|j| j.name() == "Showman")
+                {
+                    new = Joker::gen_single(state);
+                }
+                state.jokers.push(new);
+            }
             Self::World(_) => {
                 for card in selected_cards.iter_mut() {
                     card.suit = Suit::Spade;

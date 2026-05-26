@@ -83,6 +83,8 @@ pub fn create_game_state(
         }
     }
 
+    jokers.sort_by(|a, b| a.index.cmp(&b.index));
+
     State {
         rng: SmallRng::seed_from_u64(session.seed.into()),
         scoring: Scoring::new(HashMap::from([

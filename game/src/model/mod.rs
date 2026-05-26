@@ -5,7 +5,11 @@ use rand::{
     rngs::SmallRng,
     Rng,
 };
-use std::{collections::HashSet, fmt::Display};
+use std::{
+    collections::HashSet,
+    fmt::Display,
+    ops::{Add, AddAssign},
+};
 use strum::EnumIter;
 
 use crate::model::{cards::Card, db::ConsumableType, scoring::Scoring, traits::Consumable};
@@ -236,12 +240,26 @@ impl Default for ScoreModification {
     }
 }
 
-impl ScoreModification {
-    pub fn add(&mut self, other: ScoreModification) {
-        self.chips += other.chips;
-        self.mult += other.mult;
-        self.xmult *= other.xmult;
-        self.money += other.money;
-        self.triggers += other.triggers;
+impl Add for ScoreModification {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self {
+            chips: self.chips + rhs.chips,
+            mult: self.mult + rhs.mult,
+            xmult: self.xmult * rhs.xmult,
+            money: self.money + rhs.money,
+            triggers: self.triggers + rhs.triggers,
+        }
+    }
+}
+
+impl AddAssign for ScoreModification {
+    fn add_assign(&mut self, rhs: Self) {
+        self.chips += rhs.chips;
+        self.mult += rhs.mult;
+        self.xmult *= rhs.xmult;
+        self.money += rhs.money;
+        self.triggers += rhs.triggers;
     }
 }

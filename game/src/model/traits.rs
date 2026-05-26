@@ -12,13 +12,10 @@ pub trait Consumable {
 
 pub trait Generatable: Consumable + Sized + 'static {
     fn gen_single(state: &mut State, negative: bool) -> Self;
-
     fn gen_pack_single(state: &mut State) -> Box<dyn Consumable>;
-
     fn gen_pack(state: &mut State, n: usize) -> Vec<Box<dyn Consumable>> {
         let duplicate = state.jokers.iter().any(|j| j.name() == "Showman");
         let mut result = vec![];
-
         while result.len() < n {
             let new = Self::gen_pack_single(state);
             if duplicate

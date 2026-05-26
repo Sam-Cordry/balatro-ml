@@ -156,7 +156,7 @@ impl Joker {
         }
     }
 
-    pub fn increase_sell_value(&mut self) {
+    pub fn set_sell_value(&mut self, new: usize) {
         match self {
             Self::Joker { sell_value, .. }
             | Self::Greedy { sell_value, .. }
@@ -307,7 +307,7 @@ impl Joker {
             | Self::Triboulet { sell_value, .. }
             | Self::Yorick { sell_value, .. }
             | Self::Chicot { sell_value, .. }
-            | Self::Perkeo { sell_value, .. } => *sell_value += 1,
+            | Self::Perkeo { sell_value, .. } => *sell_value = new,
         }
     }
 }

@@ -205,7 +205,7 @@ impl Joker {
                 *chips -= 5;
             }
             Self::Blue { .. } => modification.chips += 2 * state.remaining_deck.len() as isize,
-            Self::Constellation { mult, .. } => modification.xmult += (*mult / 10) as f64,
+            Self::Constellation { xmult, .. } => modification.xmult += (*xmult / 10) as f64,
             Self::Green { mult, .. } => modification.mult += *mult as isize,
             Self::Superposition { .. } => {
                 if (*hand_type_played == HandType::Straight

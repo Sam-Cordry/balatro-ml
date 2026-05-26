@@ -40,7 +40,7 @@ impl Joker {
                 state
                     .jokers
                     .iter_mut()
-                    .for_each(|j| j.increase_sell_value());
+                    .for_each(|j| j.set_sell_value(j.get_sell_value() + 1));
             }
             Self::Turtle { hand_size, .. } => {
                 *hand_size -= 1;

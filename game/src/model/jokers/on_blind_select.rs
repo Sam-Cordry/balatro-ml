@@ -9,11 +9,11 @@ use crate::model::{
 use rand::{distr::StandardUniform, Rng};
 
 impl Joker {
-    pub fn on_blind_select(&mut self, state: &mut State) {
+    pub fn on_blind_select(&mut self, state: &mut State, idx: usize) {
         match self {
-            Self::Dagger { mult, index, .. } => {
-                if *index + 1 < state.jokers.len() {
-                    *mult += state.jokers.remove(*index + 1).get_sell_value();
+            Self::Dagger { mult, .. } => {
+                if idx + 1 < state.jokers.len() {
+                    *mult += state.jokers.remove(idx + 1).get_sell_value();
                 }
             }
             Self::Marble { .. } => {

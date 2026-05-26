@@ -110,6 +110,9 @@ impl Card {
         let mut modification = ScoreModification::default();
         modification.chips += self.rank.get_value() as isize;
         modification
+            + self
+                .enhancement
+                .map_or(ScoreModification::default(), |e| e.on_scored())
     }
 
     pub fn on_held(&self) -> ScoreModification {
@@ -117,6 +120,10 @@ impl Card {
     }
 
     pub fn on_discard(&self) -> ScoreModification {
+        todo!("implement")
+    }
+
+    pub fn on_round_end(&self) -> ScoreModification {
         todo!("implement")
     }
 }
@@ -316,7 +323,17 @@ impl Distribution<Enhancement> for StandardUniform {
 
 impl Enhancement {
     fn on_scored(&self) -> ScoreModification {
-        todo!("implement")
+        let mut modification = ScoreModification::default();
+        match self {
+            Self::Bonus => modification.chips += 30,
+            Self::Mult => modification.mult += 4,
+            Self::Glass => modification.xmult *= 2f64,
+            Self::Lucky => {
+                todo!("needs state for rng")
+            }
+            _ => {}
+        }
+        modification
     }
 }
 
