@@ -4,7 +4,7 @@ use rand::{Rng, rand_core::SeedableRng, rngs::Xoshiro128PlusPlus, seq::SliceRand
 use strum::IntoEnumIterator;
 
 use crate::{
-    blinds::RunState,
+    blinds::{BlindType, RunState},
     cards::{Card, Rank, Suit},
     scoring::{get_scoring_cards, identify_hand_type},
 };
@@ -14,7 +14,8 @@ pub enum GamePhase {
     BlindSelect,
     Round,
     Shop,
-    GameEnd,
+    Lost,
+    Won,
 }
 
 #[derive(Debug, Clone)]
@@ -33,7 +34,6 @@ pub enum EngineError {
     InvalidIndex,
     DuplicateIndex,
     NoRemainingDiscards,
-
     GameOver,
 }
 
@@ -45,10 +45,11 @@ pub struct GameEngine {
     deck: Vec<Card>,
     full_deck: Vec<Card>,
     current_score: usize,
-    hands: u8,
-    discards: u8,
-    hands_left: u8,
-    discards_left: u8,
+    hands: usize,
+    discards: usize,
+    hands_left: usize,
+    discards_left: usize,
+    money: usize,
 }
 
 impl GameEngine {
@@ -70,6 +71,7 @@ impl GameEngine {
             discards: 4,
             hands_left: 4,
             discards_left: 4,
+            money: 4,
         }
     }
 
@@ -95,12 +97,16 @@ impl GameEngine {
         self.current_score
     }
 
-    pub fn hands_left(&self) -> u8 {
+    pub fn hands_left(&self) -> usize {
         self.hands_left
     }
 
-    pub fn discards_left(&self) -> u8 {
+    pub fn discards_left(&self) -> usize {
         self.discards_left
+    }
+
+    pub fn money(&self) -> usize {
+        self.money
     }
 
     fn shuffle_deck(&mut self) {
@@ -114,7 +120,7 @@ impl GameEngine {
     }
 
     pub fn handle_action(&mut self, action: GameAction) -> Result<(), EngineError> {
-        if self.phase == GamePhase::GameEnd {
+        if self.phase == GamePhase::Lost || self.phase == GamePhase::Won {
             return Result::Err(EngineError::GameOver);
         }
 
@@ -216,9 +222,13 @@ impl GameEngine {
         self.current_score = chips * mult;
 
         if self.current_score >= self.run_state.target_score() {
-            self.end_round();
+            if self.run_state.ante() == 8 && self.run_state.blind() == BlindType::Boss {
+                self.phase = GamePhase::Won;
+            } else {
+                self.end_round();
+            }
         } else if self.hands_left == 0 {
-            self.phase = GamePhase::GameEnd;
+            self.phase = GamePhase::Lost;
         } else {
             self.draw_to_hand_size();
         }
@@ -227,9 +237,18 @@ impl GameEngine {
     fn end_round(&mut self) {
         self.hand = vec![];
         self.deck = self.full_deck.clone();
+        self.current_score = 0;
+
+        self.money += self.hands_left
+            + (self.money / 5).min(5)
+            + match self.run_state.blind() {
+                BlindType::Small => 3,
+                BlindType::Big => 4,
+                BlindType::Boss => 5,
+            };
+
         self.hands_left = self.hands;
         self.discards_left = self.discards;
-        self.current_score = 0;
 
         self.run_state.advance();
         self.phase = GamePhase::Shop;
@@ -494,16 +513,24 @@ mod tests {
 
         engine.handle_action(GameAction::PlayHand(vec![0])).unwrap();
 
-        assert_eq!(engine.phase(), GamePhase::GameEnd);
+        assert_eq!(engine.phase(), GamePhase::Lost);
     }
 
     #[test]
     fn test_actions_fail_after_ending_game() {
         let mut engine = GameEngine::new();
-        engine.phase = GamePhase::GameEnd;
+        engine.phase = GamePhase::Lost;
 
-        let result = engine.handle_action(GameAction::SelectBlind);
+        let mut result = engine.handle_action(GameAction::SelectBlind);
+        assert!(result.is_err_and(|e| e == EngineError::GameOver));
 
+        result = engine.handle_action(GameAction::NextRound);
+        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+
+        result = engine.handle_action(GameAction::PlayHand(vec![]));
+        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+
+        result = engine.handle_action(GameAction::DiscardHand(vec![]));
         assert!(result.is_err_and(|e| e == EngineError::GameOver));
     }
 
@@ -571,5 +598,100 @@ mod tests {
         engine.handle_action(GameAction::NextRound).unwrap();
 
         assert_eq!(engine.phase(), GamePhase::BlindSelect);
+    }
+
+    #[test]
+    fn test_beating_ante_8_triggers_victory() {
+        let mut engine = GameEngine::new();
+        engine.handle_action(GameAction::SelectBlind).unwrap();
+
+        engine.run_state.set_ante(8);
+        engine.run_state.set_blind(BlindType::Boss);
+        engine.run_state.set_target_score(100);
+
+        engine.hand = vec![
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+        ];
+
+        engine
+            .handle_action(GameAction::PlayHand(vec![0, 1, 2, 3, 4]))
+            .unwrap();
+
+        assert_eq!(engine.phase(), GamePhase::Won);
+    }
+
+    #[test]
+    fn test_actions_after_victory_errors() {
+        let mut engine = GameEngine::new();
+        engine.phase = GamePhase::Won;
+
+        let mut result = engine.handle_action(GameAction::SelectBlind);
+        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+
+        result = engine.handle_action(GameAction::NextRound);
+        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+
+        result = engine.handle_action(GameAction::PlayHand(vec![]));
+        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+
+        result = engine.handle_action(GameAction::DiscardHand(vec![]));
+        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+    }
+
+    #[test]
+    fn test_beating_round_earns_money() {
+        let mut engine = GameEngine::new();
+        engine.handle_action(GameAction::SelectBlind).unwrap();
+
+        assert_eq!(engine.money(), 4);
+
+        engine.hand = vec![
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+        ];
+        engine
+            .handle_action(GameAction::PlayHand(vec![0, 1, 2, 3, 4]))
+            .unwrap();
+
+        assert_eq!(engine.money(), 10);
+
+        engine.handle_action(GameAction::NextRound).unwrap();
+        engine.handle_action(GameAction::SelectBlind).unwrap();
+
+        engine.hand = vec![
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+        ];
+        engine
+            .handle_action(GameAction::PlayHand(vec![0, 1, 2, 3, 4]))
+            .unwrap();
+
+        assert_eq!(engine.money(), 19);
+
+        engine.handle_action(GameAction::NextRound).unwrap();
+        engine.handle_action(GameAction::SelectBlind).unwrap();
+
+        engine.hand = vec![
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+            Card::new(Rank::Ace, Suit::Spade),
+        ];
+        engine
+            .handle_action(GameAction::PlayHand(vec![0, 1, 2, 3, 4]))
+            .unwrap();
+
+        assert_eq!(engine.money(), 30);
     }
 }

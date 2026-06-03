@@ -61,6 +61,21 @@ impl RunState {
 }
 
 #[cfg(test)]
+impl RunState {
+    pub fn set_ante(&mut self, ante: usize) {
+        self.ante = ante;
+    }
+
+    pub fn set_blind(&mut self, blind: BlindType) {
+        self.blind = blind;
+    }
+
+    pub fn set_target_score(&mut self, target_score: usize) {
+        self.target_score = target_score;
+    }
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
@@ -114,4 +129,3 @@ mod tests {
         assert_eq!(state.target_score, 4000);
     }
 }
-
