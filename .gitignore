@@ -1,2 +1,3 @@
 /balatro_core/target
 /balatro_core/*.profraw
+/balatro_core/tarpaulin-report.html
