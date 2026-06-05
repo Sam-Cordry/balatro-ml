@@ -186,6 +186,8 @@ pub fn get_scoring_cards(cards: &[Card], hand_type: HandType) -> Vec<Card> {
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use super::*;
 
     #[test]
@@ -250,7 +252,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::HighCard);
+        assert_matches!(hand_type, HandType::HighCard);
     }
 
     #[test]
@@ -265,7 +267,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::Pair);
+        assert_matches!(hand_type, HandType::Pair);
     }
 
     #[test]
@@ -280,7 +282,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::TwoPair);
+        assert_matches!(hand_type, HandType::TwoPair);
     }
 
     #[test]
@@ -295,7 +297,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::ThreeOfAKind);
+        assert_matches!(hand_type, HandType::ThreeOfAKind);
     }
 
     #[test]
@@ -310,7 +312,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::Straight);
+        assert_matches!(hand_type, HandType::Straight);
     }
 
     #[test]
@@ -325,7 +327,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::Flush);
+        assert_matches!(hand_type, HandType::Flush);
     }
 
     #[test]
@@ -340,7 +342,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::FullHouse);
+        assert_matches!(hand_type, HandType::FullHouse);
     }
 
     #[test]
@@ -355,7 +357,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::FourOfAKind);
+        assert_matches!(hand_type, HandType::FourOfAKind);
     }
 
     #[test]
@@ -370,7 +372,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::StraightFlush);
+        assert_matches!(hand_type, HandType::StraightFlush);
     }
 
     #[test]
@@ -385,7 +387,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::FiveOfAKind);
+        assert_matches!(hand_type, HandType::FiveOfAKind);
     }
 
     #[test]
@@ -400,7 +402,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::FlushHouse);
+        assert_matches!(hand_type, HandType::FlushHouse);
     }
 
     #[test]
@@ -415,7 +417,7 @@ mod tests {
 
         let hand_type = identify_hand_type(&cards);
 
-        assert_eq!(hand_type, HandType::FlushFive);
+        assert_matches!(hand_type, HandType::FlushFive);
     }
 
     #[test]

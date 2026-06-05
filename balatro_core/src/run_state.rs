@@ -72,6 +72,8 @@ impl RunState {
 
 #[cfg(test)]
 mod tests {
+    use std::assert_matches;
+
     use super::*;
 
     #[test]
@@ -79,7 +81,7 @@ mod tests {
         let state = RunState::new();
 
         assert_eq!(state.ante(), 1);
-        assert_eq!(state.blind(), BlindType::Small);
+        assert_matches!(state.blind(), BlindType::Small);
         assert_eq!(state.target_score(), 300);
     }
 
@@ -87,19 +89,19 @@ mod tests {
     fn test_run_state_advancement() {
         let mut state = RunState::new();
         assert_eq!(state.ante(), 1);
-        assert_eq!(state.blind(), BlindType::Small);
+        assert_matches!(state.blind(), BlindType::Small);
 
         state.advance();
         assert_eq!(state.ante(), 1);
-        assert_eq!(state.blind(), BlindType::Big);
+        assert_matches!(state.blind(), BlindType::Big);
 
         state.advance();
         assert_eq!(state.ante(), 1);
-        assert_eq!(state.blind(), BlindType::Boss);
+        assert_matches!(state.blind(), BlindType::Boss);
 
         state.advance();
         assert_eq!(state.ante(), 2);
-        assert_eq!(state.blind(), BlindType::Small);
+        assert_matches!(state.blind(), BlindType::Small);
     }
 
     #[test]

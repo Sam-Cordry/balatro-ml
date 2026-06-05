@@ -283,7 +283,7 @@ impl GameEngine {
 #[allow(unused_must_use)]
 #[cfg(test)]
 mod tests {
-    use crate::blinds::BlindType;
+    use std::assert_matches;
 
     use super::*;
 
@@ -291,7 +291,7 @@ mod tests {
     fn test_engine_init() {
         let engine = GameEngine::new();
 
-        assert_eq!(engine.phase(), GamePhase::BlindSelect);
+        assert_matches!(engine.phase(), GamePhase::BlindSelect);
         assert!(engine.hand().is_empty());
         assert_eq!(engine.deck().len(), 52);
     }
@@ -301,7 +301,7 @@ mod tests {
         let mut engine = GameEngine::new();
 
         engine.handle_action(GameAction::SelectBlind).unwrap();
-        assert_eq!(engine.phase(), GamePhase::Round);
+        assert_matches!(engine.phase(), GamePhase::Round);
     }
 
     #[test]
@@ -319,23 +319,23 @@ mod tests {
 
         // in blind select
         let mut result = engine.handle_action(GameAction::PlayHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
 
         result = engine.handle_action(GameAction::DiscardHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
 
         result = engine.handle_action(GameAction::NextRound);
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
 
         // move to round
         engine.handle_action(GameAction::SelectBlind).unwrap();
 
         // in round
         result = engine.handle_action(GameAction::SelectBlind);
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
 
         result = engine.handle_action(GameAction::NextRound);
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
 
         // beat round
         engine.hand = vec![
@@ -351,13 +351,13 @@ mod tests {
 
         // in shop
         result = engine.handle_action(GameAction::SelectBlind);
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
 
         result = engine.handle_action(GameAction::PlayHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
 
         result = engine.handle_action(GameAction::DiscardHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::InvalidPhase));
+        assert_matches!(result, Result::Err(EngineError::InvalidPhase));
     }
 
     #[test]
@@ -367,7 +367,7 @@ mod tests {
 
         let result = engine.handle_action(GameAction::PlayHand(vec![]));
 
-        assert!(result.is_err_and(|e| e == EngineError::NoCardsSelected));
+        assert_matches!(result, Result::Err(EngineError::NoCardsSelected));
     }
 
     #[test]
@@ -377,7 +377,7 @@ mod tests {
 
         let result = engine.handle_action(GameAction::PlayHand(vec![0, 1, 2, 3, 4, 5, 6, 7]));
 
-        assert!(result.is_err_and(|e| e == EngineError::TooManyCardsSelected));
+        assert_matches!(result, Result::Err(EngineError::TooManyCardsSelected));
     }
 
     #[test]
@@ -387,7 +387,7 @@ mod tests {
 
         let result = engine.handle_action(GameAction::PlayHand(vec![0, 0]));
 
-        assert!(result.is_err_and(|e| e == EngineError::DuplicateIndex));
+        assert_matches!(result, Result::Err(EngineError::DuplicateIndex));
     }
 
     #[test]
@@ -397,7 +397,7 @@ mod tests {
 
         let result = engine.handle_action(GameAction::PlayHand(vec![8]));
 
-        assert!(result.is_err_and(|e| e == EngineError::InvalidIndex));
+        assert_matches!(result, Result::Err(EngineError::InvalidIndex));
     }
 
     #[test]
@@ -471,7 +471,9 @@ mod tests {
             Card::new(Rank::Ace, Suit::Heart),
             Card::new(Rank::Five, Suit::Spade),
         ];
-        engine.handle_action(GameAction::PlayHand(vec![0, 1, 2]));
+        engine
+            .handle_action(GameAction::PlayHand(vec![0, 1, 2]))
+            .unwrap();
 
         assert_eq!(engine.current_score(), 64);
     }
@@ -514,7 +516,7 @@ mod tests {
 
         engine.handle_action(GameAction::PlayHand(vec![0])).unwrap();
 
-        assert_eq!(engine.phase(), GamePhase::Lost);
+        assert_matches!(engine.phase(), GamePhase::Lost);
     }
 
     #[test]
@@ -523,16 +525,16 @@ mod tests {
         engine.phase = GamePhase::Lost;
 
         let mut result = engine.handle_action(GameAction::SelectBlind);
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
 
         result = engine.handle_action(GameAction::NextRound);
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
 
         result = engine.handle_action(GameAction::PlayHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
 
         result = engine.handle_action(GameAction::DiscardHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
     }
 
     #[test]
@@ -553,7 +555,7 @@ mod tests {
 
         let result = engine.handle_action(GameAction::DiscardHand(vec![0]));
 
-        assert!(result.is_err_and(|e| e == EngineError::NoRemainingDiscards));
+        assert_matches!(result, Result::Err(EngineError::NoRemainingDiscards));
     }
 
     #[test]
@@ -572,9 +574,9 @@ mod tests {
             .handle_action(GameAction::PlayHand(vec![0, 1, 2, 3, 4]))
             .unwrap();
 
-        assert_eq!(engine.phase(), GamePhase::Shop);
+        assert_matches!(engine.phase(), GamePhase::Shop);
         assert_eq!(engine.run_state.ante(), 1);
-        assert_eq!(engine.run_state.blind(), BlindType::Big);
+        assert_matches!(engine.run_state.blind(), BlindType::Big);
         assert_eq!(engine.run_state.target_score(), 450);
         assert_eq!(engine.hand().len(), 0);
         assert_eq!(engine.deck().len(), 52);
@@ -598,7 +600,7 @@ mod tests {
 
         engine.handle_action(GameAction::NextRound).unwrap();
 
-        assert_eq!(engine.phase(), GamePhase::BlindSelect);
+        assert_matches!(engine.phase(), GamePhase::BlindSelect);
     }
 
     #[test]
@@ -622,7 +624,7 @@ mod tests {
             .handle_action(GameAction::PlayHand(vec![0, 1, 2, 3, 4]))
             .unwrap();
 
-        assert_eq!(engine.phase(), GamePhase::Won);
+        assert_matches!(engine.phase(), GamePhase::Won);
     }
 
     #[test]
@@ -631,16 +633,16 @@ mod tests {
         engine.phase = GamePhase::Won;
 
         let mut result = engine.handle_action(GameAction::SelectBlind);
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
 
         result = engine.handle_action(GameAction::NextRound);
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
 
         result = engine.handle_action(GameAction::PlayHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
 
         result = engine.handle_action(GameAction::DiscardHand(vec![]));
-        assert!(result.is_err_and(|e| e == EngineError::GameOver));
+        assert_matches!(result, Result::Err(EngineError::GameOver));
     }
 
     #[test]
