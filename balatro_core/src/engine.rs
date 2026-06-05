@@ -4,8 +4,9 @@ use rand::{Rng, rand_core::SeedableRng, rngs::Xoshiro128PlusPlus, seq::SliceRand
 use strum::IntoEnumIterator;
 
 use crate::{
-    blinds::{BlindType, RunState},
+    blinds::BlindType,
     cards::{Card, Rank, Suit},
+    run_state::RunState,
     scoring::{get_scoring_cards, identify_hand_type},
 };
 
