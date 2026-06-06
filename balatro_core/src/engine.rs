@@ -6,8 +6,8 @@ use strum::IntoEnumIterator;
 use crate::{
     blinds::BlindType,
     cards::{Card, Rank, Suit},
+    hand_types::{HandLevels, get_scoring_cards, identify_hand_type},
     run_state::RunState,
-    scoring::{HandLevels, get_scoring_cards, identify_hand_type},
 };
 
 #[derive(Debug, PartialEq, Clone, Copy)]

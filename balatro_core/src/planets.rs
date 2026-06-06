@@ -1,4 +1,4 @@
-use crate::scoring::HandType;
+use crate::hand_types::HandType;
 
 pub enum Planet {
     Pluto,
@@ -36,7 +36,7 @@ impl Planet {
 
 #[cfg(test)]
 mod tests {
-    use crate::scoring::HandType;
+    use crate::hand_types::HandType;
 
     use super::*;
 
