@@ -7,7 +7,7 @@ use crate::{
     blinds::BlindType,
     cards::{Card, Rank, Suit},
     run_state::RunState,
-    scoring::{get_scoring_cards, identify_hand_type},
+    scoring::{HandLevels, get_scoring_cards, identify_hand_type},
 };
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -42,6 +42,7 @@ pub struct GameEngine {
     rng: Xoshiro128PlusPlus,
     run_state: RunState,
     phase: GamePhase,
+    hand_levels: HandLevels,
     hand: Vec<Card>,
     deck: Vec<Card>,
     full_deck: Vec<Card>,
@@ -64,6 +65,7 @@ impl GameEngine {
             run_state: RunState::new(),
             rng: Xoshiro128PlusPlus::seed_from_u64(rand::rng().next_u64()),
             phase: GamePhase::BlindSelect,
+            hand_levels: HandLevels::default(),
             hand: vec![],
             deck: deck.clone(),
             full_deck: deck,
@@ -213,8 +215,8 @@ impl GameEngine {
         self.hand.retain(|_| *mask_iter.next().unwrap());
 
         let hand_type = identify_hand_type(&played_cards);
-        let (mut chips, mult) = hand_type.base_scoring();
-        let scoring_cards = get_scoring_cards(&played_cards, hand_type);
+        let (mut chips, mult) = self.hand_levels.get_scoring(&hand_type);
+        let scoring_cards = get_scoring_cards(&played_cards, &hand_type);
 
         for card in scoring_cards {
             chips += card.base_chips();
