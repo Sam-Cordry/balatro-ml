@@ -8,6 +8,7 @@ use crate::{
     cards::{Card, Rank, Suit},
     hand_types::{HandLevels, get_scoring_cards, identify_hand_type},
     run_state::RunState,
+    scoring::ScoreModification,
 };
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -215,11 +216,24 @@ impl GameEngine {
         self.hand.retain(|_| *mask_iter.next().unwrap());
 
         let hand_type = identify_hand_type(&played_cards);
-        let (mut chips, mult) = self.hand_levels.get_scoring(&hand_type);
         let scoring_cards = get_scoring_cards(&played_cards, &hand_type);
 
-        for card in scoring_cards {
-            chips += card.base_chips();
+        let mut scoring_modifications = self.hand_levels.get_scoring(&hand_type);
+
+        for card in &scoring_cards {
+            scoring_modifications.extend(card.get_scoring());
+        }
+
+        let (mut chips, mut mult) = (0, 0);
+
+        for score_mod in scoring_modifications.into_iter() {
+            match score_mod {
+                ScoreModification::Chips(c) => chips += c,
+                ScoreModification::Mult(m) => mult += m,
+                ScoreModification::XMult(x) => mult = (mult as f32 * x) as usize,
+                ScoreModification::Money(v) => self.money += v,
+                ScoreModification::Chance(_, _, _) => unimplemented!(),
+            }
         }
 
         self.current_score = chips * mult;

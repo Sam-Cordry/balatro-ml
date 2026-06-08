@@ -2,7 +2,10 @@ use std::collections::{HashMap, HashSet};
 
 use strum_macros::EnumIter;
 
-use crate::cards::{Card, Rank, Suit};
+use crate::{
+    cards::{Card, Rank, Suit},
+    scoring::ScoreModification,
+};
 
 #[derive(Debug, PartialEq, Clone, Copy, EnumIter)]
 pub enum HandType {
@@ -46,14 +49,17 @@ impl Default for HandLevels {
 }
 
 impl HandLevels {
-    pub fn get_scoring(&self, hand_type: &HandType) -> (usize, usize) {
+    pub fn get_scoring(&self, hand_type: &HandType) -> Vec<ScoreModification<'_>> {
         let idx = *hand_type as usize;
         let add_levels = self.levels[idx] - 1;
 
-        (
-            HAND_SCALING[idx].0 + HAND_SCALING[idx].2 * add_levels,
-            HAND_SCALING[idx].1 + HAND_SCALING[idx].3 * add_levels,
-        )
+        let chips = HAND_SCALING[idx].0 + HAND_SCALING[idx].2 * add_levels;
+        let mult = HAND_SCALING[idx].1 + HAND_SCALING[idx].3 * add_levels;
+
+        vec![
+            ScoreModification::Chips(chips),
+            ScoreModification::Mult(mult),
+        ]
     }
 
     pub fn level_up(&mut self, hand_type: &HandType) {
@@ -94,19 +100,19 @@ pub fn identify_hand_type(cards: &[Card]) -> HandType {
     }
 }
 
-pub fn has_pair(cards: &[Card]) -> bool {
+fn has_pair(cards: &[Card]) -> bool {
     get_rank_freq(cards).values().any(|f| *f >= 2)
 }
 
-pub fn has_two_pair(cards: &[Card]) -> bool {
+fn has_two_pair(cards: &[Card]) -> bool {
     get_rank_freq(cards).values().filter(|f| **f >= 2).count() == 2
 }
 
-pub fn has_three_of_a_kind(cards: &[Card]) -> bool {
+fn has_three_of_a_kind(cards: &[Card]) -> bool {
     get_rank_freq(cards).values().any(|f| *f >= 3)
 }
 
-pub fn has_straight(cards: &[Card]) -> bool {
+fn has_straight(cards: &[Card]) -> bool {
     if cards.len() != 5 {
         return false;
     }
@@ -117,33 +123,33 @@ pub fn has_straight(cards: &[Card]) -> bool {
     ranks[4] - ranks[0] == 4 || ranks == vec![14, 5, 4, 3, 2]
 }
 
-pub fn has_flush(cards: &[Card]) -> bool {
+fn has_flush(cards: &[Card]) -> bool {
     cards.len() == 5 && HashSet::<Suit>::from_iter(cards.iter().map(|c| c.suit())).len() == 1
 }
 
-pub fn has_full_house(cards: &[Card]) -> bool {
+fn has_full_house(cards: &[Card]) -> bool {
     let freq = get_rank_freq(cards);
 
     freq.values().all(|f| *f == 2 || *f == 3)
 }
 
-pub fn has_four_of_a_kind(cards: &[Card]) -> bool {
+fn has_four_of_a_kind(cards: &[Card]) -> bool {
     get_rank_freq(cards).values().any(|f| *f >= 4)
 }
 
-pub fn has_straight_flush(cards: &[Card]) -> bool {
+fn has_straight_flush(cards: &[Card]) -> bool {
     has_straight(cards) && has_flush(cards)
 }
 
-pub fn has_five_of_a_kind(cards: &[Card]) -> bool {
+fn has_five_of_a_kind(cards: &[Card]) -> bool {
     get_rank_freq(cards).values().any(|f| *f == 5)
 }
 
-pub fn has_flush_house(cards: &[Card]) -> bool {
+fn has_flush_house(cards: &[Card]) -> bool {
     has_flush(cards) && has_full_house(cards)
 }
 
-pub fn has_flush_five(cards: &[Card]) -> bool {
+fn has_flush_five(cards: &[Card]) -> bool {
     has_flush(cards) && has_five_of_a_kind(cards)
 }
 
@@ -225,57 +231,53 @@ mod tests {
     fn test_hand_type_initial_scoring() {
         let hand_levels = HandLevels::default();
 
-        let (hc_chips, hc_mult) = hand_levels.get_scoring(&HandType::HighCard);
-        assert_eq!(hc_chips, 5);
-        assert_eq!(hc_mult, 1);
+        let hc_scoring = hand_levels.get_scoring(&HandType::HighCard);
+        assert!(hc_scoring.contains(&ScoreModification::Chips(5)));
+        assert!(hc_scoring.contains(&ScoreModification::Mult(1)));
 
-        let (pair_chips, pair_mult) = hand_levels.get_scoring(&HandType::Pair);
-        assert_eq!(pair_chips, 10);
-        assert_eq!(pair_mult, 2);
+        let pair_scoring = hand_levels.get_scoring(&HandType::Pair);
+        assert!(pair_scoring.contains(&ScoreModification::Chips(10)));
+        assert!(pair_scoring.contains(&ScoreModification::Mult(2)));
 
-        let (two_pair_chips, two_pair_mult) = hand_levels.get_scoring(&HandType::TwoPair);
-        assert_eq!(two_pair_chips, 20);
-        assert_eq!(two_pair_mult, 2);
+        let two_pair_scoring = hand_levels.get_scoring(&HandType::TwoPair);
+        assert!(two_pair_scoring.contains(&ScoreModification::Chips(20)));
+        assert!(two_pair_scoring.contains(&ScoreModification::Mult(2)));
 
-        let (three_of_a_kind_chips, three_of_a_kind_mult) =
-            hand_levels.get_scoring(&HandType::ThreeOfAKind);
-        assert_eq!(three_of_a_kind_chips, 30);
-        assert_eq!(three_of_a_kind_mult, 3);
+        let three_of_a_kind_scoring = hand_levels.get_scoring(&HandType::ThreeOfAKind);
+        assert!(three_of_a_kind_scoring.contains(&ScoreModification::Chips(30)));
+        assert!(three_of_a_kind_scoring.contains(&ScoreModification::Mult(3)));
 
-        let (straight_chips, straight_mult) = hand_levels.get_scoring(&HandType::Straight);
-        assert_eq!(straight_chips, 30);
-        assert_eq!(straight_mult, 4);
+        let straight_scoring = hand_levels.get_scoring(&HandType::Straight);
+        assert!(straight_scoring.contains(&ScoreModification::Chips(30)));
+        assert!(straight_scoring.contains(&ScoreModification::Mult(4)));
 
-        let (flush_chips, flush_mult) = hand_levels.get_scoring(&HandType::Flush);
-        assert_eq!(flush_chips, 35);
-        assert_eq!(flush_mult, 4);
+        let flush_scoring = hand_levels.get_scoring(&HandType::Flush);
+        assert!(flush_scoring.contains(&ScoreModification::Chips(35)));
+        assert!(flush_scoring.contains(&ScoreModification::Mult(4)));
 
-        let (full_house_chips, full_house_mult) = hand_levels.get_scoring(&HandType::FullHouse);
-        assert_eq!(full_house_chips, 40);
-        assert_eq!(full_house_mult, 4);
+        let full_house_scoring = hand_levels.get_scoring(&HandType::FullHouse);
+        assert!(full_house_scoring.contains(&ScoreModification::Chips(40)));
+        assert!(full_house_scoring.contains(&ScoreModification::Mult(4)));
 
-        let (four_of_a_kind_chips, four_of_a_kind_mult) =
-            hand_levels.get_scoring(&HandType::FourOfAKind);
-        assert_eq!(four_of_a_kind_chips, 60);
-        assert_eq!(four_of_a_kind_mult, 7);
+        let four_of_a_kind_scoring = hand_levels.get_scoring(&HandType::FourOfAKind);
+        assert!(four_of_a_kind_scoring.contains(&ScoreModification::Chips(60)));
+        assert!(four_of_a_kind_scoring.contains(&ScoreModification::Mult(7)));
 
-        let (straight_flush_chips, straight_flush_mult) =
-            hand_levels.get_scoring(&HandType::StraightFlush);
-        assert_eq!(straight_flush_chips, 100);
-        assert_eq!(straight_flush_mult, 8);
+        let straight_flush_scoring = hand_levels.get_scoring(&HandType::StraightFlush);
+        assert!(straight_flush_scoring.contains(&ScoreModification::Chips(100)));
+        assert!(straight_flush_scoring.contains(&ScoreModification::Mult(8)));
 
-        let (five_of_a_kind_chips, five_of_a_kind_mult) =
-            hand_levels.get_scoring(&HandType::FiveOfAKind);
-        assert_eq!(five_of_a_kind_chips, 120);
-        assert_eq!(five_of_a_kind_mult, 12);
+        let five_of_a_kind_scoring = hand_levels.get_scoring(&HandType::FiveOfAKind);
+        assert!(five_of_a_kind_scoring.contains(&ScoreModification::Chips(120)));
+        assert!(five_of_a_kind_scoring.contains(&ScoreModification::Mult(12)));
 
-        let (flush_house_chips, flush_house_mult) = hand_levels.get_scoring(&HandType::FlushHouse);
-        assert_eq!(flush_house_chips, 140);
-        assert_eq!(flush_house_mult, 14);
+        let flush_house_scoring = hand_levels.get_scoring(&HandType::FlushHouse);
+        assert!(flush_house_scoring.contains(&ScoreModification::Chips(140)));
+        assert!(flush_house_scoring.contains(&ScoreModification::Mult(14)));
 
-        let (flush_five_chips, flush_five_mult) = hand_levels.get_scoring(&HandType::FlushFive);
-        assert_eq!(flush_five_chips, 160);
-        assert_eq!(flush_five_mult, 16);
+        let flush_five_scoring = hand_levels.get_scoring(&HandType::FlushFive);
+        assert!(flush_five_scoring.contains(&ScoreModification::Chips(160)));
+        assert!(flush_five_scoring.contains(&ScoreModification::Mult(16)));
     }
 
     #[test]
@@ -286,57 +288,53 @@ mod tests {
             hand_levels.level_up(&hand_type);
         }
 
-        let (hc_chips, hc_mult) = hand_levels.get_scoring(&HandType::HighCard);
-        assert_eq!(hc_chips, 15);
-        assert_eq!(hc_mult, 2);
+        let hc_scoring = hand_levels.get_scoring(&HandType::HighCard);
+        assert!(hc_scoring.contains(&ScoreModification::Chips(15)));
+        assert!(hc_scoring.contains(&ScoreModification::Mult(2)));
 
-        let (pair_chips, pair_mult) = hand_levels.get_scoring(&HandType::Pair);
-        assert_eq!(pair_chips, 25);
-        assert_eq!(pair_mult, 3);
+        let pair_scoring = hand_levels.get_scoring(&HandType::Pair);
+        assert!(pair_scoring.contains(&ScoreModification::Chips(25)));
+        assert!(pair_scoring.contains(&ScoreModification::Mult(3)));
 
-        let (two_pair_chips, two_pair_mult) = hand_levels.get_scoring(&HandType::TwoPair);
-        assert_eq!(two_pair_chips, 40);
-        assert_eq!(two_pair_mult, 3);
+        let two_pair_scoring = hand_levels.get_scoring(&HandType::TwoPair);
+        assert!(two_pair_scoring.contains(&ScoreModification::Chips(40)));
+        assert!(two_pair_scoring.contains(&ScoreModification::Mult(3)));
 
-        let (three_of_a_kind_chips, three_of_a_kind_mult) =
-            hand_levels.get_scoring(&HandType::ThreeOfAKind);
-        assert_eq!(three_of_a_kind_chips, 50);
-        assert_eq!(three_of_a_kind_mult, 5);
+        let three_of_a_kind_scoring = hand_levels.get_scoring(&HandType::ThreeOfAKind);
+        assert!(three_of_a_kind_scoring.contains(&ScoreModification::Chips(50)));
+        assert!(three_of_a_kind_scoring.contains(&ScoreModification::Mult(5)));
 
-        let (straight_chips, straight_mult) = hand_levels.get_scoring(&HandType::Straight);
-        assert_eq!(straight_chips, 60);
-        assert_eq!(straight_mult, 7);
+        let straight_scoring = hand_levels.get_scoring(&HandType::Straight);
+        assert!(straight_scoring.contains(&ScoreModification::Chips(60)));
+        assert!(straight_scoring.contains(&ScoreModification::Mult(7)));
 
-        let (flush_chips, flush_mult) = hand_levels.get_scoring(&HandType::Flush);
-        assert_eq!(flush_chips, 50);
-        assert_eq!(flush_mult, 6);
+        let flush_scoring = hand_levels.get_scoring(&HandType::Flush);
+        assert!(flush_scoring.contains(&ScoreModification::Chips(50)));
+        assert!(flush_scoring.contains(&ScoreModification::Mult(6)));
 
-        let (full_house_chips, full_house_mult) = hand_levels.get_scoring(&HandType::FullHouse);
-        assert_eq!(full_house_chips, 65);
-        assert_eq!(full_house_mult, 6);
+        let full_house_scoring = hand_levels.get_scoring(&HandType::FullHouse);
+        assert!(full_house_scoring.contains(&ScoreModification::Chips(65)));
+        assert!(full_house_scoring.contains(&ScoreModification::Mult(6)));
 
-        let (four_of_a_kind_chips, four_of_a_kind_mult) =
-            hand_levels.get_scoring(&HandType::FourOfAKind);
-        assert_eq!(four_of_a_kind_chips, 90);
-        assert_eq!(four_of_a_kind_mult, 10);
+        let four_of_a_kind_scoring = hand_levels.get_scoring(&HandType::FourOfAKind);
+        assert!(four_of_a_kind_scoring.contains(&ScoreModification::Chips(90)));
+        assert!(four_of_a_kind_scoring.contains(&ScoreModification::Mult(10)));
 
-        let (straight_flush_chips, straight_flush_mult) =
-            hand_levels.get_scoring(&HandType::StraightFlush);
-        assert_eq!(straight_flush_chips, 140);
-        assert_eq!(straight_flush_mult, 12);
+        let straight_flush_scoring = hand_levels.get_scoring(&HandType::StraightFlush);
+        assert!(straight_flush_scoring.contains(&ScoreModification::Chips(140)));
+        assert!(straight_flush_scoring.contains(&ScoreModification::Mult(12)));
 
-        let (five_of_a_kind_chips, five_of_a_kind_mult) =
-            hand_levels.get_scoring(&HandType::FiveOfAKind);
-        assert_eq!(five_of_a_kind_chips, 155);
-        assert_eq!(five_of_a_kind_mult, 15);
+        let five_of_a_kind_scoring = hand_levels.get_scoring(&HandType::FiveOfAKind);
+        assert!(five_of_a_kind_scoring.contains(&ScoreModification::Chips(155)));
+        assert!(five_of_a_kind_scoring.contains(&ScoreModification::Mult(15)));
 
-        let (flush_house_chips, flush_house_mult) = hand_levels.get_scoring(&HandType::FlushHouse);
-        assert_eq!(flush_house_chips, 180);
-        assert_eq!(flush_house_mult, 18);
+        let flush_house_scoring = hand_levels.get_scoring(&HandType::FlushHouse);
+        assert!(flush_house_scoring.contains(&ScoreModification::Chips(180)));
+        assert!(flush_house_scoring.contains(&ScoreModification::Mult(18)));
 
-        let (flush_five_chips, flush_five_mult) = hand_levels.get_scoring(&HandType::FlushFive);
-        assert_eq!(flush_five_chips, 210);
-        assert_eq!(flush_five_mult, 19);
+        let flush_five_scoring = hand_levels.get_scoring(&HandType::FlushFive);
+        assert!(flush_five_scoring.contains(&ScoreModification::Chips(210)));
+        assert!(flush_five_scoring.contains(&ScoreModification::Mult(19)));
     }
 
     #[test]
@@ -344,13 +342,22 @@ mod tests {
         let mut hand_levels = HandLevels::default();
 
         hand_levels.level_up(&HandType::HighCard);
-        assert_eq!(hand_levels.get_scoring(&HandType::HighCard), (15, 2));
+
+        let mut scoring = hand_levels.get_scoring(&HandType::HighCard);
+        assert!(scoring.contains(&ScoreModification::Chips(15)));
+        assert!(scoring.contains(&ScoreModification::Mult(2)));
 
         hand_levels.level_down(&HandType::HighCard);
-        assert_eq!(hand_levels.get_scoring(&HandType::HighCard), (5, 1));
+
+        scoring = hand_levels.get_scoring(&HandType::HighCard);
+        assert!(scoring.contains(&ScoreModification::Chips(5)));
+        assert!(scoring.contains(&ScoreModification::Mult(1)));
 
         hand_levels.level_down(&HandType::HighCard);
-        assert_eq!(hand_levels.get_scoring(&HandType::HighCard), (5, 1));
+
+        scoring = hand_levels.get_scoring(&HandType::HighCard);
+        assert!(scoring.contains(&ScoreModification::Chips(5)));
+        assert!(scoring.contains(&ScoreModification::Mult(1)));
     }
 
     #[test]

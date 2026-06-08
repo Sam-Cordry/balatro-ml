@@ -1,5 +1,7 @@
 use strum_macros::EnumIter;
 
+use crate::scoring::ScoreModification;
+
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash, EnumIter)]
 #[repr(u8)]
 pub enum Rank {
@@ -37,7 +39,19 @@ impl Card {
         Self { rank, suit }
     }
 
-    pub fn base_chips(&self) -> usize {
+    pub fn rank(&self) -> Rank {
+        self.rank
+    }
+
+    pub fn suit(&self) -> Suit {
+        self.suit
+    }
+
+    pub fn get_scoring(&self) -> Vec<ScoreModification<'_>> {
+        vec![ScoreModification::Chips(self.base_chips())]
+    }
+
+    fn base_chips(&self) -> usize {
         match self.rank {
             Rank::Two => 2,
             Rank::Three => 3,
@@ -50,14 +64,6 @@ impl Card {
             Rank::Ten | Rank::Jack | Rank::Queen | Rank::King => 10,
             Rank::Ace => 11,
         }
-    }
-
-    pub fn rank(&self) -> Rank {
-        self.rank
-    }
-
-    pub fn suit(&self) -> Suit {
-        self.suit
     }
 }
 
