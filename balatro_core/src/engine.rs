@@ -221,7 +221,7 @@ impl GameEngine {
         let mut scoring_modifications = self.hand_levels.get_scoring(&hand_type);
 
         for card in &scoring_cards {
-            scoring_modifications.extend(card.get_scoring());
+            scoring_modifications.extend(card.on_scored());
         }
 
         let (mut chips, mut mult) = (0, 0);

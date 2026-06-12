@@ -1,6 +1,6 @@
 use strum_macros::EnumIter;
 
-use crate::scoring::ScoreModification;
+use crate::{cards::enhancements::Enhancement, scoring::ScoreModification};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash, EnumIter)]
 #[repr(u8)]
@@ -32,11 +32,16 @@ pub enum Suit {
 pub struct Card {
     rank: Rank,
     suit: Suit,
+    enhancement: Option<Enhancement>,
 }
 
 impl Card {
     pub fn new(rank: Rank, suit: Suit) -> Self {
-        Self { rank, suit }
+        Self {
+            rank,
+            suit,
+            enhancement: None,
+        }
     }
 
     pub fn rank(&self) -> Rank {
@@ -47,8 +52,22 @@ impl Card {
         self.suit
     }
 
-    pub fn get_scoring(&self) -> Vec<ScoreModification<'_>> {
-        vec![ScoreModification::Chips(self.base_chips())]
+    pub fn enhancement(&self) -> Option<Enhancement> {
+        self.enhancement
+    }
+
+    pub fn add_enhancement(&mut self, enhancement: Enhancement) {
+        self.enhancement = Some(enhancement);
+    }
+
+    pub fn on_scored(&self) -> Vec<ScoreModification<'_>> {
+        let mut scoring = vec![ScoreModification::Chips(self.base_chips())];
+
+        if let Some(e) = self.enhancement.as_ref() {
+            scoring.extend(e.on_scored());
+        }
+
+        scoring
     }
 
     fn base_chips(&self) -> usize {
@@ -103,5 +122,35 @@ mod tests {
                 }
             })
         })
+    }
+
+    #[test]
+    fn test_add_enhancement() {
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        assert!(card.enhancement().is_none());
+
+        card.add_enhancement(Enhancement::Mult);
+        assert!(card.enhancement().is_some_and(|e| e == Enhancement::Mult));
+    }
+
+    #[test]
+    fn test_scoring_enhanced_card() {
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        card.add_enhancement(Enhancement::Lucky);
+
+        let scoring = card.on_scored();
+
+        assert_eq!(scoring.len(), 3);
+        assert!(scoring.contains(&ScoreModification::Chips(11)));
+        assert!(scoring.contains(&ScoreModification::Chance(
+            1,
+            5,
+            &ScoreModification::Mult(20)
+        )));
+        assert!(scoring.contains(&ScoreModification::Chance(
+            1,
+            15,
+            &ScoreModification::Money(20)
+        )));
     }
 }
