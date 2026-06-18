@@ -1,6 +1,9 @@
 use strum_macros::EnumIter;
 
-use crate::{cards::enhancements::Enhancement, scoring::ScoreModification};
+use crate::{
+    cards::{enhancements::Enhancement, seals::Seal},
+    scoring::ScoreModification,
+};
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash, EnumIter)]
 #[repr(u8)]
@@ -33,6 +36,7 @@ pub struct Card {
     rank: Rank,
     suit: Suit,
     enhancement: Option<Enhancement>,
+    seal: Option<Seal>,
 }
 
 impl Card {
@@ -41,6 +45,7 @@ impl Card {
             rank,
             suit,
             enhancement: None,
+            seal: None,
         }
     }
 
@@ -56,8 +61,16 @@ impl Card {
         self.enhancement
     }
 
+    pub fn seal(&self) -> Option<Seal> {
+        self.seal
+    }
+
     pub fn add_enhancement(&mut self, enhancement: Enhancement) {
         self.enhancement = Some(enhancement);
+    }
+
+    pub fn add_seal(&mut self, seal: Seal) {
+        self.seal = Some(seal);
     }
 
     pub fn on_scored(&self) -> Vec<ScoreModification<'_>> {
@@ -65,6 +78,10 @@ impl Card {
 
         if let Some(e) = self.enhancement.as_ref() {
             scoring.extend(e.on_scored());
+        }
+
+        if let Some(s) = self.seal.as_ref() {
+            scoring.extend(s.on_scored());
         }
 
         scoring
@@ -134,6 +151,15 @@ mod tests {
     }
 
     #[test]
+    fn test_add_seal() {
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        assert!(card.seal().is_none());
+
+        card.add_seal(Seal::Red);
+        assert!(card.seal().is_some_and(|s| s == Seal::Red));
+    }
+
+    #[test]
     fn test_scoring_enhanced_card() {
         let mut card = Card::new(Rank::Ace, Suit::Spade);
         card.add_enhancement(Enhancement::Lucky);
@@ -152,5 +178,17 @@ mod tests {
             15,
             &ScoreModification::Money(20)
         )));
+    }
+
+    #[test]
+    fn test_scoring_card_with_seal() {
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        card.add_seal(Seal::Gold);
+
+        let scoring = card.on_scored();
+
+        assert_eq!(scoring.len(), 2);
+        assert!(scoring.contains(&ScoreModification::Chips(11)));
+        assert!(scoring.contains(&ScoreModification::Money(3)));
     }
 }

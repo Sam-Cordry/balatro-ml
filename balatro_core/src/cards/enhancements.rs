@@ -48,18 +48,18 @@ mod tests {
 
     #[test]
     fn test_bonus_on_scored() {
-        let enhancements = Enhancement::Bonus.on_scored();
+        let scoring = Enhancement::Bonus.on_scored();
 
-        assert_eq!(enhancements.len(), 1);
-        assert!(enhancements.contains(&ScoreModification::Chips(30)));
+        assert_eq!(scoring.len(), 1);
+        assert!(scoring.contains(&ScoreModification::Chips(30)));
     }
 
     #[test]
     fn test_mult_on_scored() {
-        let enhancements = Enhancement::Mult.on_scored();
+        let scoring = Enhancement::Mult.on_scored();
 
-        assert_eq!(enhancements.len(), 1);
-        assert!(enhancements.contains(&ScoreModification::Mult(4)));
+        assert_eq!(scoring.len(), 1);
+        assert!(scoring.contains(&ScoreModification::Mult(4)));
     }
 
     #[test]
@@ -69,10 +69,10 @@ mod tests {
 
     #[test]
     fn test_glass_on_scored() {
-        let enhancements = Enhancement::Glass.on_scored();
+        let scoring = Enhancement::Glass.on_scored();
 
-        assert_eq!(enhancements.len(), 1);
-        assert!(enhancements.contains(&ScoreModification::XMult(2.0)));
+        assert_eq!(scoring.len(), 1);
+        assert!(scoring.contains(&ScoreModification::XMult(2.0)));
     }
 
     #[test]
@@ -82,10 +82,10 @@ mod tests {
 
     #[test]
     fn test_stone_on_scored() {
-        let enhancements = Enhancement::Stone.on_scored();
+        let scoring = Enhancement::Stone.on_scored();
 
-        assert_eq!(enhancements.len(), 1);
-        assert!(enhancements.contains(&ScoreModification::Chips(50)));
+        assert_eq!(scoring.len(), 1);
+        assert!(scoring.contains(&ScoreModification::Chips(50)));
     }
 
     #[test]
@@ -95,15 +95,15 @@ mod tests {
 
     #[test]
     fn test_lucky_on_scored() {
-        let enhancements = Enhancement::Lucky.on_scored();
+        let scoring = Enhancement::Lucky.on_scored();
 
-        assert_eq!(enhancements.len(), 2);
-        assert!(enhancements.contains(&ScoreModification::Chance(
+        assert_eq!(scoring.len(), 2);
+        assert!(scoring.contains(&ScoreModification::Chance(
             1,
             5,
             &ScoreModification::Mult(20)
         )));
-        assert!(enhancements.contains(&ScoreModification::Chance(
+        assert!(scoring.contains(&ScoreModification::Chance(
             1,
             15,
             &ScoreModification::Money(20)
@@ -132,10 +132,10 @@ mod tests {
 
     #[test]
     fn test_steel_on_held() {
-        let enhancements = Enhancement::Steel.on_held();
+        let scoring = Enhancement::Steel.on_held();
 
-        assert_eq!(enhancements.len(), 1);
-        assert!(enhancements.contains(&ScoreModification::XMult(1.5)));
+        assert_eq!(scoring.len(), 1);
+        assert!(scoring.contains(&ScoreModification::XMult(1.5)));
     }
 
     #[test]
@@ -185,10 +185,10 @@ mod tests {
 
     #[test]
     fn test_gold_on_round_end() {
-        let enhancements = Enhancement::Gold.on_round_end();
+        let scoring = Enhancement::Gold.on_round_end();
 
-        assert_eq!(enhancements.len(), 1);
-        assert!(enhancements.contains(&ScoreModification::Money(3)));
+        assert_eq!(scoring.len(), 1);
+        assert!(scoring.contains(&ScoreModification::Money(3)));
     }
 
     #[test]

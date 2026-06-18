@@ -5,5 +5,4 @@ pub mod hands;
 pub mod planets;
 pub mod run_state;
 pub mod scoring;
-pub mod tarots;
 pub mod vouchers;
