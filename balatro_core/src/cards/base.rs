@@ -1,12 +1,11 @@
 use strum_macros::EnumIter;
 
 use crate::{
-    cards::{enhancements::Enhancement, seals::Seal},
+    cards::{editions::Edition, enhancements::Enhancement, seals::Seal},
     scoring::ScoreModification,
 };
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash, EnumIter)]
-#[repr(u8)]
 pub enum Rank {
     Ace = 1,
     King = 2,
@@ -37,6 +36,7 @@ pub struct Card {
     suit: Suit,
     enhancement: Option<Enhancement>,
     seal: Option<Seal>,
+    edition: Option<Edition>,
 }
 
 impl Card {
@@ -46,6 +46,7 @@ impl Card {
             suit,
             enhancement: None,
             seal: None,
+            edition: None,
         }
     }
 
@@ -65,12 +66,20 @@ impl Card {
         self.seal
     }
 
+    pub fn edition(&self) -> Option<Edition> {
+        self.edition
+    }
+
     pub fn add_enhancement(&mut self, enhancement: Enhancement) {
         self.enhancement = Some(enhancement);
     }
 
     pub fn add_seal(&mut self, seal: Seal) {
         self.seal = Some(seal);
+    }
+
+    pub fn add_edition(&mut self, edition: Edition) {
+        self.edition = Some(edition);
     }
 
     pub fn on_scored(&self) -> Vec<ScoreModification<'_>> {
@@ -82,6 +91,10 @@ impl Card {
 
         if let Some(s) = self.seal.as_ref() {
             scoring.extend(s.on_scored());
+        }
+
+        if let Some(e) = self.edition.as_ref() {
+            scoring.push(e.on_scored());
         }
 
         scoring
@@ -160,6 +173,15 @@ mod tests {
     }
 
     #[test]
+    fn test_add_edition() {
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        assert!(card.edition().is_none());
+
+        card.add_edition(Edition::Polychrome);
+        assert!(card.edition().is_some_and(|e| e == Edition::Polychrome));
+    }
+
+    #[test]
     fn test_scoring_enhanced_card() {
         let mut card = Card::new(Rank::Ace, Suit::Spade);
         card.add_enhancement(Enhancement::Lucky);
@@ -190,5 +212,17 @@ mod tests {
         assert_eq!(scoring.len(), 2);
         assert!(scoring.contains(&ScoreModification::Chips(11)));
         assert!(scoring.contains(&ScoreModification::Money(3)));
+    }
+
+    #[test]
+    fn test_scoring_card_with_edition() {
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        card.add_edition(Edition::Foil);
+
+        let scoring = card.on_scored();
+
+        assert_eq!(scoring.len(), 2);
+        assert!(scoring.contains(&ScoreModification::Chips(11)));
+        assert!(scoring.contains(&ScoreModification::Chips(50)));
     }
 }
