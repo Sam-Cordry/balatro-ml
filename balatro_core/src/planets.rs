@@ -1,5 +1,6 @@
 use crate::hands::HandType;
 
+#[derive(Debug, Clone, Copy)]
 pub enum Planet {
     Pluto,
     Mercury,
