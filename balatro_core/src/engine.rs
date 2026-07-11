@@ -5,7 +5,7 @@ use strum::IntoEnumIterator;
 
 use crate::{
     blinds::BlindType,
-    cards::{Card, Rank, Suit},
+    cards::{Card, Rank, Seal, Suit},
     hands::{HandLevels, get_scoring_cards, identify_hand_type},
     run_state::RunState,
     scoring::ScoreModification,
@@ -221,7 +221,9 @@ impl GameEngine {
         let mut scoring_modifications = self.hand_levels.get_scoring(&hand_type);
 
         for card in &scoring_cards {
-            scoring_modifications.extend(card.on_scored());
+            for _ in 0..(card.count_retriggers() + 1) {
+                scoring_modifications.extend(card.on_scored());
+            }
         }
 
         let (mut chips, mut mult) = (0, 0);
@@ -712,5 +714,18 @@ mod tests {
             .unwrap();
 
         assert_eq!(engine.money(), 30);
+    }
+
+    #[test]
+    fn test_playing_red_seal_retriggers() {
+        let mut engine = GameEngine::new();
+        engine.handle_action(GameAction::SelectBlind).unwrap();
+
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        card.add_seal(Seal::Red);
+        engine.hand = vec![card];
+
+        engine.handle_action(GameAction::PlayHand(vec![0])).unwrap();
+        assert_eq!(engine.current_score(), 27);
     }
 }

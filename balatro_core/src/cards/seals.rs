@@ -30,6 +30,13 @@ impl Seal {
             _ => None,
         }
     }
+
+    pub fn count_retriggers(&self) -> usize {
+        match self {
+            Self::Red => 1,
+            _ => 0,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -67,5 +74,17 @@ mod tests {
         assert!(Seal::Gold.on_round_end().is_none());
         assert!(Seal::Red.on_round_end().is_none());
         assert!(Seal::Purple.on_round_end().is_none());
+    }
+
+    #[test]
+    fn test_red_seal_adds_retrigger() {
+        assert_eq!(Seal::Red.count_retriggers(), 1);
+    }
+
+    #[test]
+    fn test_no_retriggers() {
+        assert_eq!(Seal::Gold.count_retriggers(), 0);
+        assert_eq!(Seal::Blue.count_retriggers(), 0);
+        assert_eq!(Seal::Purple.count_retriggers(), 0);
     }
 }

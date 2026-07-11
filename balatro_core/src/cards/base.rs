@@ -100,6 +100,10 @@ impl Card {
         scoring
     }
 
+    pub fn count_retriggers(&self) -> usize {
+        self.seal.map_or(0, |s| s.count_retriggers())
+    }
+
     fn base_chips(&self) -> usize {
         match self.rank {
             Rank::Two => 2,
@@ -224,5 +228,14 @@ mod tests {
         assert_eq!(scoring.len(), 2);
         assert!(scoring.contains(&ScoreModification::Chips(11)));
         assert!(scoring.contains(&ScoreModification::Chips(50)));
+    }
+
+    #[test]
+    fn test_count_retriggers() {
+        let mut card = Card::new(Rank::Ace, Suit::Spade);
+        assert_eq!(card.count_retriggers(), 0);
+
+        card.add_seal(Seal::Red);
+        assert_eq!(card.count_retriggers(), 1)
     }
 }
